@@ -1,0 +1,57 @@
+/* Footer main styling */
+.footer {
+  background: #1a1a1a;
+  color: #fff;
+  padding: 20px 0 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Container for main footer content */
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 20px;
+}
+
+/* Left section (title & tagline) */
+.footer-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #ff9900; /* Accent color */
+}
+
+.footer-text {
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* Right section (links) */
+.footer-right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.footer-link {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.footer-link:hover {
+  color: #ff9900; /* Highlight on hover */
+}
+
+/* Bottom copyright bar */
+.footer-bottom {
+  border-top: 1px solid #333;
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  color: #999;
+}
