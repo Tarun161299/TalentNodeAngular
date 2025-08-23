@@ -1,0 +1,164 @@
+/* General */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #f9f9f9, #eaf4fc);
+  margin: 0;
+  padding: 30px;
+}
+
+.title {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+/* Dashboard Container */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* Row Style */
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 15px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+  transition: all 0.3s ease-in-out;
+}
+
+.row:hover {
+  transform: translateY(-3px);
+  background: #f5f9ff;
+}
+
+/* Profile Section */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile img {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  border: 3px solid #007bff;
+  object-fit: cover;
+}
+
+.info h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.info p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.info .qualification {
+  display: block;
+  font-size: 13px;
+  color: #222;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+.info .details {
+  display: block;
+  font-size: 13px;
+  color: #555;
+}
+
+.info .contact {
+  display: block;
+  font-size: 12px;
+  color: #007bff;
+  margin-top: 3px;
+}
+
+/* Actions Section */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* Status Badges */
+.status {
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+}
+
+.status.new {
+  background: #17a2b8; /* Blue */
+}
+
+.status.shortlisted {
+  background: #28a745; /* Green */
+}
+
+.status.rejected {
+  background: #dc3545; /* Red */
+}
+
+.status.hired {
+  background: #ffc107; /* Yellow */
+  color: #222;
+}
+
+/* Buttons */
+.btn {
+  border: none;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.3s;
+}
+
+.btn.view {
+  background: #6c757d;
+  color: white;
+}
+
+.btn.profile {
+  background: #ff9800; /* Orange */
+  color: white;
+}
+
+.btn.shortlist {
+  background: #28a745;
+  color: white;
+}
+
+.btn.reject {
+  background: #dc3545;
+  color: white;
+}
+
+.btn.call {
+  background: #007bff;
+  color: white;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
