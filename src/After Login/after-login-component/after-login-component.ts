@@ -12,5 +12,9 @@ import { Dashboard } from '../dashboard/dashboard';
   styleUrl: './after-login-component.css'
 })
 export class AfterLoginComponent {
+  isSidebarCollapsed = false;
 
+  onSidebarToggled(collapsed: boolean) {
+    this.isSidebarCollapsed = collapsed;
+  }
 }

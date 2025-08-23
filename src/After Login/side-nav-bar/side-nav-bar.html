@@ -1,16 +1,51 @@
-<div class="sidebar">
-  <div class="sidebar-header">
-    <h2>TalentNode</h2>
-    <p class="role">Employer Panel</p>
+<nav class="sidebar" [class.collapsed]="collapsed">
+  <div class="toggle-btn" (click)="toggleSidebarWidth()">
+    ☰
   </div>
-  <ul class="nav-list">
-    <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-    <li><a href="#"><i class="fas fa-plus-circle"></i> Post Job</a></li>
-    <li><a href="#"><i class="fas fa-briefcase"></i> Manage Jobs</a></li>
-    <li><a href="#"><i class="fas fa-users"></i> Applications</a></li>
-    <li><a href="#"><i class="fas fa-search"></i> Search Candidates</a></li>
-    <li><a href="#"><i class="fas fa-chart-line"></i> Reports</a></li>
-    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-    <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+
+  <ul class="menu">
+    <!-- Dashboard -->
+    <li>
+      <a routerLink="/dashboard" class="menu-item">
+        🏠 <span *ngIf="!collapsed">Dashboard</span>
+      </a>
+    </li>
+
+    <!-- Jobs -->
+    <li>
+      <div class="menu-item parent" (click)="toggleMenu('jobs')">
+        💼 <span *ngIf="!collapsed">Jobs</span>
+        <span class="arrow" *ngIf="!collapsed" [class.open]="openMenu === 'jobs'">▾</span>
+      </div>
+      <ul class="submenu" *ngIf="openMenu === 'jobs' && !collapsed">
+        <li><a routerLink="/jobs/recommended">Recommended Jobs</a></li>
+        <li><a routerLink="/jobs/saved">Saved Jobs</a></li>
+        <li><a routerLink="/jobs/applied">Applied Jobs</a></li>
+      </ul>
+    </li>
+
+    <!-- Recruiters -->
+    <li>
+      <div class="menu-item parent" (click)="toggleMenu('recruiters')">
+        👔 <span *ngIf="!collapsed">Recruiters</span>
+        <span class="arrow" *ngIf="!collapsed" [class.open]="openMenu === 'recruiters'">▾</span>
+      </div>
+      <ul class="submenu" *ngIf="openMenu === 'recruiters' && !collapsed">
+        <li><a routerLink="/recruiters/following">Following</a></li>
+        <li><a routerLink="/recruiters/search">Search Recruiters</a></li>
+      </ul>
+    </li>
+
+    <!-- Settings -->
+    <li>
+      <div class="menu-item parent" (click)="toggleMenu('settings')">
+        ⚙️ <span *ngIf="!collapsed">Settings</span>
+        <span class="arrow" *ngIf="!collapsed" [class.open]="openMenu === 'settings'">▾</span>
+      </div>
+      <ul class="submenu" *ngIf="openMenu === 'settings' && !collapsed">
+        <li><a routerLink="/settings/profile">Profile Settings</a></li>
+        <li><a routerLink="/settings/privacy">Privacy Settings</a></li>
+      </ul>
+    </li>
   </ul>
-</div>
+</nav>
