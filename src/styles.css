@@ -1,0 +1,25 @@
+/* Main layout container */
+.main-layout {
+    display: flex;
+    min-height: 100vh;
+    transition: all 0.3s ease;
+  }
+  
+  /* Sidebar (default width) */
+  app-side-nav-bar {
+    width: 240px;
+    transition: width 0.3s ease;
+  }
+  
+  /* Collapsed sidebar */
+  .main-layout.sidebar-collapsed app-side-nav-bar {
+    width: 60px;
+  }
+  
+  /* Dashboard area expands automatically */
+  .dashboard {
+    flex: 1; /* This makes it grow/shrink depending on sidebar */
+    padding: 20px;
+    transition: margin-left 0.3s ease, width 0.3s ease;
+  }
+  

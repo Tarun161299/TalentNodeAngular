@@ -13,5 +13,9 @@ import { AllApplication } from '../all-application/all-application';
   styleUrl: './after-login-component.css'
 })
 export class AfterLoginComponent {
+  isSidebarCollapsed = false;
 
+  onSidebarToggled(collapsed: boolean) {
+    this.isSidebarCollapsed = collapsed;
+  }
 }

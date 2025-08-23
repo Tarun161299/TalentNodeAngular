@@ -1,7 +1,11 @@
-<!-- <app-befor-login-header></app-befor-login-header>
-<router-outlet></router-outlet>
-<app-before-login-footer></app-before-login-footer> -->
 <app-after-login-header></app-after-login-header>
-<app-side-nav-bar></app-side-nav-bar>
-<router-outlet></router-outlet>
+
+<div class="main-layout" [class.sidebar-collapsed]="isSidebarCollapsed">
+  <app-side-nav-bar (toggle)="onSidebarToggled($event)"></app-side-nav-bar>
+
+  <div class="content-area">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
 <app-after-login-footer></app-after-login-footer>

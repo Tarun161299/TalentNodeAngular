@@ -1,0 +1,16 @@
+.main-layout {
+    display: flex;
+    min-height: calc(100vh - 120px); /* minus header/footer height */
+  }
+  
+  .content-area {
+    flex-grow: 1;
+    transition: margin-left 0.3s;
+    padding: 20px;
+  }
+  
+  .sidebar-collapsed .content-area {
+    margin-left: 60px; /* collapsed sidebar */
+  }
+  
+ 
