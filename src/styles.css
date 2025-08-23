@@ -1,4 +1,5 @@
 /* Main layout container */
+@import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
 .main-layout {
     display: flex;
     min-height: 100vh;

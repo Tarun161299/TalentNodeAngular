@@ -7,27 +7,27 @@
     <!-- Dashboard -->
     <li>
       <a routerLink="/dashboard" class="menu-item">
-        🏠 <span *ngIf="!collapsed">Dashboard</span>
+        <i class="fas fa-home"></i> <span *ngIf="!collapsed">Dashboard</span>
       </a>
     </li>
 
     <!-- Jobs -->
     <li>
       <div class="menu-item parent" (click)="toggleMenu('jobs')">
-        💼 <span *ngIf="!collapsed">Jobs</span>
+        <i class="fas fa-briefcase"></i> <span *ngIf="!collapsed">Jobs</span>
         <span class="arrow" *ngIf="!collapsed" [class.open]="openMenu === 'jobs'">▾</span>
       </div>
       <ul class="submenu" *ngIf="openMenu === 'jobs' && !collapsed">
         <li><a routerLink="/jobs/recommended">Recommended Jobs</a></li>
         <li><a routerLink="/jobs/saved">Saved Jobs</a></li>
-        <li><a routerLink="/jobs/applied">Applied Jobs</a></li>
+        <li><a (click)="this.navigateTo('/welcome/all_Application')" routerLinkActive="active">Applied Jobs</a></li>
       </ul>
     </li>
 
     <!-- Recruiters -->
     <li>
       <div class="menu-item parent" (click)="toggleMenu('recruiters')">
-        👔 <span *ngIf="!collapsed">Recruiters</span>
+        <i class="fas fa-id-card"></i>   <span *ngIf="!collapsed">Recruiters</span>
         <span class="arrow" *ngIf="!collapsed" [class.open]="openMenu === 'recruiters'">▾</span>
       </div>
       <ul class="submenu" *ngIf="openMenu === 'recruiters' && !collapsed">
@@ -39,7 +39,7 @@
     <!-- Settings -->
     <li>
       <div class="menu-item parent" (click)="toggleMenu('settings')">
-        ⚙️ <span *ngIf="!collapsed">Settings</span>
+        <i class="fas fa-cog"></i> <span *ngIf="!collapsed">Settings</span>
         <span class="arrow" *ngIf="!collapsed" [class.open]="openMenu === 'settings'">▾</span>
       </div>
       <ul class="submenu" *ngIf="openMenu === 'settings' && !collapsed">

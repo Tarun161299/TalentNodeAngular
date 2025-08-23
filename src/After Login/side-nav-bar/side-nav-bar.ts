@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-side-nav-bar',
@@ -9,7 +10,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 })
 export class SideNavBar {
   // collapsed = false;
-
+  constructor(private router: Router) {}
   // @Output() toggle = new EventEmitter<boolean>();
 
   // openMenu: string | null = null; // for nested nav
@@ -36,5 +37,10 @@ export class SideNavBar {
 
   toggleMenu(menu: string) {
     this.openMenu = this.openMenu === menu ? null : menu;
+  }
+
+  navigateTo(path: string) {
+    debugger
+    this.router.navigate([path]);
   }
 }
