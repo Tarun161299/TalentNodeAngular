@@ -7,6 +7,21 @@
 
 </head>
 <body>
+<!-- resume-preview-dialog.component.html -->
+<div class="pdf-modal" *ngIf="showPdf">
+  <div class="pdf-modal-content">
+    <span class="close" (click)="closePdf()">&times;</span>
+
+    <!-- ngx pdf viewer -->
+    <ngx-extended-pdf-viewer
+      [src]="'D:/Document/Resume/SQL_Interview_QA_Tech_Support.pdf'"
+      useBrowserLocale="true"
+      [height]="'80vh'"
+      [showSidebarButton]="true"
+      [showPrintButton]="true"
+    ></ngx-extended-pdf-viewer>
+  </div>
+</div>
 
   <h1 class="title">📋 Candidate Applications</h1>
 
@@ -26,7 +41,8 @@
       </div>
       <div class="actions">
         <span class="status new">New</span>
-        <button class="btn view">📄 Resume</button>
+     
+        <button (click)="openPdf()">📄 Resume</button>
         <button class="btn profile">👤 View Profile</button>
         <button class="btn shortlist">✔ Shortlist</button>
         <button class="btn reject">❌ Reject</button>
