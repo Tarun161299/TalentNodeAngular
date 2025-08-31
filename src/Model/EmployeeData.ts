@@ -14,4 +14,5 @@ export interface EmployeeData {
   emp_Skills: Skills[];
   districtName: string;
   stateName: string;
+  empImage:string;
 }

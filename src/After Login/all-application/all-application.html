@@ -27,7 +27,7 @@
 <div class="dashboard">
   <div class="row" *ngFor="let candidate of employeeList">
     <div class="profile">
-      <img [src]="'https://i.pravatar.cc/60?img=6'" [alt]="candidate.firstName">
+      <img [src]="'data:image/jpeg;base64,' + candidate.empImage" [alt]="candidate.firstName">
       <div class="info">
         <h3>{{ candidate.firstName +' '+ candidate.lastName}}</h3>
         <p>Applied For: <strong>IT</strong></p>
