@@ -8,93 +8,46 @@
 </head>
 <body>
 <!-- resume-preview-dialog.component.html -->
-<div class="pdf-modal" *ngIf="showPdf">
-  <div class="pdf-modal-content">
-    <span class="close" (click)="closePdf()">&times;</span>
+<div class="custom-modal" *ngIf="showPdf">
+  <div class="custom-modal-content">
+    <button class="close-btn" (click)="closeModal()">X</button> 
+    <pdf-viewer
+          [src]="'data:application/pdf;base64,' + pdfBase64"
+          [render-text]="true"
+          [show-all]="true"
+          style="display: block; height: 100%; width: 100%;">
+        </pdf-viewer>
 
-    <!-- ngx pdf viewer -->
-    <ngx-extended-pdf-viewer
-      [src]="'D:/Document/Resume/SQL_Interview_QA_Tech_Support.pdf'"
-      useBrowserLocale="true"
-      [height]="'80vh'"
-      [showSidebarButton]="true"
-      [showPrintButton]="true"
-    ></ngx-extended-pdf-viewer>
-  </div>
-</div>
-
+   </div>
+</div> 
   <h1 class="title">📋 Candidate Applications</h1>
 
-  <div class="dashboard">
+  <!-- src/app/dashboard/dashboard.component.html -->
 
-    <!-- Candidate 1 -->
-    <div class="row">
-      <div class="profile">
-        <img src="https://i.pravatar.cc/60?img=5" alt="John">
-        <div class="info">
-          <h3>John Doe</h3>
-          <p>Applied For: <strong>Software Engineer</strong></p>
-          <span class="qualification">🎓 B.Tech in Computer Science</span>
-          <span class="details">💼 3 Years | 📍 Delhi</span>
-          <span class="contact">📞 +91 9876543210 | ✉ john.doe@email.com</span>
-        </div>
-      </div>
-      <div class="actions">
-        <span class="status new">New</span>
-     
-        <button (click)="openPdf()">📄 Resume</button>
-        <button class="btn profile">👤 View Profile</button>
-        <button class="btn shortlist">✔ Shortlist</button>
-        <button class="btn reject">❌ Reject</button>
-        <button class="btn call">📞 Call</button>
+<div class="dashboard">
+  <div class="row" *ngFor="let candidate of employeeList">
+    <div class="profile">
+      <img [src]="'data:image/jpeg;base64,' + candidate.empImage" [alt]="candidate.firstName">
+      <div class="info">
+        <h3>{{ candidate.firstName +' '+ candidate.lastName}}</h3>
+        <p>Applied For: <strong>IT</strong></p>
+<div  *ngFor="let qual of candidate.emp_Qualification"><span  class="qualification">🎓 {{ qual.qualificationName }}</span></div>
+        
+        <span class="details">💼 {{ candidate.experience }} | 📍 {{ candidate.districtName }}</span>
+        <span class="contact">📞 {{ candidate.phone }} | ✉ {{ candidate.email }}</span>
       </div>
     </div>
-
-    <!-- Candidate 2 -->
-    <div class="row">
-      <div class="profile">
-        <img src="https://i.pravatar.cc/60?img=6" alt="Jane">
-        <div class="info">
-          <h3>Jane Smith</h3>
-          <p>Applied For: <strong>UI Designer</strong></p>
-          <span class="qualification">🎓 B.Des in Visual Communication</span>
-          <span class="details">💼 2 Years | 📍 Bangalore</span>
-          <span class="contact">📞 +91 9123456780 | ✉ jane.smith@email.com</span>
-        </div>
-      </div>
-      <div class="actions">
-        <span class="status shortlisted">Shortlisted</span>
-        <button class="btn view">📄 Resume</button>
-        <button class="btn profile">👤 View Profile</button>
-        <button class="btn shortlist">✔ Shortlist</button>
-        <button class="btn reject">❌ Reject</button>
-        <button class="btn call">📞 Call</button>
-      </div>
+    <div class="actions">
+      <span class="status new" >New </span>
+       <!-- [ngClass]="candidate.status" -->
+      <button class="btn view" (click)="openPdf(candidate.employeeID)">📄 Resume</button>
+      <button class="btn profile">👤 View Profile</button>
+      <button class="btn shortlist">✔ Shortlist</button>
+      <button class="btn reject">❌ Reject</button>
+      <button class="btn call">📞 Call</button>
     </div>
-
-    <!-- Candidate 3 -->
-    <div class="row">
-      <div class="profile">
-        <img src="https://i.pravatar.cc/60?img=7" alt="Michael">
-        <div class="info">
-          <h3>Michael Lee</h3>
-          <p>Applied For: <strong>Project Manager</strong></p>
-          <span class="qualification">🎓 MBA in Project Management</span>
-          <span class="details">💼 5 Years | 📍 Mumbai</span>
-          <span class="contact">📞 +91 9988776655 | ✉ michael.lee@email.com</span>
-        </div>
-      </div>
-      <div class="actions">
-        <span class="status rejected">Rejected</span>
-        <button class="btn view">📄 Resume</button>
-        <button class="btn profile">👤 View Profile</button>
-        <button class="btn shortlist">✔ Shortlist</button>
-        <button class="btn reject">❌ Reject</button>
-        <button class="btn call">📞 Call</button>
-      </div>
-    </div>
-
   </div>
+</div>
 
 </body>
 </html>
