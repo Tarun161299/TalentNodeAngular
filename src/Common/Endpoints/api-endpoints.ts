@@ -6,8 +6,9 @@ export const ApiEndpoints = {
 
 
     GetAllEmployes: `Employee/Get_All_Employee_Data`,
-    GetResumeByEmployeeId:`Employee/GetResume?EmployeeID=`
-    
+    GetResumeByEmployeeId:`Employee/GetResume?EmployeeID=`,
+    Authentication:`UserAuthentication/Authenticate`
+    //UserAuthentication/Authenticate
 
   
 };
