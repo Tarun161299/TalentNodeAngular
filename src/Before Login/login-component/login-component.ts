@@ -43,11 +43,18 @@ if(response!="401"){
   debugger
  var role= this.getClaimsFromToken(token).Role_Id;
   localStorage.setItem('token',token);
+  if(role.toString()=="3")
    this.router.navigate(['/welcome/dashboard']);
-
+  else if(role.toString()=="4"){
+    this.router.navigate(['/welcome/CandidateDashboard']);
+  }
+else{
+  alert("invalid role")
+}
 }
     },error:(err:any)=>{
 debugger
+alert("invalid credentials")
     }})
     
     } else {

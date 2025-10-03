@@ -5,6 +5,7 @@ import { LoginComponent } from '../Before Login/login-component/login-component'
 import { AfterLoginComponent } from '../After Login/after-login-component/after-login-component';
 import { Dashboard } from '../After Login/dashboard/dashboard';
 import { AllApplication } from '../After Login/all-application/all-application';
+import { CandidateDashboard } from './candidate-dashboard/candidate-dashboard';
 
 export const routes: Routes = [
    {
@@ -22,6 +23,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: Dashboard , pathMatch: 'full'}, // default
       { path: 'all_Application', component: AllApplication , pathMatch: 'full'}, // default   
+      { path: 'CandidateDashboard', component: CandidateDashboard , pathMatch: 'full'}, 
     ]
   },
   { path: '**', redirectTo: '' }
