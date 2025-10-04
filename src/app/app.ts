@@ -6,6 +6,9 @@ import { LoginComponent } from '../Before Login/login-component/login-component'
 import { BeforeLoginComponent } from '../Before Login/before-login-component/before-login-component';
 import { AfterLoginComponent } from '../After Login/after-login-component/after-login-component';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { ReactiveFormsModule } from '@angular/forms';
+
+
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet,BeforeLoginComponent,AfterLoginComponent,NgxExtendedPdfViewerModule],

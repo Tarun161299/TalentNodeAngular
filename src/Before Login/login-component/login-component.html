@@ -16,8 +16,13 @@
       <button type="submit" (click)="onLogin()"class="login-btn">Login</button>
 
       <p class="signup-text">
-        Don't have an account? <a href="#">Sign Up</a>
+        Don't have an account? <a (click)="onSignup()" >Sign Up</a>
       </p>
     </form>
+  </div>
+  <!-- Signup button -->
+  <div class="signup-link">
+    <p>Don't have an account?</p>
+    <button >Signup</button>
   </div>
 </div>

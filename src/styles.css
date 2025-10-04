@@ -1,5 +1,6 @@
 /* Main layout container */
 @import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
+@import 'ngx-toastr/toastr';
 .main-layout {
     display: flex;
     min-height: 100vh;

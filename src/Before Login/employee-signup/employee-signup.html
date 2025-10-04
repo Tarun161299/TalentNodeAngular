@@ -1,0 +1,52 @@
+<div class="signup-container">
+  <h2>Employee Signup</h2>
+  
+  <form (ngSubmit)="onSubmit()" #signupForm="ngForm">
+    <!-- Name -->
+    <div class="form-group">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" [(ngModel)]="name" required />
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" [(ngModel)]="email" required />
+    </div>
+
+    <!-- Contact No -->
+    <div class="form-group">
+      <label for="contact">Contact No</label>
+      <input type="text" id="contact" name="contact" [(ngModel)]="contact" required pattern="[0-9]{10}" />
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input 
+        type="password" 
+        id="password" 
+        name="password" 
+        [(ngModel)]="password" 
+        (input)="checkPasswordStrength()" 
+        required minlength="6" 
+      />
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input 
+        type="password" 
+        id="confirmPassword" 
+        name="confirmPassword" 
+        [(ngModel)]="confirmPassword" 
+        (input)="checkPasswordMatch()" 
+        required minlength="6" 
+      />
+    </div>
+    
+    <!-- Submit -->
+    <button type="submit" [disabled]="!signupForm.valid">Signup</button>
+  </form>
+</div>

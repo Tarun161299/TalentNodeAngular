@@ -16,4 +16,9 @@ onLogin(){
 
   this.router.navigate(['/welcome/dashboard']);
 }
+onSignup() {
+
+    // Navigate to Employee Signup page
+    this.router.navigate(['/signup']);
+  }
 }
