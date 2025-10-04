@@ -5,10 +5,12 @@ import { RouterOutlet } from '@angular/router';
 import { SideNavBar } from '../side-nav-bar/side-nav-bar';
 import { Dashboard } from '../dashboard/dashboard';
 import { AllApplication } from '../all-application/all-application';
+import { UserProfile } from '../../Common/services/user-profile';
+import { UserProfileComponent } from '../user-profile/user-profile';
 
 @Component({
   selector: 'app-after-login-component',
-  imports: [RouterOutlet,AfterLoginFooter,AfterLoginHeader,SideNavBar,Dashboard,AllApplication],
+  imports: [RouterOutlet,AfterLoginFooter,AfterLoginHeader,SideNavBar,Dashboard,AllApplication,UserProfileComponent],
   templateUrl: './after-login-component.html',
   styleUrl: './after-login-component.css'
 })
@@ -17,5 +19,6 @@ export class AfterLoginComponent {
 
   onSidebarToggled(collapsed: boolean) {
     this.isSidebarCollapsed = collapsed;
+    
   }
 }

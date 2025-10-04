@@ -1,0 +1,362 @@
+<div class="profile-container">
+  <!-- Header Section -->
+  <div class="profile-header">
+    <div class="header-content">
+      <div class="avatar-section">
+        <div class="avatar-container">
+          <img [src]="user.avatar" alt="Profile" class="avatar">
+          <div class="avatar-overlay" *ngIf="isEditing">
+            <label for="avatar-upload" class="upload-btn">
+              <i class="fas fa-camera"></i>
+            </label>
+            <input type="file" id="avatar-upload" (change)="onAvatarChange($event)" accept="image/*">
+          </div>
+        </div>
+        <div class="user-basic-info">
+          <h1>{{ user.firstName }} {{ user.lastName }}</h1>
+          <p class="current-role">{{ user.currentPosition }} at {{ user.currentCompany }}</p>
+          <div class="user-stats">
+            <span class="stat">
+              <i class="fas fa-briefcase"></i>
+              {{ getTotalExperience() }}
+            </span>
+            <span class="stat">
+              <i class="fas fa-map-marker-alt"></i>
+              {{ user.location }}
+            </span>
+            <span class="stat">
+              <i class="fas fa-clock"></i>
+              {{ user.noticePeriod }} days notice
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn-resume" *ngIf="!isEditing">
+          <label for="resume-upload">
+            <i class="fas fa-upload"></i>
+            {{ user.resume ? 'Update Resume' : 'Upload Resume' }}
+          </label>
+          <input type="file" id="resume-upload" (change)="onResumeUpload($event)" accept=".pdf">
+        </button>
+        <button class="btn-edit" (click)="toggleEdit()">
+          <i class="fas" [class.fa-edit]="!isEditing" [class.fa-times]="isEditing"></i>
+          {{ isEditing ? 'Cancel' : 'Edit Profile' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="profile-tabs">
+    <nav class="tab-nav">
+      <button 
+        class="tab-btn" 
+        [class.active]="selectedTab === 'personal'"
+        (click)="selectTab('personal')">
+        <i class="fas fa-user"></i>
+        Personal Info
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="selectedTab === 'experience'"
+        (click)="selectTab('experience')">
+        <i class="fas fa-briefcase"></i>
+        Experience
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="selectedTab === 'education'"
+        (click)="selectTab('education')">
+        <i class="fas fa-graduation-cap"></i>
+        Education
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="selectedTab === 'skills'"
+        (click)="selectTab('skills')">
+        <i class="fas fa-code"></i>
+        Skills
+      </button>
+    </nav>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="profile-content">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Personal Info Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'personal'">
+        <div class="card">
+          <div class="card-header">
+            <h3>Personal Information</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>First Name *</label>
+                <input 
+                  type="text" 
+                  formControlName="firstName"
+                  [class.error]="profileForm.get('personal.firstName')?.invalid && profileForm.get('personal.firstName')?.touched"
+                  [readonly]="!isEditing">
+                <div class="error-message" *ngIf="profileForm.get('personal.firstName')?.invalid && profileForm.get('personal.firstName')?.touched">
+                  <span *ngIf="profileForm.get('personal.firstName')?.errors?.['required']">First name is required</span>
+                  <span *ngIf="profileForm.get('personal.firstName')?.errors?.['minlength']">Minimum 2 characters required</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Last Name *</label>
+                <input 
+                  type="text" 
+                  formControlName="lastName"
+                  [class.error]="profileForm.get('personal.lastName')?.invalid && profileForm.get('personal.lastName')?.touched"
+                  [readonly]="!isEditing">
+                <div class="error-message" *ngIf="profileForm.get('personal.lastName')?.invalid && profileForm.get('personal.lastName')?.touched">
+                  <span *ngIf="profileForm.get('personal.lastName')?.errors?.['required']">Last name is required</span>
+                  <span *ngIf="profileForm.get('personal.lastName')?.errors?.['minlength']">Minimum 2 characters required</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Email *</label>
+                <input 
+                  type="email" 
+                  formControlName="email"
+                  [class.error]="profileForm.get('personal.email')?.invalid && profileForm.get('personal.email')?.touched"
+                  [readonly]="!isEditing">
+                <div class="error-message" *ngIf="profileForm.get('personal.email')?.invalid && profileForm.get('personal.email')?.touched">
+                  <span *ngIf="profileForm.get('personal.email')?.errors?.['required']">Email is required</span>
+                  <span *ngIf="profileForm.get('personal.email')?.errors?.['email']">Please enter a valid email</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Phone *</label>
+                <input 
+                  type="tel" 
+                  formControlName="phone"
+                  [class.error]="profileForm.get('personal.phone')?.invalid && profileForm.get('personal.phone')?.touched"
+                  [readonly]="!isEditing">
+                <div class="error-message" *ngIf="profileForm.get('personal.phone')?.invalid && profileForm.get('personal.phone')?.touched">
+                  <span *ngIf="profileForm.get('personal.phone')?.errors?.['required']">Phone number is required</span>
+                  <span *ngIf="profileForm.get('personal.phone')?.errors?.['pattern']">Please enter a valid phone number</span>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label>Location *</label>
+                <input 
+                  type="text" 
+                  formControlName="location"
+                  [readonly]="!isEditing">
+              </div>
+              
+              <div class="form-group">
+                <label>Current Position</label>
+                <input 
+                  type="text" 
+                  formControlName="currentPosition"
+                  [readonly]="!isEditing">
+              </div>
+              
+              <div class="form-group">
+                <label>Current Company</label>
+                <input 
+                  type="text" 
+                  formControlName="currentCompany"
+                  [readonly]="!isEditing">
+              </div>
+
+              <div class="form-group">
+                <label>Current Salary (₹)</label>
+                <input 
+                  type="number" 
+                  formControlName="currentSallary"
+                  [readonly]="!isEditing">
+              </div>
+              
+              <div class="form-group">
+                <label>Expected Salary (₹)</label>
+                <input 
+                  type="number" 
+                  formControlName="expectedSalary"
+                  [readonly]="!isEditing">
+              </div>
+            </div>
+            
+            <div class="form-group full-width">
+              <label>Professional Summary</label>
+              <textarea 
+                formControlName="bio"
+                rows="4"
+                [readonly]="!isEditing"
+                placeholder="Describe your professional background, skills, and career objectives..."></textarea>
+              <div class="char-count">{{ profileForm.get('personal.bio')?.value?.length || 0 }}/1000</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Experience Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'experience'">
+        <div class="card">
+          <div class="card-header">
+            <h3>Work Experience</h3>
+            <button type="button" class="btn-add" (click)="addExperience()" *ngIf="isEditing">
+              <i class="fas fa-plus"></i> Add Experience
+            </button>
+          </div>
+          <div class="card-body">
+            <div formArrayName="experience">
+              <div class="experience-item" *ngFor="let exp of experienceForms.controls; let i = index" [formGroupName]="i">
+                <div class="experience-header">
+                  <h4>Experience {{ i + 1 }}</h4>
+                  <button type="button" class="btn-remove" (click)="removeExperience(i)" *ngIf="isEditing && experienceForms.length > 1">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>Company *</label>
+                    <input type="text" formControlName="company" [readonly]="!isEditing">
+                  </div>
+                  <div class="form-group">
+                    <label>Position *</label>
+                    <input type="text" formControlName="position" [readonly]="!isEditing">
+                  </div>
+                  <div class="form-group">
+                    <label>Start Date *</label>
+                    <input type="month" formControlName="startDate" [readonly]="!isEditing">
+                  </div>
+                  <div class="form-group">
+                    <label>End Date</label>
+                    <input type="month" formControlName="endDate" [readonly]="!isEditing || exp.get('current')?.value">
+                    <label class="checkbox-label">
+                      <input type="checkbox" formControlName="current" [disabled]="!isEditing">
+                      Currently working here
+                    </label>
+                  </div>
+                </div>
+                <div class="form-group full-width">
+                  <label>Description</label>
+                  <textarea formControlName="description" rows="3" [readonly]="!isEditing" placeholder="Describe your responsibilities and achievements..."></textarea>
+                </div>
+              </div>
+              <div class="no-data" *ngIf="experienceForms.length === 0 && !isEditing">
+                <i class="fas fa-briefcase"></i>
+                <p>No work experience added yet</p>
+                <button type="button" class="btn-primary" (click)="isEditing = true; addExperience()">
+                  Add Your First Experience
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Education Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'education'">
+        <div class="card">
+          <div class="card-header">
+            <h3>Education</h3>
+            <button type="button" class="btn-add" (click)="addEducation()" *ngIf="isEditing">
+              <i class="fas fa-plus"></i> Add Education
+            </button>
+          </div>
+          <div class="card-body">
+            <div formArrayName="education">
+              <div class="education-item" *ngFor="let edu of educationForms.controls; let i = index" [formGroupName]="i">
+                <div class="education-header">
+                  <h4>Education {{ i + 1 }}</h4>
+                  <button type="button" class="btn-remove" (click)="removeEducation(i)" *ngIf="isEditing && educationForms.length > 1">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>Degree *</label>
+                    <input type="text" formControlName="degree" [readonly]="!isEditing" placeholder="e.g., B.Tech Computer Science">
+                  </div>
+                  <div class="form-group">
+                    <label>Institution *</label>
+                    <input type="text" formControlName="institution" [readonly]="!isEditing" placeholder="e.g., IIT Delhi">
+                  </div>
+                  <div class="form-group">
+                    <label>Year *</label>
+                    <input type="number" formControlName="year" [readonly]="!isEditing" >
+                  </div>
+                  <div class="form-group">
+                    <label>Percentage/CGPA</label>
+                    <input type="number" formControlName="percentage" [readonly]="!isEditing" step="0.01" min="0" max="100">
+                  </div>
+                </div>
+              </div>
+              <div class="no-data" *ngIf="educationForms.length === 0 && !isEditing">
+                <i class="fas fa-graduation-cap"></i>
+                <p>No education details added yet</p>
+                <button type="button" class="btn-primary" (click)="isEditing = true; addEducation()">
+                  Add Your Education
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'skills'">
+        <div class="card">
+          <div class="card-header">
+            <h3>Skills</h3>
+            <button type="button" class="btn-add" (click)="addSkill()" *ngIf="isEditing">
+              <i class="fas fa-plus"></i> Add Skill
+            </button>
+          </div>
+          <div class="card-body">
+            <div formArrayName="skills">
+              <div class="skills-container">
+                <div class="skill-item" *ngFor="let skill of skillForms.controls; let i = index" [formGroupName]="i">
+                  <div class="skill-content">
+                    <div class="skill-inputs">
+                      <input type="text" formControlName="name" placeholder="Skill name" [readonly]="!isEditing">
+                      <select formControlName="level" [disabled]="!isEditing">
+                        <option *ngFor="let level of skillLevels" [value]="level">{{ level }}</option>
+                      </select>
+                    </div>
+                    <button type="button" class="btn-remove" (click)="removeSkill(i)" *ngIf="isEditing && skillForms.length > 1">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                  <div class="skill-level-indicator" *ngIf="!isEditing">
+                    <div class="level-bar" [class]="'level-' + skill.get('level')?.value?.toLowerCase()">
+                      <div class="level-fill" [style.width.%]="getSkillLevelPercentage(skill.get('level')?.value)"></div>
+                    </div>
+                    <span class="level-text">{{ skill.get('level')?.value }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="no-data" *ngIf="skillForms.length === 0 && !isEditing">
+                <i class="fas fa-code"></i>
+                <p>No skills added yet</p>
+                <button type="button" class="btn-primary" (click)="isEditing = true; addSkill()">
+                  Add Your Skills
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions" *ngIf="isEditing">
+        <button type="submit" class="btn-primary" [disabled]="isLoading || profileForm.invalid">
+          <i class="fas fa-save"></i>
+          {{ isLoading ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

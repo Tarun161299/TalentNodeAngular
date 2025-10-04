@@ -7,6 +7,9 @@ import { Dashboard } from '../After Login/dashboard/dashboard';
 import { AllApplication } from '../After Login/all-application/all-application';
 import { EmployeeSignupComponent } from '../Before Login/employee-signup/employee-signup';
 import { Signup } from '../Before Login/signup/signup';
+import { UserProfileComponent } from '../After Login/user-profile/user-profile';
+
+
 
 export const routes: Routes = [
    {
@@ -16,6 +19,7 @@ export const routes: Routes = [
       { path: '', component: LoginComponent }, // default
       { path: 'login', component: LoginComponent },
       { path: 'signup', component: Signup,pathMatch: 'full'},
+      
 
     ]
     
@@ -25,7 +29,8 @@ export const routes: Routes = [
     component: AfterLoginComponent,
     children: [
       { path: 'dashboard', component: Dashboard , pathMatch: 'full'}, // default
-      { path: 'all_Application', component: AllApplication , pathMatch: 'full'}, // default   
+      { path: 'all_Application', component: AllApplication , pathMatch: 'full'}, // default  
+      {path: 'UserProfile',component:UserProfileComponent} 
     ]
   },
   { path: '**', redirectTo: '' }

@@ -69,10 +69,10 @@ ngOnInit(): void {
    
   // }
 loadAllEmployeeData(){
-  debugger
+  
 this.employeeService.getEmployeesDetails().subscribe({
   next: (res) => {
-    debugger
+   
     this.employeeList= res;
   },
   error: (err) => {
@@ -88,7 +88,7 @@ closeModal() {
     debugger
     this.employeeService.getResumeByEmployeeId(id).subscribe({
       next: (res) => {
-        debugger
+        
         this.documentdetails= res;
         this.pdfBase64=this.documentdetails.fileContentBase64;//"data:application/pdf;base64,"+
         //this.pdfBase64=this.base64ToUint8Array(this.documentdetails.fileContentBase64);
