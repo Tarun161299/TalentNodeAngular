@@ -5,6 +5,7 @@ import { LoginComponent } from '../Before Login/login-component/login-component'
 import { AfterLoginComponent } from '../After Login/after-login-component/after-login-component';
 import { Dashboard } from '../After Login/dashboard/dashboard';
 import { AllApplication } from '../After Login/all-application/all-application';
+import { CandidateDashboard } from './candidate-dashboard/candidate-dashboard';
 import { EmployeeSignupComponent } from '../Before Login/employee-signup/employee-signup';
 import { Signup } from '../Before Login/signup/signup';
 import { UserProfileComponent } from '../After Login/user-profile/user-profile';
@@ -29,8 +30,9 @@ export const routes: Routes = [
     component: AfterLoginComponent,
     children: [
       { path: 'dashboard', component: Dashboard , pathMatch: 'full'}, // default
-      { path: 'all_Application', component: AllApplication , pathMatch: 'full'}, // default  
-      {path: 'UserProfile',component:UserProfileComponent} 
+      { path: 'all_Application', component: AllApplication , pathMatch: 'full'}, // default 
+      { path: 'CandidateDashboard', component: CandidateDashboard , pathMatch: 'full'},   
+       {path: 'UserProfile',component:UserProfileComponent} 
     ]
   },
   { path: '**', redirectTo: '' }

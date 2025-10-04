@@ -5,12 +5,13 @@ import { RouterOutlet } from '@angular/router';
 import { SideNavBar } from '../side-nav-bar/side-nav-bar';
 import { Dashboard } from '../dashboard/dashboard';
 import { AllApplication } from '../all-application/all-application';
+import { CandidateDashboard } from '../../app/candidate-dashboard/candidate-dashboard';
 import { UserProfile } from '../../Common/services/user-profile';
 import { UserProfileComponent } from '../user-profile/user-profile';
 
 @Component({
   selector: 'app-after-login-component',
-  imports: [RouterOutlet,AfterLoginFooter,AfterLoginHeader,SideNavBar,Dashboard,AllApplication,UserProfileComponent],
+  imports: [RouterOutlet,AfterLoginFooter,AfterLoginHeader,SideNavBar,Dashboard,AllApplication,UserProfileComponent,CandidateDashboard],
   templateUrl: './after-login-component.html',
   styleUrl: './after-login-component.css'
 })

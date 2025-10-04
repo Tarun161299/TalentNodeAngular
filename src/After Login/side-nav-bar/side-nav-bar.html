@@ -5,47 +5,22 @@
 
   <ul class="menu">
     <!-- Dashboard -->
-    <li>
-      <a routerLink="/dashboard" class="menu-item">
-        <i class="fas fa-home"></i> <span *ngIf="!collapsed">Dashboard</span>
-      </a>
-    </li>
 
-    <!-- Jobs -->
-    <li>
-      <div class="menu-item parent" (click)="toggleMenu('jobs')">
-        <i class="fas fa-briefcase"></i> <span *ngIf="!collapsed">Jobs</span>
-        <span class="arrow" *ngIf="!collapsed" [class.open]="openMenu === 'jobs'">▾</span>
-      </div>
-      <ul class="submenu" *ngIf="openMenu === 'jobs' && !collapsed">
-        <li><a routerLink="/jobs/recommended">Recommended Jobs</a></li>
-        <li><a routerLink="/jobs/saved">Saved Jobs</a></li>
-        <li><a (click)="this.navigateTo('/welcome/all_Application')" routerLinkActive="active">Applied Jobs</a></li>
-      </ul>
-    </li>
 
-    <!-- Recruiters -->
-    <li>
-      <div class="menu-item parent" (click)="toggleMenu('recruiters')">
-        <i class="fas fa-id-card"></i>   <span *ngIf="!collapsed">Recruiters</span>
-        <span class="arrow" *ngIf="!collapsed" [class.open]="openMenu === 'recruiters'">▾</span>
-      </div>
-      <ul class="submenu" *ngIf="openMenu === 'recruiters' && !collapsed">
-        <li><a routerLink="/recruiters/following">Following</a></li>
-        <li><a routerLink="/recruiters/search">Search Recruiters</a></li>
-      </ul>
-    </li>
+     <li *ngFor="let item of modulesData">
+    <div class="menu-item parent" (click)="toggleMenu(item.moduleID)">
+       <i [class]="item.class"></i>
+      <!-- [class]="item.icon" -->
+      <span *ngIf="!collapsed">{{ item.description }}</span>
+      <span class="arrow" *ngIf="!collapsed" [class.open]="openMenu === item.moduleID">▾</span>
+    </div>
 
-    <!-- Settings -->
-    <li>
-      <div class="menu-item parent" (click)="toggleMenu('settings')">
-        <i class="fas fa-cog"></i> <span *ngIf="!collapsed">Settings</span>
-        <span class="arrow" *ngIf="!collapsed" [class.open]="openMenu === 'settings'">▾</span>
-      </div>
-      <ul class="submenu" *ngIf="openMenu === 'settings' && !collapsed">
-        <li><a routerLink="/settings/profile">Profile Settings</a></li>
-        <li><a routerLink="/settings/privacy">Privacy Settings</a></li>
-      </ul>
-    </li>
+    <ul class="submenu" *ngIf="openMenu === item.moduleID && !collapsed">
+      <li *ngFor="let sub of item.childModule">
+        
+        <a (click)="this.navigateTo(sub.url)"> <i  [class]="sub.class"></i> {{ sub.description }}</a>
+      </li>
+    </ul>
+  </li>
   </ul>
 </nav>

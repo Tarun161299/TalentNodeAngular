@@ -85,3 +85,6 @@ input:focus {
 .signup-text a:hover {
   text-decoration: underline;
 }
+.error {
+  border: 1px solid red;
+}
