@@ -23,5 +23,6 @@
     flex: 1; /* This makes it grow/shrink depending on sidebar */
     padding: 20px;
     transition: margin-left 0.3s ease, width 0.3s ease;
+    scrollbar-width: auto;
   }
   

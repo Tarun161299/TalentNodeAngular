@@ -1,3 +1,5 @@
+<div class="dashboard">
+<div class="profile-content scrollable">
 <div class="profile-container">
   <!-- Header Section -->
   <div class="profile-header">
@@ -87,14 +89,14 @@
     <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
       
       <!-- Personal Info Tab -->
-      <div class="tab-content" *ngIf="selectedTab === 'personal'">
+      <div class="tab-content" *ngIf="selectedTab === 'personal'" [formGroupName]="'personal'">
         <div class="card">
           <div class="card-header">
             <h3>Personal Information</h3>
           </div>
-          <div class="card-body">
+          <div class="card-body" >
             <div class="form-grid">
-              <div class="form-group">
+              <div class="form-group" >
                 <label>First Name *</label>
                 <input 
                   type="text" 
@@ -174,7 +176,7 @@
                 <label>Current Salary (₹)</label>
                 <input 
                   type="number" 
-                  formControlName="currentSallary"
+                  formControlName="currentSalary"
                   [readonly]="!isEditing">
               </div>
               
@@ -359,4 +361,5 @@
       </div>
     </form>
   </div>
+</div>
 </div>

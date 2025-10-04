@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 
 interface Education {
@@ -52,7 +52,7 @@ export interface UserProfile {
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule,ReactiveFormsModule,FormsModule,],
   templateUrl: './user-profile.html',
   styleUrls: ['./user-profile.css']
 })
@@ -140,6 +140,7 @@ export class UserProfileComponent implements OnInit {
         location: ['', Validators.required],
         currentPosition: [''],
         currentCompany: [''],
+        currentSalary: [''],
         expectedSalary: [0],
         noticePeriod: [0],
         bio: ['', [Validators.maxLength(1000)]]

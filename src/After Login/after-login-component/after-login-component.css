@@ -6,7 +6,7 @@
   .content-area {
     flex-grow: 1;
     transition: margin-left 0.3s;
-    padding: 20px;
+    padding: 1px;
   }
   
   .sidebar-collapsed .content-area {
