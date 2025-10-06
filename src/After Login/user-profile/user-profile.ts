@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { EmployeeService } from '../../Common/services/employee-service';
+import { Employee } from '../../Model/AddProfile';
+import { MasterServices } from '../../Common/services/master-services';
 
 interface Education {
   degree: string;
@@ -41,6 +44,7 @@ export interface UserProfile {
   education: Education[];
   experience: Experience[];
   skills: Skill[];
+  
   languages: string[];
   socialLinks: {
     linkedin: string;
@@ -61,8 +65,12 @@ export class UserProfileComponent implements OnInit {
   isEditing = false;
   isLoading = false;
   selectedTab = 'personal';
-
-  user: UserProfile = {
+  empId:number=0;
+  disticts:any;
+  states:any;
+  empProfile:Employee|undefined;
+  user: UserProfile
+  = {
     id: 1,
     firstName: 'Aarav',
     lastName: 'Sharma',
@@ -121,15 +129,100 @@ export class UserProfileComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private employeeService:EmployeeService,
+    private masterServices:MasterServices
   ) {
     this.profileForm = this.createForm();
+  
   }
 
   ngOnInit() {
+   var token = localStorage.getItem('token');
+    if(this.isEditing==false){
+      this.profileForm.get('personal.State')?.disable();
+      this.profileForm.get('personal.District')?.disable();
+    }
+this.empId= Number(this.getClaimsFromToken(token==null || token==undefined ?"":token).EmpId);
     this.loadUserData();
+    this.getAllDistricts();
+    this.getAllStates();
+    this.GetUserDetailsById(this.empId);
+  }
+  
+  GetUserDetailsById(id:number){
+this.employeeService.getEmployeedetailsById(id).subscribe({next:(data:any)=>{
+  debugger    ;
+this.user=data;
+this.profileForm.get('personal')?.patchValue({
+        firstName: this.user.firstName ?? '',
+        lastName: this.user.lastName ?? '',
+        email: this.user.email ?? '',
+        phone: this.user.phone ?? '',
+        location: this.user.location ?? '',
+        State:  '',//this.user.State ??
+        District:  '',
+        currentPosition: this.user.currentPosition ?? '',
+        currentCompany: this.user.currentCompany ?? '',
+        currentSalary: this.user.expectedSalary ?? '',
+        expectedSalary: this.user.expectedSalary ?? 0,
+        noticePeriod: this.user.noticePeriod ?? 0,
+        bio: this.user.bio ?? ''
+      });
+
+      // patch social links
+      this.profileForm.get('socialLinks')?.patchValue({
+        linkedin: this.user.socialLinks?.linkedin ?? '',
+        github: this.user.socialLinks?.github ?? '',
+        portfolio: this.user.socialLinks?.portfolio ?? ''
+      });
+
+      // patch education, experience, skills if needed
+      this.setFormArray('education', this.user.education);
+      this.setFormArray('experience', this.user.experience);
+      this.setFormArray('skills', this.user.skills);
+},error:(err:any)=>{
+
+}})
+  }
+  getClaimsFromToken(token: string): any {
+  if (!token) return null;
+
+  try {
+    const payload = token.split('.')[1];  // JWT = header.payload.signature
+    const decoded = atob(payload);        // Base64 decode
+    return JSON.parse(decoded);           // Convert to JSON
+  } catch (error) {
+    console.error('Invalid token', error);
+    return null;
   }
 
+}
+setFormArray(arrayName: string, data: any[]) {
+  const formArray = this.profileForm.get(arrayName) as FormArray;
+  formArray.clear();
+
+  if (!data || !data.length) return;
+
+  data.forEach(item => {
+    formArray.push(this.fb.group({ ...item }));
+  });
+}
+
+getAllStates(){
+this.masterServices.GetAllState().subscribe({next:(data:any)=>{
+this.states=data;
+},error:(err:any)=>{
+
+}})
+}
+getAllDistricts(){
+this.masterServices.GetAllDistrict().subscribe({next:(data:any)=>{
+this.disticts=data;
+},error:(err:any)=>{
+
+}})
+}
   createForm(): FormGroup {
     return this.fb.group({
       personal: this.fb.group({
@@ -138,6 +231,8 @@ export class UserProfileComponent implements OnInit {
         email: ['', [Validators.required, Validators.email]],
         phone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s-]+$/)]],
         location: ['', Validators.required],
+        District: ['', Validators.required],
+        State: ['', Validators.required],
         currentPosition: [''],
         currentCompany: [''],
         currentSalary: [''],
@@ -252,7 +347,16 @@ export class UserProfileComponent implements OnInit {
   }
 
   toggleEdit() {
+    debugger
     this.isEditing = !this.isEditing;
+    if(this.isEditing==false){
+      this.profileForm.get('personal.State')?.disable();
+      this.profileForm.get('personal.District')?.disable();
+    }
+    else{
+      this.profileForm.get('personal.State')?.enable();
+      this.profileForm.get('personal.District')?.enable();
+    }
     if (!this.isEditing) {
       this.loadUserData();
     }
@@ -264,7 +368,7 @@ export class UserProfileComponent implements OnInit {
       
       // Simulate API call
       setTimeout(() => {
-        const formValue = this.profileForm.value;
+        var formValue = this.profileForm.value;
         this.user = {
           ...this.user,
           ...formValue.personal,
@@ -273,7 +377,24 @@ export class UserProfileComponent implements OnInit {
           skills: formValue.skills,
           socialLinks: formValue.socialLinks
         };
-        
+        if(this.selectedTab === 'personal'){
+            
+  //       this.empProfile={
+  //          empId: this.empId,
+  // firstName: this.user.firstName,
+  // lastName: this.user.lastName,
+  // email: this.user.email,
+  // phone: this.user.phone,
+  // address: this.user.location,
+  // stateId: this.user.,
+  // districtId: this.user.,
+  // currentPosition: this.user.,
+  // currentSallary: this.user.,
+  // expectedSallary: this.user.,
+  // resumeID: this.user.,
+  // empImageID: this.user.
+  //       }
+        }
         this.isLoading = false;
         this.isEditing = false;
         this.toastr.success('Profile updated successfully!', 'Success');

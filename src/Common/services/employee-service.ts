@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../Environments/enironmets';
 import { ApiEndpoints } from '../Endpoints/api-endpoints';
 import { EmployeeData } from '../../Model/EmployeeData';
+import { Employee } from '../../Model/AddProfile';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +34,11 @@ export class EmployeeService {
   getResumeByEmployeeId(id: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl+ApiEndpoints.GetResumeByEmployeeId+id}`, { headers: this.getHeaders() });
   }
-
+  saveProfile(profile: Employee): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveProfile}`,profile, { headers: this.getHeaders() });
+  }
+  getEmployeedetailsById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl+ApiEndpoints.getEmployeeDetails+id}`, { headers: this.getHeaders() });
+  }
   // Add more endpoints here as needed
 }

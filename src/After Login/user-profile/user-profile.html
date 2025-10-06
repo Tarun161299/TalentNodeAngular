@@ -163,7 +163,36 @@
                   formControlName="currentPosition"
                   [readonly]="!isEditing">
               </div>
-              
+            
+                <div class="form-group">
+  <label for="State">State</label>
+  <select
+    id="district"
+    class="form-control"
+    formControlName="State"
+    [disabled]="!isEditing"
+  >
+    <option value="" disabled>Select State</option>
+    <option *ngFor="let sta of states" [value]="sta.stateId">
+      {{ sta.state }}
+    </option>
+  </select>
+</div>
+             <div class="form-group">
+  <label for="district">District</label>
+  <select
+    id="district"
+    class="form-control"
+    formControlName="District"
+    [disabled]="!isEditing"
+  >
+    <option value="" disabled>Select District</option>
+    <option *ngFor="let district of disticts" [value]="district.districtId">
+      {{ district.name }}
+    </option>
+  </select>
+</div>
+
               <div class="form-group">
                 <label>Current Company</label>
                 <input 

@@ -304,8 +304,7 @@
 }
 
 .form-group input:read-only,
-.form-group textarea:read-only,
-.form-group select:read-only {
+.form-group textarea:read-only {
   background-color: #f7fafc;
   border-color: #e2e8f0;
   color: #718096;
@@ -638,8 +637,8 @@ select:focus {
 
 /* Read-only State Improvements */
 input:read-only,
-textarea:read-only,
-select:read-only {
+textarea:read-only
+ {
   background-color: #f7fafc !important;
   border-color: #e2e8f0 !important;
   color: #718096 !important;

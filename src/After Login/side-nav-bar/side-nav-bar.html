@@ -18,7 +18,7 @@
     <ul class="submenu" *ngIf="openMenu === item.moduleID && !collapsed">
       <li *ngFor="let sub of item.childModule">
         
-        <a (click)="this.navigateTo(sub.url)"> <i  [class]="sub.class"></i> {{ sub.description }}</a>
+        <a (click)="navigateTo(sub.url)" > <i  [class]="sub.class"></i> {{ sub.description }}</a>
       </li>
     </ul>
   </li>

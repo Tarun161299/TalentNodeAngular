@@ -58,7 +58,7 @@ error:(error:any)=>{
 
   navigateTo(path: string) {
     debugger
-    this.router.navigate([path]);
+    this.router.navigateByUrl(path);
   }
 
     getClaimsFromToken(token: string): any {

@@ -30,7 +30,7 @@ export const routes: Routes = [
     component: AfterLoginComponent,
     children: [
       { path: 'dashboard', component: Dashboard , pathMatch: 'full'}, // default
-      { path: 'all_Application', component: AllApplication , pathMatch: 'full'}, // default 
+      { path: 'all_application', component: AllApplication }, // default 
       { path: 'CandidateDashboard', component: CandidateDashboard , pathMatch: 'full'},   
        {path: 'UserProfile',component:UserProfileComponent} 
     ]

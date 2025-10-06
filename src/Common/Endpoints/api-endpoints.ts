@@ -11,8 +11,12 @@ export const ApiEndpoints = {
     ModuleByRole:`MdModules/GetModuleByRole?RoleId=`,
       Signup: 'Signup/SaveSignup',
     CheckEmail: 'employees/check-email', 
-    CheckContact: 'employees/check-contact'
-    
+    CheckContact: 'employees/check-contact',
+    saveProfile:'UserProfile/SaveUserProfile',
+    GetAllSkill:'MD/Skills',
+     GetAllDistrict:'MD/District',
+     GetAllState:'MD/state',
+     getEmployeeDetails:'Employee/GetEmployeeDetails?EmployeeID='
 
   
 };
