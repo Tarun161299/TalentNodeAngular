@@ -249,7 +249,17 @@
                     <i class="fas fa-trash"></i>
                   </button>
                 </div>
+                
                 <div class="form-grid">
+                  <div class="form-group" style="display: none;">
+                    <label>employeeID *</label>
+                    <input type="text" formControlName="employeeID" [readonly]="!isEditing">
+                  </div>
+                   <div class="form-group" style="display: none;">
+                    <label>ExperienceId *</label>
+                    <input type="text" formControlName="experienceId" [readonly]="!isEditing">
+                  </div>
+                  
                   <div class="form-group">
                     <label>Company *</label>
                     <input type="text" formControlName="company" [readonly]="!isEditing">
@@ -307,10 +317,28 @@
                   </button>
                 </div>
                 <div class="form-grid">
-                  <div class="form-group">
+                  <!-- <div class="form-group">
                     <label>Degree *</label>
                     <input type="text" formControlName="degree" [readonly]="!isEditing" placeholder="e.g., B.Tech Computer Science">
+                  </div> -->
+                  <div class="form-group" style="display: none;">
+                    <label>EmpId *</label>
+                    <input type="text" formControlName="degEmpId" [readonly]="!isEditing" placeholder="e.g., IIT Delhi">
                   </div>
+                  <div class="form-group">
+  <label for="State">Degree *</label>
+  <select
+    id="district"
+    class="form-control"
+    formControlName="degree"
+    [disabled]="!isEditing"
+  >
+    <option value="" disabled>Select Degree</option>
+    <option *ngFor="let de of degree" [value]="de.qualID">
+      {{ de.qualificationName }}
+    </option>
+  </select>
+</div>
                   <div class="form-group">
                     <label>Institution *</label>
                     <input type="text" formControlName="institution" [readonly]="!isEditing" placeholder="e.g., IIT Delhi">
@@ -352,7 +380,11 @@
                 <div class="skill-item" *ngFor="let skill of skillForms.controls; let i = index" [formGroupName]="i">
                   <div class="skill-content">
                     <div class="skill-inputs">
-                      <input type="text" formControlName="name" placeholder="Skill name" [readonly]="!isEditing">
+                         <input type="number" formControlName="skillEmpId" style="display:none;"[readonly]="!isEditing" step="0.01" min="0" max="100">
+<select formControlName="name" [disabled]="!isEditing">
+                        <option *ngFor="let level of skillemployee" [value]="level.skillID">{{ level.skillName }}</option>
+                      </select>
+                      
                       <select formControlName="level" [disabled]="!isEditing">
                         <option *ngFor="let level of skillLevels" [value]="level">{{ level }}</option>
                       </select>

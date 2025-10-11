@@ -29,7 +29,9 @@ export class EmployeeService {
   getEmployeesDetails(): Observable<EmployeeData[]> {
     return this.http.get<EmployeeData[]>(`${this.baseUrl+ApiEndpoints.GetAllEmployes}`, { headers: this.getHeaders() });
   }
-
+ SaveEmployeesDetails(data:Employee): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveEmployee}`, data,{ headers: this.getHeaders() });
+  }
   // Fetch a single employee by ID
   getResumeByEmployeeId(id: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl+ApiEndpoints.GetResumeByEmployeeId+id}`, { headers: this.getHeaders() });
@@ -39,6 +41,17 @@ export class EmployeeService {
   }
   getEmployeedetailsById(id: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl+ApiEndpoints.getEmployeeDetails+id}`, { headers: this.getHeaders() });
+  }
+  SaveExperience(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl+ApiEndpoints.SaveExperience}`,data, { headers: this.getHeaders() });
+  }
+
+  saveSkillDetails(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveSkillDetails}`,data, { headers: this.getHeaders() });
+  }
+
+   SaveQuaification(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl+ApiEndpoints.AddEducation}`,data, { headers: this.getHeaders() });
   }
   // Add more endpoints here as needed
 }

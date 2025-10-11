@@ -33,4 +33,9 @@ export class MasterServices {
       debugger
         return this.http.get<any>(`${this.baseUrl+ApiEndpoints.GetAllSkill}`,{ headers: this.getHeaders() });
       }
+
+      GetAllQualification( ): Observable<any> {
+      debugger
+        return this.http.get<any>(`${this.baseUrl+ApiEndpoints.Qualification}`,{ headers: this.getHeaders() });
+      }
 }

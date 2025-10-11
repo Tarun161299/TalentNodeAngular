@@ -1,15 +1,16 @@
 export interface Employee {
-  empId: number;
+  empId: Number;
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
-  address: string;
-  stateId: number;
-  districtId: number;
+  location: string;
+  state: Number;
+  district: Number;
   currentPosition: string;
-  currentSallary: string;
-  expectedSallary: string;
-  resumeID: number;
-  empImageID: number;
+  currentSallary: number;
+  expectedSallary: number;
+  bio:string;
+  resumeID: Number;
+  empImageID: Number;
 }
