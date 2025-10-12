@@ -1,3 +1,15 @@
+<div class="custom-modal" *ngIf="showPdf">
+  <div class="custom-modal-content">
+    <button class="close-btn" (click)="closeModal()">X</button> 
+    <pdf-viewer
+          [src]="'data:application/pdf;base64,' + user.resume"
+          [render-text]="true"
+          [show-all]="true"
+          style="display: block; height: 100%; width: 100%;">
+        </pdf-viewer>
+
+   </div>
+</div> 
 <div class="dashboard">
 <div class="profile-content scrollable">
 <div class="profile-container">
@@ -30,6 +42,11 @@
               <i class="fas fa-clock"></i>
               {{ user.noticePeriod }} days notice
             </span>
+            <span class="stat">
+  <i class="fas fa-file-pdf"></i>
+  <a *ngIf="user.resume" (click)="viewResume()">View Resume</a>
+  <span *ngIf="!user.resume">No Resume Uploaded</span>
+</span>
           </div>
         </div>
       </div>
@@ -169,7 +186,7 @@
   <select
     id="district"
     class="form-control"
-    formControlName="State"
+    formControlName="stateid"
     [disabled]="!isEditing"
   >
     <option value="" disabled>Select State</option>
@@ -183,7 +200,7 @@
   <select
     id="district"
     class="form-control"
-    formControlName="District"
+    formControlName="districtId"
     [disabled]="!isEditing"
   >
     <option value="" disabled>Select District</option>

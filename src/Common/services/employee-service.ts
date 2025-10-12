@@ -53,5 +53,9 @@ export class EmployeeService {
    SaveQuaification(data: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl+ApiEndpoints.AddEducation}`,data, { headers: this.getHeaders() });
   }
+
+   SaveDocument(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveDocument}`,data, { headers: this.getHeaders() });
+  }
   // Add more endpoints here as needed
 }
