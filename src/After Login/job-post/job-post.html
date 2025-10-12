@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Portal - Post New Job</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-briefcase"></i>
+                <h2>HR Portal</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><i class="fas fa-tachometer-alt"></i> Dashboard</li>
+                <li class="active"><i class="fas fa-plus-circle"></i> Post Job</li>
+                <li><i class="fas fa-list-alt"></i> Job Listings</li>
+                <li><i class="fas fa-users"></i> Candidates</li>
+                <li><i class="fas fa-chart-bar"></i> Analytics</li>
+                <li><i class="fas fa-cog"></i> Settings</li>
+                <li><i class="fas fa-sign-out-alt"></i> Logout</li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1><i class="fas fa-plus-circle"></i> Post a New Job</h1>
+                <div class="user-info">
+                    <img src="https://i.pravatar.cc/150?img=32" alt="HR User">
+                    <span>Sarah Johnson</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-edit"></i> Job Details
+                </div>
+                <div class="card-body">
+                    <form id="jobForm">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="jobTitle">Job Title *</label>
+                                    <input type="text" id="jobTitle" class="form-control" required placeholder="e.g. Senior Frontend Developer">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="department">Department *</label>
+                                    <select id="department" class="form-control" required>
+                                        <option value="">Select Department</option>
+                                        <option value="engineering">Engineering</option>
+                                        <option value="marketing">Marketing</option>
+                                        <option value="sales">Sales</option>
+                                        <option value="hr">Human Resources</option>
+                                        <option value="finance">Finance</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="jobType">Job Type *</label>
+                                    <select id="jobType" class="form-control" required>
+                                        <option value="">Select Job Type</option>
+                                        <option value="full-time">Full Time</option>
+                                        <option value="part-time">Part Time</option>
+                                        <option value="contract">Contract</option>
+                                        <option value="internship">Internship</option>
+                                        <option value="remote">Remote</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="location">Location *</label>
+                                    <input type="text" id="location" class="form-control" required placeholder="e.g. New York, NY">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="salary">Salary Range</label>
+                                    <input type="text" id="salary" class="form-control" placeholder="e.g. $80,000 - $100,000">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="experience">Experience Level *</label>
+                                    <select id="experience" class="form-control" required>
+                                        <option value="">Select Experience</option>
+                                        <option value="entry">Entry Level</option>
+                                        <option value="mid">Mid Level</option>
+                                        <option value="senior">Senior Level</option>
+                                        <option value="executive">Executive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Job Description *</label>
+                            <textarea id="description" class="form-control" required placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="requirements">Requirements *</label>
+                            <textarea id="requirements" class="form-control" required placeholder="List the required skills, qualifications, and experience..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Benefits</label>
+                            <div class="benefits-grid">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="health">
+                                    <label for="health">
+                                        <i class="fas fa-heartbeat"></i>
+                                        Health Insurance
+                                    </label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="dental">
+                                    <label for="dental">
+                                        <i class="fas fa-tooth"></i>
+                                        Dental Insurance
+                                    </label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="retirement">
+                                    <label for="retirement">
+                                        <i class="fas fa-piggy-bank"></i>
+                                        Retirement Plan
+                                    </label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="remote">
+                                    <label for="remote">
+                                        <i class="fas fa-laptop-house"></i>
+                                        Remote Work Options
+                                    </label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="training">
+                                    <label for="training">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        Professional Development
+                                    </label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="flexible">
+                                    <label for="flexible">
+                                        <i class="fas fa-clock"></i>
+                                        Flexible Hours
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="applicationDeadline">Application Deadline</label>
+                                    <input type="date" id="applicationDeadline" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="vacancies">Number of Vacancies</label>
+                                    <input type="number" id="vacancies" class="form-control" min="1" placeholder="e.g. 3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Post Job
+                            </button>
+                            <button type="button" class="btn btn-outline" id="previewBtn">
+                                <i class="fas fa-eye"></i> Preview
+                            </button>
+                            <button type="button" class="btn btn-success" id="saveDraftBtn">
+                                <i class="fas fa-save"></i> Save as Draft
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Job Preview -->
+            <div class="card preview-card" id="previewCard">
+                <div class="card-header">
+                    <i class="fas fa-file-alt"></i> Job Preview
+                </div>
+                <div class="card-body">
+                    <div class="preview-container">
+                        <h3 class="preview-title" id="previewTitle">Job Title</h3>
+                        <div class="preview-meta">
+                            <span><i class="fas fa-building"></i> <span id="previewDepartment">Department</span></span>
+                            <span><i class="fas fa-briefcase"></i> <span id="previewType">Job Type</span></span>
+                            <span><i class="fas fa-map-marker-alt"></i> <span id="previewLocation">Location</span></span>
+                            <span><i class="fas fa-money-bill-wave"></i> <span id="previewSalary">Salary not specified</span></span>
+                            <span><i class="fas fa-user-tie"></i> <span id="previewExperience">Experience Level</span></span>
+                        </div>
+                        <div class="preview-description">
+                            <h4>Job Description</h4>
+                            <p id="previewDescription">Job description will appear here...</p>
+                        </div>
+                        <div class="preview-description">
+                            <h4>Requirements</h4>
+                            <p id="previewRequirements">Job requirements will appear here...</p>
+                        </div>
+                        <div class="preview-description" id="previewBenefits">
+                            <h4>Benefits</h4>
+                            <ul id="benefitsList">
+                                <li>No benefits selected</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationMessage">Job posted successfully!</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
