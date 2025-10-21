@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { LoginService } from '../../Common/services/login';
 import { LoginDetails } from '../../Model/loginDetails';
 import { CommonModule } from '@angular/common';
+import { LoaderService } from '../../Common/services/loader-service';
 
 @Component({
   selector: 'app-login-component',
@@ -17,7 +18,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   submitted = false;
   loginDetails:LoginDetails|undefined;
-  constructor(private fb: FormBuilder,private router: Router,private loginService:LoginService) {
+  constructor(private fb: FormBuilder,private router: Router,private loginService:LoginService,private loaderService: LoaderService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -27,6 +28,7 @@ email_input:string="";
 Password_input:string="";
 
   onLogin() {
+    this.loaderService.hide()
     this.submitted = true;
 
     if (this.loginForm.valid) {
@@ -48,13 +50,16 @@ if(response!="401"){
   else if(role.toString()=="4"){
     this.router.navigate(['/welcome/CandidateDashboard']);
   }
+  
 else{
   alert("invalid role")
 }
+this.loaderService.hide()
 }
     },error:(err:any)=>{
 debugger
 alert("invalid credentials")
+this.loaderService.hide()
     }})
     
     } else {

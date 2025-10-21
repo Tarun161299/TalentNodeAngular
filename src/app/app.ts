@@ -7,16 +7,22 @@ import { BeforeLoginComponent } from '../Before Login/before-login-component/bef
 import { AfterLoginComponent } from '../After Login/after-login-component/after-login-component';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { ReactiveFormsModule } from '@angular/forms';
+import { LoaderService } from '../Common/services/loader-service';
+import { LoaderComponent } from '../loader-component/loader-component';
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,BeforeLoginComponent,AfterLoginComponent,NgxExtendedPdfViewerModule,ReactiveFormsModule],
+  imports: [RouterOutlet,BeforeLoginComponent,AfterLoginComponent,NgxExtendedPdfViewerModule,ReactiveFormsModule,LoaderComponent],
 
     
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
+isLoading:any;
+  constructor(private loaderService: LoaderService) {
+      this.isLoading = this.loaderService.loading$;
+  }
   protected readonly title = signal('TalentNodeAngular');
 }

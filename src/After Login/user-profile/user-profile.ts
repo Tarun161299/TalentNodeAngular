@@ -5,6 +5,8 @@ import { ToastrService } from 'ngx-toastr';
 import { EmployeeService } from '../../Common/services/employee-service';
 import { Employee } from '../../Model/AddProfile';
 import { MasterServices } from '../../Common/services/master-services';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { Imageupload } from '../../Common/services/imageupload';
 
 interface Education {
   degEmpId: number;
@@ -65,7 +67,7 @@ export interface UserProfile {
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule,],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule,PdfViewerModule],
   templateUrl: './user-profile.html',
   styleUrls: ['./user-profile.css']
 })
@@ -73,36 +75,38 @@ export class UserProfileComponent implements OnInit {
   profileForm: FormGroup;
   isEditing = false;
   isLoading = false;
+  showPdf = false;
   skillemployee:any;
   selectedTab = 'personal';
   degree: any;
   empId: number = 0;
   disticts: any;
+  showP:string='';
   states: any;
   empProfile: Employee | undefined;
   user: UserProfile
     = {
       id: 1,
-      firstName: 'Aarav',
-      lastName: 'Sharma',
-      email: 'aarav.sharma@example.com',
-      phone: '+91 98765 43210',
-      bio: 'Full-stack developer with 5+ years of experience in building scalable web applications. Passionate about React, Angular, and Node.js. Looking for challenging opportunities in product-based companies.',
-      location: 'Bangalore, India',
-      currentPosition: 'Senior Software Engineer',
-      currentCompany: 'Tech Solutions Inc.',
-      expectedSalary: 2500000,
-      currentSalary: 239000,
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      bio: '',
+      location: '',
+      currentPosition: '',
+      currentCompany: '',
+      expectedSalary: 0,
+      currentSalary: 0,
       stateid: 0,
       districtId: 0,
       noticePeriod: 30,
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+      avatar: '',
       resume: '',
       education: [
         {
           degEmpId: 0,
           degree: 0,
-          institution: 'IIT Delhi',
+          institution: '',
           year: 2018,
           percentage: 85
         }
@@ -111,47 +115,59 @@ export class UserProfileComponent implements OnInit {
         {
           employeeID: 0,
           experienceId: 0,
-          company: 'Tech Solutions Inc.',
-          position: 'Senior Software Engineer',
-          startDate: '2022-01',
+          company: '',
+          position: '',
+          startDate: '',
           endDate: '',
           current: true,
-          description: 'Leading a team of 5 developers. Building scalable microservices architecture.'
+          description: ''
         },
         {
           employeeID: 0,
           experienceId: 0,
-          company: 'Digital Innovations',
-          position: 'Software Developer',
-          startDate: '2019-03',
-          endDate: '2021-12',
+          company: '',
+          position: '',
+          startDate: '',
+          endDate: '',
           current: false,
-          description: 'Developed and maintained multiple client projects using React and Node.js'
+          description: ''
         }
       ],
       skills: [
-        { skillEmpId:0,name: 0, level: 'Expert' }
+        
       ],
-      languages: ['English', 'Hindi'],
+      languages: [],
       socialLinks: {
-        linkedin: 'https://linkedin.com/in/aaravsharma',
-        github: 'https://github.com/aaravsharma',
-        portfolio: 'https://aaravsharma.dev'
+        linkedin: '',
+        github: '',
+        portfolio: ''
       }
     };
 
   skillLevels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
-
+closeModal() {
+    this.showPdf = false;
+  }
   constructor(
     private fb: FormBuilder,
     private toastr: ToastrService,
     private employeeService: EmployeeService,
-    private masterServices: MasterServices
+    private masterServices: MasterServices,
+    private imageperofile:Imageupload
   ) {
+    this.showP=this.imageperofile.base64String();
     this.profileForm = this.createForm();
-
+   
   }
-
+viewResume() {
+  
+    
+        this.showPdf = true;
+     
+  
+    
+    // Implement PDF opening logic here
+  }
   ngOnInit() {
     var token = localStorage.getItem('token');
     if (this.isEditing == false) {
@@ -173,14 +189,16 @@ export class UserProfileComponent implements OnInit {
       next: (data: any) => {
         debugger;
         this.user = data;
+        
+        this.user.avatar= (data.avatar==null||data.avatar==undefined||data.avatar=='')?`data:image/png;base64,${this.showP}`:`data:image/jpeg;base64,${data.avatar}`;
         this.profileForm.get('personal')?.patchValue({
           firstName: this.user.firstName ?? '',
           lastName: this.user.lastName ?? '',
           email: this.user.email ?? '',
           phone: this.user.phone ?? '',
           location: this.user.location ?? '',
-          State: this.user.stateid ?? '',
-          District: this.user.districtId ?? '',
+          stateid: this.user.stateid ?? '',
+          districtId: this.user.districtId ?? '',
           currentPosition: this.user.currentPosition ?? '',
           currentCompany: this.user.currentCompany ?? '',
           currentSalary: this.user.currentSalary ?? '',
@@ -275,8 +293,8 @@ export class UserProfileComponent implements OnInit {
         email: ['', [Validators.required, Validators.email]],
         phone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s-]+$/)]],
         location: ['', Validators.required],
-        District: ['', Validators.required],
-        State: ['', Validators.required],
+        districtId: ['', Validators.required],
+        stateid: ['', Validators.required],
         currentPosition: [''],
         currentCompany: [''],
         currentSalary: [''],
@@ -436,8 +454,8 @@ export class UserProfileComponent implements OnInit {
             bio: this.user.bio,
             phone: this.user.phone,
             location: this.user.location,
-            state: this.user.stateid,
-            district: this.user.districtId,
+            state: Number(this.user.stateid),
+            district:Number(this.user.districtId) ,
             currentPosition: this.user.currentPosition,
             currentSallary: this.user.currentSalary,
             expectedSallary: this.user.expectedSalary,
@@ -463,22 +481,6 @@ export class UserProfileComponent implements OnInit {
         }
         if (this.selectedTab === 'experience') {
           debugger
-          this.empProfile = {
-            empId: this.empId,
-            firstName: this.user.firstName,
-            lastName: this.user.lastName,
-            email: this.user.email,
-            bio: this.user.bio,
-            phone: this.user.phone,
-            location: this.user.location,
-            state: this.user.stateid,
-            district: this.user.districtId,
-            currentPosition: this.user.currentPosition,
-            currentSallary: this.user.currentSalary,
-            expectedSallary: this.user.expectedSalary,
-            resumeID: 0,
-            empImageID: 0
-          }
 
           var now = new Date().toISOString();
 
@@ -492,9 +494,13 @@ export class UserProfileComponent implements OnInit {
             next: (data: any) => {
               if (data > 0) {
                 this.toastr.success('Profile updated successfully!', 'Success');
+                this.isLoading = false;
+              this.isEditing = false;
               }
               else {
                 this.toastr.error('Some error Occured!');
+                this.isLoading = false;
+              this.isEditing = false;
               }
               this.isLoading = false;
               this.isEditing = false;
@@ -515,8 +521,13 @@ debugger
               else {
                 this.toastr.error('Some error Occured!');
               }
+              this.isLoading = false;
+              this.isEditing = false;
             }, error: (err: any) => {
+              debugger
               this.toastr.error('Some error Occured!');
+              this.isLoading = false;
+              this.isEditing = false;
             }
           })
         }
@@ -530,8 +541,12 @@ debugger
               else {
                 this.toastr.error('Some error Occured!');
               }
+              this.isLoading = false;
+              this.isEditing = false;
             }, error: (err: any) => {
               this.toastr.error('Some error Occured!');
+              this.isLoading = false;
+              this.isEditing = false;
             }
           })
         }
@@ -543,35 +558,139 @@ debugger
     }
   }
 
-  onAvatarChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        this.toastr.error('File size should be less than 5MB', 'Error');
-        return;
-      }
+  // onAvatarChange(event: any) {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     if (file.size > 5 * 1024 * 1024) {
+  //       this.toastr.error('File size should be less than 5MB', 'Error');
+  //       return;
+  //     }
 
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.user.avatar = e.target.result;
-        this.toastr.success('Profile picture updated!', 'Success');
-      };
-      reader.readAsDataURL(file);
-    }
+  //     const reader = new FileReader();
+  //     reader.onload = (e: any) => {
+  //       this.user.avatar = e.target.result;
+  //       this.toastr.success('Profile picture updated!', 'Success');
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // }
+
+onResumeUpload(event: any) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // ✅ Validate file type
+  if (file.type !== 'application/pdf') {
+    this.toastr.error('Please upload a PDF file', 'Error');
+    return;
   }
 
-  onResumeUpload(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      if (file.type !== 'application/pdf') {
-        this.toastr.error('Please upload a PDF file', 'Error');
-        return;
-      }
-
-      this.user.resume = file.name;
-      this.toastr.success('Resume uploaded successfully!', 'Success');
-    }
+  // ✅ Validate file size (max 500MB)
+  const maxSizeMB = 500;
+  const fileSizeMB = file.size / (1024 * 1024);
+  if (fileSizeMB > maxSizeMB) {
+    this.toastr.error('File size exceeds 500MB limit', 'Error');
+    return;
   }
+this.user.resume = event.target.result;
+  var fileName = file.name;
+  var fileType = file.name.split('.').pop()?.toLowerCase() || 'pdf';
+
+  const reader = new FileReader();
+  reader.onload = (e:any) => {
+    var base64String = (reader.result as string).split(',')[1];
+
+    var resumeUploadModel = {
+      employeeID: this.empId,
+      docName: 'Resume',
+      fileName: fileName,
+      fileType: fileType,
+      fileContentBase64: base64String,
+      mode:"R"
+    };
+    this.employeeService.SaveDocument(resumeUploadModel).subscribe({next:(data:any)=>{
+if(data>0){
+this.toastr.success('Resume uploaded successfully!', 'Success');
+}else{
+this.toastr.error('some error occured!');
+}
+    },
+  error:(err:any)=>{
+this.toastr.error('some error occured!');
+  }})
+    
+    console.log('Resume Upload Model:', resumeUploadModel);
+    
+
+    // 🔹 Optionally: Call API here
+    // this.employeeService.uploadResume(resumeUploadModel).subscribe(...);
+  };
+
+  reader.readAsDataURL(file);
+}
+onAvatarChange(event: any) {
+  debugger
+  const file = event.target.files[0];
+  if (!file) return;
+
+  let allowedType = '';
+  let docName = '';
+  let fileExt = file.name.split('.').pop()?.toLowerCase() || '';
+  const maxSizeMB = 500;
+  const fileSizeMB = file.size / (1024 * 1024);
+
+  // ✅ Common validation for size
+  if (fileSizeMB > maxSizeMB) {
+    this.toastr.error('File size exceeds 500MB limit', 'Error');
+    return;
+  }
+
+  // ✅ Type-specific validation
+
+    allowedType = 'image/jpeg';
+    docName = 'ProfileImage';
+    if (file.type !== allowedType && fileExt !== 'jpg' && fileExt !== 'jpeg') {
+      this.toastr.error('Please upload a JPEG image only', 'Error');
+      return;
+    }
+  
+
+  // ✅ Read the file and convert to Base64
+  var reader = new FileReader();
+  reader.onload = (e:any) => {
+    var base64String = (reader.result as string).split(',')[1];
+
+    var uploadModel = {
+      employeeID: this.empId,
+      docName: docName,
+      fileName: file.name,
+      fileType: fileExt,
+      fileContentBase64: base64String,
+      mode: "P"  // R = Resume, I = Image
+    };
+
+    console.log('Upload Model:', uploadModel);
+
+    // ✅ API Call
+    this.employeeService.SaveDocument(uploadModel).subscribe({
+      next: (data: any) => {
+        if (data > 0) {
+          this.user.avatar = e.target.result;
+          var successMsg = 'Profile image uploaded successfully!';
+          this.toastr.success(successMsg, 'Success');
+        } else {
+          this.toastr.error('Some error occurred!', 'Error');
+        }
+      },
+      error: (err:any) => {
+        this.toastr.error('Some error occurred while uploading!', 'Error');
+      }
+    });
+  };
+
+  reader.readAsDataURL(file);
+}
+
 
   getTotalExperience(): string {
     const experiences = this.user.experience;

@@ -21,6 +21,7 @@ export const ApiEndpoints = {
      GetAllDistrict:'MD/District',
      AddEducation:'Education/AddEducation',
      GetAllState:'MD/state',
+     saveDocument:`Employee/saveDocument`,
      getEmployeeDetails:'Employee/GetEmployeeDetails?EmployeeID='
 
   
