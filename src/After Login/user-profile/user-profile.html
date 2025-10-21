@@ -28,7 +28,7 @@
         </div>
         <div class="user-basic-info">
           <h1>{{ user.firstName }} {{ user.lastName }}</h1>
-          <p class="current-role">{{ user.currentPosition }} at {{ user.currentCompany }}</p>
+          <p class="current-role">{{ user.currentPosition }} {{ (user.currentPosition==null || user.currentPosition=='')||(user.currentCompany==null || user.currentCompany=='')?'':'at'  }} {{ user.currentCompany }}</p>
           <div class="user-stats">
             <span class="stat">
               <i class="fas fa-briefcase"></i>

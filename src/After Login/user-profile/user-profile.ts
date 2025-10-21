@@ -6,6 +6,7 @@ import { EmployeeService } from '../../Common/services/employee-service';
 import { Employee } from '../../Model/AddProfile';
 import { MasterServices } from '../../Common/services/master-services';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { Imageupload } from '../../Common/services/imageupload';
 
 interface Education {
   degEmpId: number;
@@ -80,31 +81,32 @@ export class UserProfileComponent implements OnInit {
   degree: any;
   empId: number = 0;
   disticts: any;
+  showP:string='';
   states: any;
   empProfile: Employee | undefined;
   user: UserProfile
     = {
       id: 1,
-      firstName: 'Aarav',
-      lastName: 'Sharma',
-      email: 'aarav.sharma@example.com',
-      phone: '+91 98765 43210',
-      bio: 'Full-stack developer with 5+ years of experience in building scalable web applications. Passionate about React, Angular, and Node.js. Looking for challenging opportunities in product-based companies.',
-      location: 'Bangalore, India',
-      currentPosition: 'Senior Software Engineer',
-      currentCompany: 'Tech Solutions Inc.',
-      expectedSalary: 2500000,
-      currentSalary: 239000,
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      bio: '',
+      location: '',
+      currentPosition: '',
+      currentCompany: '',
+      expectedSalary: 0,
+      currentSalary: 0,
       stateid: 0,
       districtId: 0,
       noticePeriod: 30,
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+      avatar: '',
       resume: '',
       education: [
         {
           degEmpId: 0,
           degree: 0,
-          institution: 'IIT Delhi',
+          institution: '',
           year: 2018,
           percentage: 85
         }
@@ -113,32 +115,32 @@ export class UserProfileComponent implements OnInit {
         {
           employeeID: 0,
           experienceId: 0,
-          company: 'Tech Solutions Inc.',
-          position: 'Senior Software Engineer',
-          startDate: '2022-01',
+          company: '',
+          position: '',
+          startDate: '',
           endDate: '',
           current: true,
-          description: 'Leading a team of 5 developers. Building scalable microservices architecture.'
+          description: ''
         },
         {
           employeeID: 0,
           experienceId: 0,
-          company: 'Digital Innovations',
-          position: 'Software Developer',
-          startDate: '2019-03',
-          endDate: '2021-12',
+          company: '',
+          position: '',
+          startDate: '',
+          endDate: '',
           current: false,
-          description: 'Developed and maintained multiple client projects using React and Node.js'
+          description: ''
         }
       ],
       skills: [
-        { skillEmpId:0,name: 0, level: 'Expert' }
+        
       ],
-      languages: ['English', 'Hindi'],
+      languages: [],
       socialLinks: {
-        linkedin: 'https://linkedin.com/in/aaravsharma',
-        github: 'https://github.com/aaravsharma',
-        portfolio: 'https://aaravsharma.dev'
+        linkedin: '',
+        github: '',
+        portfolio: ''
       }
     };
 
@@ -150,10 +152,12 @@ closeModal() {
     private fb: FormBuilder,
     private toastr: ToastrService,
     private employeeService: EmployeeService,
-    private masterServices: MasterServices
+    private masterServices: MasterServices,
+    private imageperofile:Imageupload
   ) {
+    this.showP=this.imageperofile.base64String();
     this.profileForm = this.createForm();
-
+   
   }
 viewResume() {
   
@@ -185,7 +189,8 @@ viewResume() {
       next: (data: any) => {
         debugger;
         this.user = data;
-        this.user.avatar=`data:image/jpeg;base64,${data.avatar}`
+        
+        this.user.avatar= (data.avatar==null||data.avatar==undefined||data.avatar=='')?`data:image/png;base64,${this.showP}`:`data:image/jpeg;base64,${data.avatar}`;
         this.profileForm.get('personal')?.patchValue({
           firstName: this.user.firstName ?? '',
           lastName: this.user.lastName ?? '',

@@ -6,6 +6,7 @@ import { EmployeeService } from '../../Common/services/employee-service';
 import { EmployeeData } from '../../Model/EmployeeData';
 import { DocumentDetails } from '../../Model/DocumentDetails';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Imageupload } from '../../Common/services/imageupload';
 
 @Component({
   selector: 'app-all-application',
@@ -22,7 +23,10 @@ pdfBase64:any="";
 pdfBlobUrl: string | null = null;
 documentdetails:any ;
 employeeList:EmployeeData[] =[];
-constructor(private employeeService:EmployeeService) {}
+showP:any='';
+constructor(private employeeService:EmployeeService,private imageperofile:Imageupload) {
+  this.showP=this.imageperofile.base64String();
+}
 candidates = [
   {
     name: 'John Doe',
