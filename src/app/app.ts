@@ -9,6 +9,8 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoaderService } from '../Common/services/loader-service';
 import { LoaderComponent } from '../loader-component/loader-component';
+import { JobList } from '../After Login/job-list/job-list';
+
 
 
 @Component({
@@ -19,6 +21,7 @@ import { LoaderComponent } from '../loader-component/loader-component';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
+
 export class App {
 isLoading:any;
   constructor(private loaderService: LoaderService) {

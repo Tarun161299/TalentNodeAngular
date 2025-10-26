@@ -12,6 +12,9 @@ class CustomErrorHandler implements ErrorHandler {
   handleError(error: any): void {
     console.error('Global error handler:', error);
     // Add your custom error handling logic here
+    if (error.message?.includes('NG0403')) {
+      console.error('Router error - check your route configuration');
+    }
   }
 }
 

@@ -9,6 +9,7 @@ import { CandidateDashboard } from '../../app/candidate-dashboard/candidate-dash
 import { UserProfile } from '../../Common/services/user-profile';
 import { UserProfileComponent } from '../user-profile/user-profile';
 
+
 @Component({
   selector: 'app-after-login-component',
   imports: [RouterOutlet,AfterLoginFooter,AfterLoginHeader,SideNavBar,Dashboard,AllApplication,UserProfileComponent,CandidateDashboard],
