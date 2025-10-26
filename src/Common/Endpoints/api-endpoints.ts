@@ -17,12 +17,17 @@ export const ApiEndpoints = {
     CheckContact: 'employees/check-contact',
     saveProfile:'UserProfile/SaveUserProfile',
     Qualification:'MD/Qualification',
+    Department:'MD/Department',
+    Benifits:'MD/Benifits',
+    Company:'MD/Company?hrid=',
+    JobType:'MD/JobType',
     GetAllSkill:'MD/Skills',
      GetAllDistrict:'MD/District',
      AddEducation:'Education/AddEducation',
      GetAllState:'MD/state',
      saveDocument:`Employee/saveDocument`,
-     getEmployeeDetails:'Employee/GetEmployeeDetails?EmployeeID='
+     getEmployeeDetails:'Employee/GetEmployeeDetails?EmployeeID=',
+     saveJobs:`Jobs/SaveJobs`,
 
   
 };

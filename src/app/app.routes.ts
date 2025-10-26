@@ -9,6 +9,7 @@ import { CandidateDashboard } from './candidate-dashboard/candidate-dashboard';
 import { EmployeeSignupComponent } from '../Before Login/employee-signup/employee-signup';
 import { Signup } from '../Before Login/signup/signup';
 import { UserProfileComponent } from '../After Login/user-profile/user-profile';
+import { CreateJobComponent } from '../After Login/create-job-component/create-job-component';
 
 
 
@@ -32,7 +33,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: Dashboard , pathMatch: 'full'}, // default
       { path: 'all_application', component: AllApplication }, // default 
       { path: 'CandidateDashboard', component: CandidateDashboard , pathMatch: 'full'},   
-       {path: 'UserProfile',component:UserProfileComponent} 
+       {path: 'UserProfile',component:UserProfileComponent} ,
+       {path: 'CreateJob',component:CreateJobComponent} 
     ]
   },
   { path: '**', redirectTo: '' }

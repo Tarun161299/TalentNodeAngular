@@ -1,0 +1,363 @@
+<!-- src/app/components/job-create/create-job-component.html -->
+<div class="job-create">
+  <div class="create-header">
+    <h1>Create New Job Post</h1>
+    <p>Fill in the details below to create a new job posting</p>
+  </div>
+
+  <form [formGroup]="jobForm" (ngSubmit)="onSubmit()" class="job-form">
+    
+    <!-- Basic Information Section -->
+    <section class="form-section">
+      <h2>Basic Information</h2>
+      
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="title">Job Title *</label>
+          <input
+            type="text"
+            id="title"
+            formControlName="title"
+            placeholder="e.g., Senior Frontend Developer"
+            [class.error]="isFieldInvalid('title')"
+          >
+          @if (isFieldInvalid('title')) {
+            <span class="error-message">{{ getFieldError('title') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="company">Company *</label>
+          <!-- <input
+            type="text"
+            id="company"
+            formControlName="company"
+            placeholder="Your company name"
+            [class.error]="isFieldInvalid('company')"
+          > -->
+          <select
+            id="company"
+            formControlName="company"
+            [class.error]="isFieldInvalid('company')"
+          >
+            <option value="">Select Company</option>
+            @for (dept of CompanyData; track dept) {
+              <option [value]="dept.companyId">{{ dept.companyName }}</option>
+            }
+          </select>
+          @if (isFieldInvalid('company')) {
+            <span class="error-message">{{ getFieldError('company') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="department">Department *</label>
+          <select
+            id="department"
+            formControlName="department"
+            [class.error]="isFieldInvalid('department')"
+          >
+            <option value="">Select Department</option>
+            @for (dept of departments; track dept) {
+              <option [value]="dept.departmentId">{{ dept.departmentName }}</option>
+            }
+          </select>
+          @if (isFieldInvalid('department')) {
+            <span class="error-message">{{ getFieldError('department') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location *</label>
+          <input
+            type="text"
+            id="location"
+            formControlName="location"
+            placeholder="e.g., Remote, New York, NY"
+            [class.error]="isFieldInvalid('location')"
+          >
+          @if (isFieldInvalid('location')) {
+            <span class="error-message">{{ getFieldError('location') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="type">Job Type *</label>
+          <select
+            id="type"
+            formControlName="type"
+            [class.error]="isFieldInvalid('type')"
+          >
+           <option value="">Select JobType</option>
+            @for (type of jobTypes; track type) {
+              <option [value]="type.id">{{ type.name| titlecase }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="vacancies">Number of Openings *</label>
+          <input
+            type="number"
+            id="vacancies"
+            formControlName="vacancies"
+            min="1"
+            [class.error]="isFieldInvalid('vacancies')"
+          >
+          @if (isFieldInvalid('vacancies')) {
+            <span class="error-message">{{ getFieldError('vacancies') }}</span>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Salary Information -->
+    <section class="form-section">
+      <h2>Salary Information (Optional)</h2>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="salaryMin">Minimum Salary</label>
+          <input
+            type="number"
+            id="salaryMin"
+            formControlName="salaryMin"
+            placeholder="e.g., 60000"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="salaryMax">Maximum Salary</label>
+          <input
+            type="number"
+            id="salaryMax"
+            formControlName="salaryMax"
+            placeholder="e.g., 90000"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="salaryCurrency">Currency</label>
+          <select id="salaryCurrency" formControlName="salaryCurrency">
+            @for (currency of currencies; track currency) {
+              <option [value]="currency">{{ currency }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      
+      @if (jobForm.errors?.['salaryRange']) {
+        <span class="error-message">Maximum salary must be greater than minimum salary</span>
+      }
+    </section>
+
+    <!-- Job Details -->
+    <section class="form-section">
+      <h2>Job Details</h2>
+      
+      <div class="form-group full-width">
+        <label for="description">Job Description *</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="6"
+          placeholder="Describe the role, responsibilities, and what you're looking for in a candidate..."
+          [class.error]="isFieldInvalid('description')"
+        ></textarea>
+        @if (isFieldInvalid('description')) {
+          <span class="error-message">{{ getFieldError('description') }}</span>
+        }
+        <div class="char-count">
+          {{ descriptionLength }} characters
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="experienceLevel">Experience Level *</label>
+          <select
+            id="experienceLevel"
+            formControlName="experienceLevel"
+            [class.error]="isFieldInvalid('experienceLevel')"
+          >
+            @for (level of experienceLevels; track level) {
+              <option [value]="level">{{ level | titlecase }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Job Category *</label>
+          <select
+            id="category"
+            formControlName="category"
+            [class.error]="isFieldInvalid('category')"
+          >
+            <option value="">Select Category</option>
+            @for (cat of categories; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+          @if (isFieldInvalid('category')) {
+            <span class="error-message">{{ getFieldError('category') }}</span>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits Multiselect -->
+    <section class="form-section">
+      <h2>Benefits *</h2>
+      <p class="section-description">Select the benefits offered with this position</p>
+      
+      <div class="multiselect-container" [class.error]="isFieldInvalid('benefits')">
+        <div class="multiselect-grid">
+          @for (benefit of benefitsOptions; track benefit.id) {
+            <div class="checkbox-item">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  [value]="benefit.id"
+                  [checked]="isBenefitSelected(benefit.id)"
+                  (change)="onBenefitChange($event, benefit.id)"
+                >
+                <span class="checkmark"></span>
+                {{ benefit.name }}
+              </label>
+            </div>
+          }
+        </div>
+        
+        @if (isFieldInvalid('benefits')) {
+          <span class="error-message">{{ getFieldError('benefits') }}</span>
+        }
+        
+        @if (getSelectedBenefits().length > 0) {
+          <div class="selected-items">
+            <strong>Selected Benefits ({{ getSelectedBenefits().length }}):</strong>
+            <div class="selected-tags">
+              @for (benefitName of getSelectedBenefitNames(); track $index) {
+                <span class="selected-tag">{{ benefitName }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Skills Multiselect -->
+    <section class="form-section">
+      <h2>Required Skills *</h2>
+      <p class="section-description">Select the skills required for this position</p>
+      
+      <div class="multiselect-container" [class.error]="isFieldInvalid('skills')">
+        <div class="multiselect-grid">
+          @for (skill of skillsOptions; track skill.id) {
+            <div class="checkbox-item">
+              <label class="checkbox-label">
+                <input
+                  type="checkbox"
+                  [value]="skill.id"
+                  [checked]="isSkillSelected(skill.id)"
+                  (change)="onSkillChange($event, skill.id)"
+                >
+                <span class="checkmark"></span>
+                {{ skill.name }}
+              </label>
+            </div>
+          }
+        </div>
+        
+        @if (isFieldInvalid('skills')) {
+          <span class="error-message">{{ getFieldError('skills') }}</span>
+        }
+        
+        @if (getSelectedSkills().length > 0) {
+          <div class="selected-items">
+            <strong>Selected Skills ({{ getSelectedSkills().length }}):</strong>
+            <div class="selected-tags">
+              @for (skillName of getSelectedSkillNames(); track $index) {
+                <span class="selected-tag">{{ skillName }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Application Details -->
+    <section class="form-section">
+      <h2>Application Details</h2>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="contactEmail">Contact Email *</label>
+          <input
+            type="email"
+            id="contactEmail"
+            formControlName="contactEmail"
+            placeholder="hr@company.com"
+            [class.error]="isFieldInvalid('contactEmail')"
+          >
+          @if (isFieldInvalid('contactEmail')) {
+            <span class="error-message">{{ getFieldError('contactEmail') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="applicationLink">Application Link</label>
+          <input
+            type="url"
+            id="applicationLink"
+            formControlName="applicationLink"
+            placeholder="https://company.com/apply"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="applicationDeadline">Application Deadline</label>
+          <input
+            type="date"
+            id="applicationDeadline"
+            formControlName="applicationDeadline"
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Form Actions -->
+    <section class="form-actions">
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="onCancel()"
+        [disabled]="isSubmitting"
+      >
+        Cancel
+      </button>
+      
+      <div class="action-group">
+        <button
+          type="button"
+          class="btn-outline"
+          (click)="onSaveDraft()"
+          [disabled]="isSubmitting"
+        >
+          Save Draft
+        </button>
+        
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="isSubmitting"
+        >
+          @if (isSubmitting) {
+            <span class="loading">Creating Job...</span>
+          } @else {
+            Create Job Post
+          }
+        </button>
+      </div>
+    </section>
+  </form>
+</div>
