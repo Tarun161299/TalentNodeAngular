@@ -1,0 +1,175 @@
+<div class="job-listings-container">
+  <!-- Header Section -->
+  <header class="listings-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1>Find Your Dream Job</h1>
+        <p>Discover amazing opportunities from top companies. Start your career journey today.</p>
+      </div>
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-number">{{ jobs.length }}+</span>
+          <span class="stat-label">Jobs Available</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">{{ filteredJobs.length }}</span>
+          <span class="stat-label">Matches</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search and Filters Section -->
+  <section class="filters-section">
+    <div class="filters-container">
+      <!-- Search Bar -->
+      <div class="search-box">
+        <div class="search-icon">🔍</div>
+        <input 
+          type="text" 
+          placeholder="Search jobs, companies, or skills..." 
+          (input)="onSearchChange($event)"
+          class="search-input">
+      </div>
+
+      <!-- Filter Controls -->
+      <div class="filter-controls">
+        <div class="filter-group">
+          <label>Category</label>
+          <select (change)="onCategoryChange($event)" class="filter-select">
+            <option value="all">All Categories</option>
+            <option value="Technology">Technology</option>
+            <option value="Design">Design</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Sales">Sales</option>
+            <option value="Finance">Finance</option>
+            <option value="HR">HR</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Job Type</label>
+          <select (change)="onTypeChange($event)" class="filter-select">
+            <option value="all">All Types</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
+            <option value="Remote">Remote</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Location</label>
+          <select (change)="onLocationChange($event)" class="filter-select">
+            <option value="all">All Locations</option>
+            <option value="Remote">Remote</option>
+            <option value="New York">New York</option>
+            <option value="San Francisco">San Francisco</option>
+            <option value="London">London</option>
+            <option value="Berlin">Berlin</option>
+            <option value="Tokyo">Tokyo</option>
+          </select>
+        </div>
+
+        <button class="clear-filters-btn" (click)="clearFilters()">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main class="listings-main">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading amazing job opportunities...</p>
+    </div>
+
+    <!-- Jobs Grid -->
+    <div *ngIf="!isLoading" class="jobs-content">
+      <!-- Results Count -->
+      <div class="results-header">
+        <h2>Available Jobs ({{ filteredJobs.length }})</h2>
+        <p *ngIf="filteredJobs.length === 0" class="no-results">
+          No jobs found matching your criteria. Try adjusting your filters.
+        </p>
+      </div>
+
+      <!-- Jobs Grid -->
+      <div class="jobs-grid">
+        <div *ngFor="let job of filteredJobs" class="job-card">
+          <!-- Card Header -->
+          <div class="card-header">
+            <div class="company-info">
+              <img [src]="job.companyLogo" [alt]="job.company + ' logo'" class="company-logo">
+              <div class="company-details">
+                <h3 class="job-title">{{ job.title }}</h3>
+                <p class="company-name">{{ job.company }}</p>
+              </div>
+            </div>
+            <div class="job-badges">
+              <span *ngIf="job.isUrgent" class="badge urgent">🔥 Urgent</span>
+              <span *ngIf="isNewJob(job.postedDate)" class="badge new">🆕 New</span>
+              <span class="badge remote" *ngIf="job.isRemote">🌍 Remote</span>
+            </div>
+          </div>
+
+          <!-- Job Details -->
+          <div class="job-details">
+            <div class="detail-item">
+              <span class="icon">📍</span>
+              <span>{{ job.isRemote ? 'Remote' : job.location }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="icon">⏱️</span>
+              <span>{{ job.type }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="icon">💰</span>
+              <span>{{ job.salary }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="icon">🎓</span>
+              <span>{{ job.experience }}</span>
+            </div>
+          </div>
+
+          <!-- Job Description -->
+          <p class="job-description">{{ job.description }}</p>
+
+          <!-- Skills -->
+          <div class="skills-section">
+            <div class="skills-tags">
+              <span *ngFor="let skill of job.skills.slice(0, 3)" class="skill-tag">
+                {{ skill }}
+              </span>
+              <span *ngIf="job.skills.length > 3" class="skill-tag more">
+                +{{ job.skills.length - 3 }} more
+              </span>
+            </div>
+          </div>
+
+          <!-- Card Footer -->
+          <div class="card-footer">
+            <div class="job-meta">
+              <span class="posted-date">Posted {{ getTimeAgo(job.postedDate) }}</span>
+              <span class="applications">{{ job.applications }} applicants</span>
+            </div>
+            <button class="apply-btn">
+              Apply Now
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Load More Button -->
+      <div *ngIf="filteredJobs.length > 0" class="load-more-section">
+        <button class="load-more-btn">
+          Load More Jobs
+        </button>
+      </div>
+    </div>
+  </main>
+</div>

@@ -10,6 +10,7 @@ import { EmployeeSignupComponent } from '../Before Login/employee-signup/employe
 import { Signup } from '../Before Login/signup/signup';
 import { UserProfileComponent } from '../After Login/user-profile/user-profile';
 import { JobList } from '../After Login/job-list/job-list';
+import { UserJoblist } from '../After Login/user-joblist/user-joblist';
 
 import { CreateJobComponent } from '../After Login/create-job-component/create-job-component';
 
@@ -37,6 +38,7 @@ export const routes: Routes = [
       { path: 'CandidateDashboard', component: CandidateDashboard , pathMatch: 'full'},   
        {path: 'UserProfile',component:UserProfileComponent} ,
        {path: 'job-list',component:JobList},
+      {path: 'user-joblist',component:UserJoblist},
        {path: 'CreateJob',component:CreateJobComponent} 
     ]
   },

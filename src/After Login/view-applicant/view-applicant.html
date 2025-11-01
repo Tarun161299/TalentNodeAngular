@@ -1,0 +1,278 @@
+<div class="applicants-container">
+  <!-- Job Postings List -->
+  <div *ngIf="!showApplicants" class="jobs-section">
+    <div class="section-header">
+      <h1>Job Postings</h1>
+      <p class="section-subtitle">Manage and review applicants for your job postings</p>
+    </div>
+    
+    <div class="jobs-grid">
+      <div *ngFor="let job of jobPostings" class="job-card">
+        <div class="job-card-header">
+          <div class="job-title-section">
+            <h3 class="job-title">{{ job.title }}</h3>
+            <div class="job-meta">
+              <span class="job-department">{{ job.department }}</span>
+              <span class="job-location">📍 {{ job.location }}</span>
+            </div>
+          </div>
+          <div class="applicant-stats">
+            <div class="applicant-count">
+              <span class="count-number">{{ job.applicants.length }}</span>
+              <span class="count-label">Applicants</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="status-breakdown">
+          <div class="status-item">
+            <span class="status-dot pending"></span>
+            <span>{{ getApplicantCountByStatus('pending') }} Pending</span>
+          </div>
+          <div class="status-item">
+            <span class="status-dot reviewed"></span>
+            <span>{{ getApplicantCountByStatus('reviewed') }} Reviewed</span>
+          </div>
+        </div>
+        
+        <button 
+          class="view-applicants-btn primary-btn"
+          (click)="viewApplicants(job)">
+          <span>View Applicants</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Applicants List View -->
+  <div *ngIf="showApplicants && selectedJob" class="applicants-section">
+    <div class="applicants-header">
+      <button class="back-btn" (click)="backToJobs()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to Jobs
+      </button>
+      
+      <div class="job-header-info">
+        <h1>{{ selectedJob.title }}</h1>
+        <div class="job-info">
+          <span class="job-info-item">{{ selectedJob.department }}</span>
+          <span class="job-info-item">📍 {{ selectedJob.location }}</span>
+          <span class="job-info-item total-applicants">{{ selectedJob.applicants.length }} Total Applicants</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-content">
+          <span class="stat-number">{{ getApplicantCountByStatus('pending') }}</span>
+          <span class="stat-label">Pending Review</span>
+        </div>
+        <div class="stat-icon pending">📋</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-content">
+          <span class="stat-number">{{ getApplicantCountByStatus('reviewed') }}</span>
+          <span class="stat-label">Reviewed</span>
+        </div>
+        <div class="stat-icon reviewed">👀</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-content">
+          <span class="stat-number">{{ getApplicantCountByStatus('shortlisted') }}</span>
+          <span class="stat-label">Shortlisted</span>
+        </div>
+        <div class="stat-icon shortlisted">⭐</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-content">
+          <span class="stat-number">{{ getApplicantCountByStatus('rejected') }}</span>
+          <span class="stat-label">Rejected</span>
+        </div>
+        <div class="stat-icon rejected">❌</div>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <div class="search-box-container">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <input 
+          type="text" 
+          placeholder="Search applicants by name, email, or skills..."
+          [(ngModel)]="searchTerm"
+          class="search-input">
+      </div>
+      
+      <div class="filter-group">
+        <select [(ngModel)]="statusFilter" class="status-filter-select">
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="reviewed">Reviewed</option>
+          <option value="shortlisted">Shortlisted</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Applicants Layout -->
+    <div class="applicants-layout">
+      <!-- Applicants List -->
+      <div class="applicants-list-section">
+        <div class="applicants-list-header">
+          <h3>Applicants ({{ filteredApplicants.length }})</h3>
+        </div>
+        <div class="applicants-list">
+          <div *ngFor="let applicant of filteredApplicants" 
+               class="applicant-card"
+               [class.selected]="selectedApplicant?.id === applicant.id"
+               (click)="selectApplicant(applicant)">
+            <div class="applicant-avatar">
+              {{ applicant.name.split(' ').map(n => n[0]).join('').toUpperCase() }}
+            </div>
+            
+            <div class="applicant-info">
+              <div class="applicant-main-info">
+                <h4 class="applicant-name">{{ applicant.name }}</h4>
+                <span class="status-badge" [ngClass]="getStatusClass(applicant.status)">
+                  {{ applicant.status }}
+                </span>
+              </div>
+              
+              <p class="applicant-email">{{ applicant.email }}</p>
+              <p class="applicant-meta">
+                {{ applicant.phone }} • {{ applicant.experience }}y exp • Applied {{ applicant.appliedDate | date:'MMM d' }}
+              </p>
+              
+              <div class="applicant-skills">
+                <span *ngFor="let skill of applicant.skills.slice(0, 3)" class="skill-tag">
+                  {{ skill }}
+                </span>
+                <span *ngIf="applicant.skills.length > 3" class="skill-more">
+                  +{{ applicant.skills.length - 3 }} more
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="filteredApplicants.length === 0" class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <h4>No applicants found</h4>
+            <p>Try adjusting your search or filter criteria</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applicant Details -->
+      <div class="applicant-details-section">
+        <div *ngIf="selectedApplicant" class="applicant-details-card">
+          <div class="details-header">
+            <div class="applicant-profile">
+              <div class="profile-avatar large">
+                {{ selectedApplicant.name.split(' ').map(n => n[0]).join('').toUpperCase() }}
+              </div>
+              <div class="profile-info">
+                <h2>{{ selectedApplicant.name }}</h2>
+                <p class="profile-email">{{ selectedApplicant.email }}</p>
+                <div class="profile-meta">
+                  <span>{{ selectedApplicant.phone }}</span>
+                  <span>{{ selectedApplicant.experience }} years experience</span>
+                  <span>Applied {{ selectedApplicant.appliedDate | date:'MMMM d, y' }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="status-actions">
+              <label>Update Status:</label>
+              <div class="status-buttons">
+                <button 
+                  *ngFor="let status of ['pending', 'reviewed', 'shortlisted', 'rejected']"
+                  [class.active]="selectedApplicant.status === status"
+                  (click)="updateStatus(selectedApplicant.id, status)"
+                  class="status-btn" [ngClass]="'status-' + status">
+                  {{ status }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="details-content">
+            <div class="details-section">
+              <h4>Skills & Expertise</h4>
+              <div class="skills-container">
+                <span *ngFor="let skill of selectedApplicant.skills" class="skill-tag large">
+                  {{ skill }}
+                </span>
+              </div>
+            </div>
+
+            <div *ngIf="selectedApplicant.coverLetter" class="details-section">
+              <h4>Cover Letter</h4>
+              <div class="cover-letter-content">
+                {{ selectedApplicant.coverLetter }}
+              </div>
+            </div>
+
+            <div class="details-section">
+              <h4>Application Details</h4>
+              <div class="application-meta">
+                <div class="meta-item">
+                  <label>Applied Date:</label>
+                  <span>{{ selectedApplicant.appliedDate | date:'fullDate' }}</span>
+                </div>
+                <div class="meta-item">
+                  <label>Experience:</label>
+                  <span>{{ selectedApplicant.experience }} years</span>
+                </div>
+                <div class="meta-item">
+                  <label>Current Status:</label>
+                  <span class="current-status" [ngClass]="getStatusClass(selectedApplicant.status)">
+                    {{ selectedApplicant.status }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="details-actions">
+            <button 
+              *ngIf="selectedApplicant.resumeUrl"
+              (click)="downloadResume(selectedApplicant)"
+              class="download-btn primary-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Download Resume
+            </button>
+            
+            <button class="secondary-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Schedule Interview
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="!selectedApplicant" class="no-selection">
+          <div class="no-selection-content">
+            <div class="no-selection-icon">👤</div>
+            <h3>Select an Applicant</h3>
+            <p>Choose an applicant from the list to view their details and manage their application status.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
