@@ -2,6 +2,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { JobServices } from '../../Common/services/job-services';
 
 export interface Job {
   id: number;
@@ -27,6 +28,10 @@ standalone: true,
   styleUrl: './job-list.css'
 })
 export class JobList implements OnInit {
+  hrID:number=0;
+  constructor(private jobServices:JobServices){
+
+  }
   // Signals for reactive state management
   private jobsData = signal<Job[]>([
     {
@@ -147,7 +152,52 @@ export class JobList implements OnInit {
     };
   });
 
+  getClaimsFromToken(token: string): any {
+    if (!token) return null;
+
+    try {
+      const payload = token.split('.')[1];  // JWT = header.payload.signature
+      const decoded = atob(payload);        // Base64 decode
+      return JSON.parse(decoded);           // Convert to JSON
+    } catch (error) {
+      console.error('Invalid token', error);
+      return null;
+    }
+
+  }
   ngOnInit(): void {
+    var token = localStorage.getItem('token');
+   
+    this.hrID = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).HRId);
+    this.jobServices.GetJobsHr(this.hrID).subscribe({next:(data:any)=>{
+      debugger
+      
+this.jobsData=signal<Job[]>(data);
+  this.filteredJobs = computed(() => {
+    const jobs = this.jobsData();
+    const query = this.searchQuery().toLowerCase();
+    const filter = this.activeFilter();
+    
+    let filtered = jobs;
+    
+    // Apply status filter
+    if (filter !== 'all') {
+      filtered = filtered.filter(job => job.status === filter);
+    }
+    
+    // Apply search filter
+    if (query) {
+      filtered = filtered.filter(job =>
+        job.title.toLowerCase().includes(query) ||
+        job.department.toLowerCase().includes(query) ||
+        job.description.toLowerCase().includes(query)
+      );
+    }
+    
+    return filtered;
+  })},error:(err:any)=>{
+
+    }})
     // Component initialization if needed
   }
 

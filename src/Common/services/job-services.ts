@@ -23,4 +23,8 @@ export class JobServices {
       debugger
         return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveJobs}`,data ,{ headers: this.getHeaders() });
       }
+      GetJobsHr(data:any ): Observable<any> {
+      debugger
+        return this.http.get<any>(`${this.baseUrl+ApiEndpoints.GetJobsHr+data.toString()}` ,{ headers: this.getHeaders() });
+      }
 }
