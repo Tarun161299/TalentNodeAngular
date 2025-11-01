@@ -1,25 +1,23 @@
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { JobServices } from '../../Common/services/job-services';
 import { RouterModule } from '@angular/router';
 
-
-interface Job {
-  id: string;
+export interface Job {
+  id: number;
   title: string;
-  company: string;
-  companyLogo: string;
+  status: 'active' | 'draft' | 'closed';
+  department: string;
   location: string;
-  type: string;
-  salary: string;
   description: string;
-  isRemote: boolean;
+  salary: string;
   experience: string;
+  type: string;
+  applicantCount: number;
+  newApplicants: number;
+  interviews: number;
   postedDate: string;
-  applicationDeadline: string;
-  skills: string[];
-  category: string;
-  isUrgent: boolean;
-  applications: number;
 }
 
 @Component({
@@ -30,202 +28,242 @@ interface Job {
   styleUrl: './user-joblist.css'
 })
 export class UserJoblist implements OnInit {
-  jobs: Job[] = [];
-  filteredJobs: Job[] = [];
-  isLoading = true;
-  searchTerm = '';
-  selectedCategory = 'all';
-  selectedType = 'all';
-  selectedLocation = 'all';
+  hrID:number=0;
+  constructor(private jobServices:JobServices){
 
-  categories = ['all', 'Technology', 'Design', 'Marketing', 'Sales', 'Finance', 'HR'];
-  jobTypes = ['all', 'Full-time', 'Part-time', 'Contract', 'Internship', 'Remote'];
-  locations = ['all', 'Remote', 'New York', 'San Francisco', 'London', 'Berlin', 'Tokyo'];
+  }
+  // Signals for reactive state management
+  private jobsData = signal<Job[]>([
+    {
+      id: 1,
+      title: "Senior Frontend Developer",
+      status: "active",
+      department: "Engineering",
+      location: "Remote",
+      description: "We are looking for an experienced Frontend Developer to build modern, responsive web applications using Angular and TypeScript.",
+      salary: "$90,000 - $120,000",
+      experience: "5+ years",
+      type: "Full-time",
+      applicantCount: 34,
+      newApplicants: 5,
+      interviews: 8,
+      postedDate: "2024-01-15"
+    },
+    {
+      id: 2,
+      title: "Product Manager",
+      status: "active",
+      department: "Product",
+      location: "San Francisco, CA",
+      description: "Lead product strategy and work with cross-functional teams to deliver exceptional user experiences.",
+      salary: "$120,000 - $150,000",
+      experience: "4+ years",
+      type: "Full-time",
+      applicantCount: 28,
+      newApplicants: 3,
+      interviews: 12,
+      postedDate: "2024-01-10"
+    },
+    {
+      id: 3,
+      title: "UX/UI Designer",
+      status: "draft",
+      department: "Design",
+      location: "New York, NY",
+      description: "Create beautiful and intuitive user interfaces for our enterprise applications.",
+      salary: "$85,000 - $110,000",
+      experience: "3+ years",
+      type: "Full-time",
+      applicantCount: 0,
+      newApplicants: 0,
+      interviews: 0,
+      postedDate: "2024-01-18"
+    },
+    {
+      id: 4,
+      title: "DevOps Engineer",
+      status: "closed",
+      department: "Engineering",
+      location: "Austin, TX",
+      description: "Manage cloud infrastructure and CI/CD pipelines for our microservices architecture.",
+      salary: "$100,000 - $130,000",
+      experience: "4+ years",
+      type: "Full-time",
+      applicantCount: 42,
+      newApplicants: 0,
+      interviews: 15,
+      postedDate: "2023-12-05"
+    },
+    {
+      id: 5,
+      title: "Data Scientist",
+      status: "active",
+      department: "Data Science",
+      location: "Remote",
+      description: "Analyze complex datasets and build machine learning models to drive business insights.",
+      salary: "$110,000 - $140,000",
+      experience: "3+ years",
+      type: "Full-time",
+      applicantCount: 19,
+      newApplicants: 7,
+      interviews: 6,
+      postedDate: "2024-01-12"
+    }
+  ]);
 
-  ngOnInit() {
-    // Simulate API call
-    setTimeout(() => {
-      this.jobs = [
-        {
-          id: '1',
-          title: 'Senior Frontend Developer (Angular)',
-          company: 'TechCorp Inc.',
-          companyLogo: 'https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=100&h=100&fit=crop&crop=center',
-          location: 'San Francisco, CA',
-          type: 'Full-time',
-          salary: '$90,000 - $120,000',
-          description: 'We are looking for a skilled Angular developer to join our growing team. You will be responsible for building reusable components and front-end libraries.',
-          isRemote: true,
-          experience: '3-5 years',
-          postedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          applicationDeadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          skills: ['Angular', 'TypeScript', 'RxJS', 'NgRx', 'HTML5', 'CSS3'],
-          category: 'Technology',
-          isUrgent: true,
-          applications: 24
-        },
-        {
-          id: '2',
-          title: 'Backend Developer (Node.js)',
-          company: 'DataSystems LLC',
-          companyLogo: 'https://images.unsplash.com/photo-1556655848-f3a79cc6d4a7?w=100&h=100&fit=crop&crop=center',
-          location: 'New York, NY',
-          type: 'Full-time',
-          salary: '$85,000 - $110,000',
-          description: 'Join our backend team to build scalable and efficient server-side applications. You will work with cutting-edge technologies.',
-          isRemote: false,
-          experience: '2-4 years',
-          postedDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-          applicationDeadline: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000).toISOString(),
-          skills: ['Node.js', 'Express', 'MongoDB', 'PostgreSQL', 'AWS'],
-          category: 'Technology',
-          isUrgent: false,
-          applications: 18
-        },
-        {
-          id: '3',
-          title: 'UX/UI Designer',
-          company: 'CreativeMinds Studio',
-          companyLogo: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=100&h=100&fit=crop&crop=center',
-          location: 'Austin, TX',
-          type: 'Full-time',
-          salary: '$75,000 - $95,000',
-          description: 'We are seeking a talented UX/UI Designer to create amazing user experiences. The ideal candidate should have an eye for clean and artful design.',
-          isRemote: true,
-          experience: '3-6 years',
-          postedDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-          applicationDeadline: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString(),
-          skills: ['Figma', 'UI/UX Design', 'Wireframing', 'Prototyping', 'User Research'],
-          category: 'Design',
-          isUrgent: true,
-          applications: 32
-        },
-        {
-          id: '4',
-          title: 'Data Scientist',
-          company: 'AI Innovations',
-          companyLogo: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=100&h=100&fit=crop&crop=center',
-          location: 'Boston, MA',
-          type: 'Full-time',
-          salary: '$100,000 - $130,000',
-          description: 'Join our AI research team to develop cutting-edge machine learning models. You will work on challenging problems.',
-          isRemote: false,
-          experience: '4-7 years',
-          postedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          applicationDeadline: new Date(Date.now() + 35 * 24 * 60 * 60 * 1000).toISOString(),
-          skills: ['Python', 'Machine Learning', 'TensorFlow', 'PyTorch', 'SQL'],
-          category: 'Technology',
-          isUrgent: false,
-          applications: 15
-        },
-        {
-          id: '5',
-          title: 'DevOps Engineer',
-          company: 'CloudScale Technologies',
-          companyLogo: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=100&h=100&fit=crop&crop=center',
-          location: 'Seattle, WA',
-          type: 'Contract',
-          salary: '$95,000 - $125,000',
-          description: 'We are looking for a DevOps Engineer to help us build and maintain our cloud infrastructure.',
-          isRemote: true,
-          experience: '3-5 years',
-          postedDate: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-          applicationDeadline: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString(),
-          skills: ['AWS', 'Docker', 'Kubernetes', 'CI/CD', 'Linux'],
-          category: 'Technology',
-          isUrgent: false,
-          applications: 21
-        },
-        {
-          id: '6',
-          title: 'Product Manager',
-          company: 'InnovateLabs',
-          companyLogo: 'https://images.unsplash.com/photo-1565688534245-05d6b5be184a?w=100&h=100&fit=crop&crop=center',
-          location: 'Chicago, IL',
-          type: 'Full-time',
-          salary: '$110,000 - $140,000',
-          description: 'We are seeking an experienced Product Manager to lead our product development initiatives.',
-          isRemote: false,
-          experience: '5-8 years',
-          postedDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-          applicationDeadline: new Date(Date.now() + 40 * 24 * 60 * 60 * 1000).toISOString(),
-          skills: ['Product Strategy', 'Roadmapping', 'Agile', 'Stakeholder Management'],
-          category: 'Technology',
-          isUrgent: true,
-          applications: 28
-        }
-      ];
-      this.filteredJobs = [...this.jobs];
-      this.isLoading = false;
-    }, 1500);
+  // Reactive signals
+  searchQuery = signal<string>('');
+  activeFilter = signal<string>('all');
+  
+  // Computed values
+  filteredJobs = computed(() => {
+    const jobs = this.jobsData();
+    const query = this.searchQuery().toLowerCase();
+    const filter = this.activeFilter();
+    
+    let filtered = jobs;
+    
+    // Apply status filter
+    if (filter !== 'all') {
+      filtered = filtered.filter(job => job.status === filter);
+    }
+    
+    // Apply search filter
+    if (query) {
+      filtered = filtered.filter(job =>
+        job.title.toLowerCase().includes(query) ||
+        job.department.toLowerCase().includes(query) ||
+        job.description.toLowerCase().includes(query)
+      );
+    }
+    
+    return filtered;
+  });
+
+  stats = computed(() => {
+    const jobs = this.jobsData();
+    return {
+      total: jobs.length,
+      active: jobs.filter(job => job.status === 'active').length,
+      drafts: jobs.filter(job => job.status === 'draft').length,
+      closed: jobs.filter(job => job.status === 'closed').length,
+      totalApplicants: jobs.reduce((sum, job) => sum + job.applicantCount, 0),
+      newApplicants: jobs.reduce((sum, job) => sum + job.newApplicants, 0)
+    };
+  });
+
+  getClaimsFromToken(token: string): any {
+    if (!token) return null;
+
+    try {
+      const payload = token.split('.')[1];  // JWT = header.payload.signature
+      const decoded = atob(payload);        // Base64 decode
+      return JSON.parse(decoded);           // Convert to JSON
+    } catch (error) {
+      console.error('Invalid token', error);
+      return null;
+    }
+
+  }
+  ngOnInit(): void {
+    var token = localStorage.getItem('token');
+   
+    //this.hrID = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).HRId);
+    this.jobServices.JobToEmployee().subscribe({next:(data:any)=>{
+      debugger
+      
+this.jobsData=signal<Job[]>(data);
+  this.filteredJobs = computed(() => {
+    const jobs = this.jobsData();
+    const query = this.searchQuery().toLowerCase();
+    const filter = this.activeFilter();
+    
+    let filtered = jobs;
+    
+    // Apply status filter
+    if (filter !== 'all') {
+      filtered = filtered.filter(job => job.status === filter);
+    }
+    
+    // Apply search filter
+    if (query) {
+      filtered = filtered.filter(job =>
+        job.title.toLowerCase().includes(query) ||
+        job.department.toLowerCase().includes(query) ||
+        job.description.toLowerCase().includes(query)
+      );
+    }
+    
+    return filtered;
+  })},error:(err:any)=>{
+
+    }})
+    // Component initialization if needed
   }
 
-  onSearchChange(event: any) {
-    this.searchTerm = event.target.value.toLowerCase();
-    this.applyFilters();
+  // Actions
+  updateSearchQuery(query: string): void {
+    this.searchQuery.set(query);
   }
 
-  onCategoryChange(event: any) {
-    this.selectedCategory = event.target.value;
-    this.applyFilters();
+  updateFilter(filter: string): void {
+    this.activeFilter.set(filter);
   }
 
-  onTypeChange(event: any) {
-    this.selectedType = event.target.value;
-    this.applyFilters();
+  viewApplicants(jobId: number): void {
+    console.log('Viewing applicants for job:', jobId);
+    // Implement navigation or modal opening
   }
 
-  onLocationChange(event: any) {
-    this.selectedLocation = event.target.value;
-    this.applyFilters();
+  editJob(jobId: number): void {
+    console.log('Editing job:', jobId);
+    // Implement edit functionality
   }
 
-  applyFilters() {
-    this.filteredJobs = this.jobs.filter(job => {
-      const matchesSearch = !this.searchTerm || 
-        job.title.toLowerCase().includes(this.searchTerm) ||
-        job.company.toLowerCase().includes(this.searchTerm) ||
-        job.skills.some(skill => skill.toLowerCase().includes(this.searchTerm));
+  duplicateJob(jobId: number): void {
+    console.log('Duplicating job:', jobId);
+    // Implement duplicate functionality
+  }
 
-      const matchesCategory = this.selectedCategory === 'all' || 
-        job.category === this.selectedCategory;
+  deleteJob(jobId: number): void {
+    if (confirm('Are you sure you want to delete this job posting?')) {
+      this.jobsData.update(jobs => jobs.filter(job => job.id !== jobId));
+    }
+  }
 
-      const matchesType = this.selectedType === 'all' || 
-        job.type === this.selectedType;
+  postNewJob(): void {
+    console.log('Opening new job form');
+    // Implement new job creation
+  }
 
-      const matchesLocation = this.selectedLocation === 'all' || 
-        (this.selectedLocation === 'Remote' && job.isRemote) ||
-        job.location === this.selectedLocation;
+  refreshJobs(): void {
+    // Simulate API refresh
+    console.log('Refreshing job data...');
+  }
 
-      return matchesSearch && matchesCategory && matchesType && matchesLocation;
+  formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
     });
   }
 
-  clearFilters() {
-    this.searchTerm = '';
-    this.selectedCategory = 'all';
-    this.selectedType = 'all';
-    this.selectedLocation = 'all';
-    this.filteredJobs = [...this.jobs];
+  getStatusColor(status: string): string {
+    const colors = {
+      active: '#10b981',
+      draft: '#f59e0b',
+      closed: '#ef4444'
+    };
+    return colors[status as keyof typeof colors] || '#6b7280';
   }
 
-  getTimeAgo(dateString: string): string {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-    return `${Math.floor(diffDays / 30)} months ago`;
-  }
-
-  isNewJob(dateString: string): boolean {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 3;
+  getStatusIcon(status: string): string {
+    const icons = {
+      active: 'fa-circle-check',
+      draft: 'fa-file-pen',
+      closed: 'fa-circle-xmark'
+    };
+    return icons[status as keyof typeof icons] || 'fa-circle';
   }
 }

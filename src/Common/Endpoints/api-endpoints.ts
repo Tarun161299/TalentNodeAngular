@@ -28,7 +28,8 @@ export const ApiEndpoints = {
      saveDocument:`Employee/saveDocument`,
      getEmployeeDetails:'Employee/GetEmployeeDetails?EmployeeID=',
      saveJobs:`Jobs/SaveJobs`,
-     GetJobsHr:`Jobs/GetJobsHr?hrid=`
+     GetJobsHr:`Jobs/GetJobsHr?hrid=`,
+     JobsToEmployee:'Jobs/JobsToEmployee'
 
   
 };

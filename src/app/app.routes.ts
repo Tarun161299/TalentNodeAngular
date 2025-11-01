@@ -13,6 +13,7 @@ import { JobList } from '../After Login/job-list/job-list';
 import { UserJoblist } from '../After Login/user-joblist/user-joblist';
 
 import { CreateJobComponent } from '../After Login/create-job-component/create-job-component';
+import { ViewApplicant } from '../After Login/view-applicant/view-applicant';
 
 
 
@@ -39,7 +40,8 @@ export const routes: Routes = [
        {path: 'UserProfile',component:UserProfileComponent} ,
        {path: 'job-list',component:JobList},
       {path: 'user-joblist',component:UserJoblist},
-       {path: 'CreateJob',component:CreateJobComponent} 
+       {path: 'CreateJob',component:CreateJobComponent},
+       {path:'view-applicant',component:ViewApplicant}
     ]
   },
   { path: '**', redirectTo: '' }
