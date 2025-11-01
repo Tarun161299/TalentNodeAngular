@@ -39,10 +39,10 @@ userName:this.loginForm.value.email,
 password:this.loginForm.value.password
       };
     this.loginService.Authentication(this.loginDetails).subscribe({next:(response:any)=>{
-      debugger
+      
       var token = response.token;
 if(response!="401"){
-  debugger
+  
  var role= this.getClaimsFromToken(token).Role_Id;
   localStorage.setItem('token',token);
   if(role.toString()=="3")
@@ -57,7 +57,7 @@ else{
 this.loaderService.hide()
 }
     },error:(err:any)=>{
-debugger
+
 alert("invalid credentials")
 this.loaderService.hide()
     }})

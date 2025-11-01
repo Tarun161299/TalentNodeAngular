@@ -39,7 +39,7 @@ export const routes: Routes = [
        {path: 'UserProfile',component:UserProfileComponent} ,
        {path: 'job-list',component:JobList},
       {path: 'user-joblist',component:UserJoblist},
-       {path: 'CreateJob',component:CreateJobComponent} 
+       {path: 'CreateJob/:jobid',component:CreateJobComponent} 
     ]
   },
   { path: '**', redirectTo: '' }

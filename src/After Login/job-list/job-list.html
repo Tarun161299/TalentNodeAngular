@@ -107,8 +107,24 @@
         </div>
 
         <!-- Job Description -->
-        <p class="job-description">{{ job.description }}</p>
-
+       <p class="job-description">
+  {{ job.description | slice:0:120 }}{{ job.description.length > 120 ? '...' : '' }}
+  <a 
+    *ngIf="job.description.length > 120" 
+    href="javascript:void(0)" 
+    (click)="openDescription(job)"
+    class="toggle-link"
+  >
+    Read more
+  </a>
+</p>
+<div class="job-skills" *ngIf="job.skills && job.skills.length > 0">
+  <i class="fas fa-tools"></i>
+  <span class="skills-label">Skills:</span>
+  <span class="skill" *ngFor="let skill of job.skills; let last = last">
+    {{ skill }}<span *ngIf="!last">, </span>
+  </span>
+</div>
         <!-- Job Details -->
         <div class="job-details">
           <div class="detail-item">
@@ -203,5 +219,25 @@
       <i class="fas fa-sync-alt"></i>
       Refresh
     </button>
+  </div>
+</div>
+<!-- Job Description Modal -->
+<div class="modal-backdrop" *ngIf="selectedJob" (click)="closeModal()"></div>
+
+<div class="modal" *ngIf="selectedJob">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ selectedJob.title }}</h3>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p><strong>Department:</strong> {{ selectedJob.department }}</p>
+      <p><strong>Location:</strong> {{ selectedJob.location }}</p>
+      <p><strong>Type:</strong> {{ selectedJob.type }}</p>
+      <hr />
+      <p>{{ selectedJob.description }}</p>
+    </div>
   </div>
 </div>

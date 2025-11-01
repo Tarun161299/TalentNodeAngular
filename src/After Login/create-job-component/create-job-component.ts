@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, For
 import { MasterServices } from '../../Common/services/master-services';
 import { JobServices } from '../../Common/services/job-services';
 import { ToastrService } from 'ngx-toastr';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-job-create',
@@ -16,11 +17,13 @@ export class CreateJobComponent {
   jobForm: FormGroup;
   isSubmitting = false;
   submitted = false;
+  jobId!: number;
+
 hrID:any;
 CompanyData:any;
   // Predefined options
   jobTypes :any;
-  experienceLevels = ['entry', 'mid', 'senior', 'executive'];
+  experienceLevels = ['entry (0-1 years)', 'mid (2-3 years)', 'senior (3-5 years)', 'executive (5+ years)'];
   currencies = ['USD', 'EUR', 'GBP', 'CAD', 'AUD','RUPEE'];
   categories = ['Engineering', 'Design', 'Marketing', 'Sales', 'Operations', 'Finance', 'HR'];
   departments :any//= ['Technology', 'Product', 'HR', 'Finance', 'Marketing', 'Operations'];
@@ -95,7 +98,7 @@ this. skillsOptions = [
 
   }
  ngOnInit() {
-  debugger
+  
     var token = localStorage.getItem('token');
    
     this.hrID = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).HRId);
@@ -104,6 +107,14 @@ this. skillsOptions = [
   this. getAllDepartments();
   this.getAllSkills();
   this.GetAllJobType();
+   this.jobId = Number(this.route.snapshot.paramMap.get('jobid'));
+   if(this.jobId>0){
+    this.jobServices.GetJobsdetail(this.jobId).subscribe((data:any)=>{
+      
+this.fillJobForm(data);
+    })
+   }
+
   }
   // Benefits options for multiselect
   benefitsOptions = [
@@ -153,7 +164,7 @@ this. skillsOptions = [
     // { id: 'redis', name: 'Redis' }
   ];
 
-  constructor(private fb: FormBuilder,private MdServices:MasterServices,public jobServices: JobServices,   private toastr: ToastrService,) {
+  constructor(private fb: FormBuilder,private MdServices:MasterServices,public jobServices: JobServices,   private toastr: ToastrService,private route: ActivatedRoute,private router:Router) {
     this.jobForm = this.createForm();
   }
 
@@ -174,8 +185,8 @@ this. skillsOptions = [
       
       // Job Details
       description: ['', [Validators.required, Validators.minLength(20)]],
-      experienceLevel: ['mid', [Validators.required]],
-      category: ['', [Validators.required]],
+      experienceLevel: ['mid (2-3 years)', [Validators.required]],
+      category: [''],
       
       // Benefits & Skills (multiselect)
       benefits: this.fb.array([], [Validators.required, Validators.minLength(1)]),
@@ -187,7 +198,19 @@ this. skillsOptions = [
       applicationDeadline: ['']
     }, { validators: this.salaryValidator });
   }
+formatDateString(dateString: string): string {
+  if (!dateString) return '';
 
+  // Handle SQL-like date string: "2025-10-28 00:00:00.0000000"
+  const parsedDate = new Date(dateString.replace(' ', 'T'));
+  
+  // Format as YYYY-MM-DD
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+  const day = String(parsedDate.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+}
   private salaryValidator(group: FormGroup) {
     const min = group.get('salaryMin')?.value;
     const max = group.get('salaryMax')?.value;
@@ -207,6 +230,44 @@ this. skillsOptions = [
   get skillsArray() {
     return this.jobForm.get('skills') as FormArray;
   }
+private fillJobForm(job: any): void {
+  
+  this.jobForm.patchValue({
+    title: job.title,
+    company: job.company,
+    department: job.department,
+    location: job.location,
+    type: job.type,
+    vacancies: job.vacancies,
+    salaryMin: job.salaryMin,
+    salaryMax: job.salaryMax,
+    salaryCurrency: job.salaryCurrency,
+    description: job.description,
+    experienceLevel: job.experienceLevel,
+    category:( job.category==null)?"":job.category ,
+    applicationLink:( job.applicationLink==null)?"":job.applicationLink,
+    contactEmail: job.contactEmail,
+    applicationDeadline: this.formatDateString(job.applicationDeadline)
+  });
+
+  // Clear previous selections
+  this.benefitsArray.clear();
+  this.skillsArray.clear();
+
+  // ✅ Populate benefits
+  if (job.benefits && job.benefits.length > 0) {
+    job.benefits.forEach((benefitId: number) => {
+      this.benefitsArray.push(this.fb.control(benefitId));
+    });
+  }
+
+  // ✅ Populate skills
+  if (job.skills && job.skills.length > 0) {
+    job.skills.forEach((skillId: number) => {
+      this.skillsArray.push(this.fb.control(skillId));
+    });
+  }
+}
 
   // Benefits multiselect methods
   onBenefitChange(event: any, benefitId: number) {
@@ -285,6 +346,7 @@ this. skillsOptions = [
       // Simulate API call
       setTimeout(() => {
         const formData = {
+          jobId:this.jobId,
           ...this.jobForm.value,
           // benefits: this.getSelectedBenefitNames(),
           // skills: this.getSelectedSkillNames(),
@@ -296,7 +358,15 @@ this. skillsOptions = [
         debugger
 this.jobServices.SaveJob(formData).subscribe({next:(data:any)=>{
   if(data>0){
-    this.toastr.success("Saved Successfully!!")
+    if(this.jobId>0){
+      this.toastr.success("updated Successfully!!")
+    }
+    else{
+this.toastr.success("Saved Successfully!!")
+    }
+       this.router.navigate(['/welcome/job-list']);
+  
+    
   }
   else{
     this.toastr.error("Some error occured !!")
@@ -313,8 +383,8 @@ this.jobServices.SaveJob(formData).subscribe({next:(data:any)=>{
         
         // Show success message
         this.toastr.error("Some error occured !!")
-        this.jobForm.reset();
-        this.resetFormArrays();
+        // this.jobForm.reset();
+        // this.resetFormArrays();
 }})
        
       }, 1500);
@@ -355,7 +425,7 @@ this.jobServices.SaveJob(formData).subscribe({next:(data:any)=>{
   // Utility methods
   isFieldInvalid(fieldName: string): boolean {
     if(fieldName=='company'){
-      debugger
+      
       const field = this.jobForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched || this.submitted));
     }

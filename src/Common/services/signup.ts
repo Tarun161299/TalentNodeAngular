@@ -24,7 +24,7 @@ export class SignupService {  // Add "Service" suffix
 
  
   // Add this method for user registration
-signupEmployee(signupData: any): Observable<any> {debugger
+signupEmployee(signupData: any): Observable<any> {
   return this.http.post<any>( 
     `${this.baseUrl + ApiEndpoints.Signup}`, 
     signupData, 

@@ -22,7 +22,7 @@ export class LoginService {
     
   }
   Authentication(login:LoginDetails ): Observable<any> {
-    debugger
+    
       return this.http.post<any>(`${this.baseUrl+ApiEndpoints.Authentication}`,login ,{ headers: this.getHeaders() });
     }
 }

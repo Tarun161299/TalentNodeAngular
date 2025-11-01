@@ -20,7 +20,7 @@ export class ModuleServices {
       
     }
     GetModuleById(RoleId:any ): Observable<any> {
-      debugger
+      
         return this.http.get<any>(`${this.baseUrl+ApiEndpoints.ModuleByRole}`+RoleId.toString() ,{ headers: this.getHeaders() });
       }
 }

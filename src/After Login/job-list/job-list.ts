@@ -3,6 +3,7 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { JobServices } from '../../Common/services/job-services';
+import { Route, Router } from '@angular/router';
 
 export interface Job {
   id: number;
@@ -14,6 +15,7 @@ export interface Job {
   salary: string;
   experience: string;
   type: string;
+  skills:string[];
   applicantCount: number;
   newApplicants: number;
   interviews: number;
@@ -29,7 +31,7 @@ standalone: true,
 })
 export class JobList implements OnInit {
   hrID:number=0;
-  constructor(private jobServices:JobServices){
+  constructor(private jobServices:JobServices,private router:Router){
 
   }
   // Signals for reactive state management
@@ -45,6 +47,7 @@ export class JobList implements OnInit {
       experience: "5+ years",
       type: "Full-time",
       applicantCount: 34,
+      skills:['Angular'],
       newApplicants: 5,
       interviews: 8,
       postedDate: "2024-01-15"
@@ -61,6 +64,7 @@ export class JobList implements OnInit {
       type: "Full-time",
       applicantCount: 28,
       newApplicants: 3,
+      skills:['Angular'],
       interviews: 12,
       postedDate: "2024-01-10"
     },
@@ -76,6 +80,7 @@ export class JobList implements OnInit {
       type: "Full-time",
       applicantCount: 0,
       newApplicants: 0,
+      skills:['Angular'],
       interviews: 0,
       postedDate: "2024-01-18"
     },
@@ -89,6 +94,7 @@ export class JobList implements OnInit {
       salary: "$100,000 - $130,000",
       experience: "4+ years",
       type: "Full-time",
+      skills:['Angular'],
       applicantCount: 42,
       newApplicants: 0,
       interviews: 15,
@@ -104,6 +110,7 @@ export class JobList implements OnInit {
       salary: "$110,000 - $140,000",
       experience: "3+ years",
       type: "Full-time",
+      skills:['Angular'],
       applicantCount: 19,
       newApplicants: 7,
       interviews: 6,
@@ -165,12 +172,21 @@ export class JobList implements OnInit {
     }
 
   }
+  selectedJob: any = null;
+
+openDescription(job: any): void {
+  this.selectedJob = job;
+}
+
+closeModal(): void {
+  this.selectedJob = null;
+}
   ngOnInit(): void {
     var token = localStorage.getItem('token');
    
     this.hrID = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).HRId);
     this.jobServices.GetJobsHr(this.hrID).subscribe({next:(data:any)=>{
-      debugger
+      
       
 this.jobsData=signal<Job[]>(data);
   this.filteredJobs = computed(() => {
@@ -216,7 +232,8 @@ this.jobsData=signal<Job[]>(data);
   }
 
   editJob(jobId: number): void {
-    console.log('Editing job:', jobId);
+       this.router.navigate(['/welcome/CreateJob/'+jobId.toString()]);
+    
     // Implement edit functionality
   }
 
@@ -233,6 +250,7 @@ this.jobsData=signal<Job[]>(data);
 
   postNewJob(): void {
     console.log('Opening new job form');
+       this.router.navigate(['/welcome/CreateJob/0']);
     // Implement new job creation
   }
 
