@@ -227,7 +227,7 @@ this.jobsData=signal<Job[]>(data);
   }
 
   viewApplicants(jobId: number): void {
-    console.log('Viewing applicants for job:', jobId);
+      this.router.navigate(['/welcome/view-applicant']);
     // Implement navigation or modal opening
   }
 

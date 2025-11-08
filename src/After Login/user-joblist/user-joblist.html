@@ -5,9 +5,9 @@
       <div class="header-text">
         <h1 class="header-title">
           <i class="fas fa-briefcase"></i>
-          My Job Postings
+          Apply For Jobs
         </h1>
-        <p class="header-subtitle">Manage all your job listings in one place</p>
+        <!-- <p class="header-subtitle">Apply For Jobs</p> -->
       </div>
       <div class="header-stats">
         <div class="stat-item">
@@ -24,10 +24,10 @@
         </div>
       </div>
     </div>
-    <button class="primary-btn" (click)="postNewJob()">
+    <!-- <button class="primary-btn" (click)="postNewJob()">
       <i class="fas fa-plus"></i>
       Post New Job
-    </button>
+    </button> -->
   </header>
 
   <!-- Filters & Search Section -->
@@ -35,43 +35,22 @@
     <div class="search-container">
       <div class="search-box">
         <i class="fas fa-search search-icon"></i>
-        <input
-          type="text"
-          placeholder="Search jobs by title, department, or description..."
-          class="search-input"
-          [value]="searchQuery()"
-          (input)="updateSearchQuery($any($event.target).value)"
-        >
+        <input type="text" placeholder="Search jobs by title, department, or description..." class="search-input"
+          [value]="searchQuery()" (input)="updateSearchQuery($any($event.target).value)">
       </div>
     </div>
-    
+
     <div class="filter-tabs">
-      <button
-        class="filter-tab"
-        [class.active]="activeFilter() === 'all'"
-        (click)="updateFilter('all')"
-      >
+      <button class="filter-tab" [class.active]="activeFilter() === 'all'" (click)="updateFilter('all')">
         All Jobs
       </button>
-      <button
-        class="filter-tab"
-        [class.active]="activeFilter() === 'active'"
-        (click)="updateFilter('active')"
-      >
+      <button class="filter-tab" [class.active]="activeFilter() === 'active'" (click)="updateFilter('active')">
         Active
       </button>
-      <button
-        class="filter-tab"
-        [class.active]="activeFilter() === 'draft'"
-        (click)="updateFilter('draft')"
-      >
+      <button class="filter-tab" [class.active]="activeFilter() === 'draft'" (click)="updateFilter('draft')">
         Drafts
       </button>
-      <button
-        class="filter-tab"
-        [class.active]="activeFilter() === 'closed'"
-        (click)="updateFilter('closed')"
-      >
+      <button class="filter-tab" [class.active]="activeFilter() === 'closed'" (click)="updateFilter('closed')">
         Closed
       </button>
     </div>
@@ -80,128 +59,142 @@
   <!-- Jobs Grid -->
   <div class="jobs-grid">
     @for (job of filteredJobs(); track job.id) {
-      <div class="job-card" [class]="job.status">
-        <!-- Job Header -->
-        <div class="job-header">
-          <div class="job-title-section">
-            <h3 class="job-title">{{ job.title }}</h3>
-            <span 
-              class="status-badge" 
-              [style.background]="getStatusColor(job.status) + '20'"
-              [style.color]="getStatusColor(job.status)"
-            >
-              <i class="fas" [class]="getStatusIcon(job.status)"></i>
-              {{ job.status | titlecase }}
-            </span>
-          </div>
-          <div class="job-meta">
-            <span class="department">
-              <i class="fas fa-building"></i>
-              {{ job.department }}
-            </span>
-            <span class="location">
-              <i class="fas fa-map-marker-alt"></i>
-              {{ job.location }}
-            </span>
-          </div>
+    <div class="job-card" [class]="job.status">
+      <!-- Job Header -->
+      <div class="job-header">
+        <div class="job-title-section">
+          <h3 class="job-title">{{ job.title }}</h3>
+          <span class="status-badge" [style.background]="getStatusColor(job.status) + '20'"
+            [style.color]="getStatusColor(job.status)">
+            <i class="fas" [class]="getStatusIcon(job.status)"></i>
+            {{ job.status | titlecase }}
+          </span>
         </div>
-
-        <!-- Job Description -->
-        <p class="job-description">{{ job.description }}</p>
-
-        <!-- Job Details -->
-        <div class="job-details">
-          <div class="detail-item">
-            <i class="fas fa-money-bill-wave"></i>
-            <span>{{ job.salary }}</span>
-          </div>
-          <div class="detail-item">
-            <i class="fas fa-user-tie"></i>
-            <span>{{ job.experience }}</span>
-          </div>
-          <div class="detail-item">
-            <i class="fas fa-clock"></i>
-            <span>{{ job.type }}</span>
-          </div>
-        </div>
-
-        <!-- Job Stats -->
-        <div class="job-stats">
-          <div class="stat">
-            <div class="stat-value">{{ job.applicantCount }}</div>
-            <div class="stat-label">Applicants</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">{{ job.newApplicants }}</div>
-            <div class="stat-label">New</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">{{ job.interviews }}</div>
-            <div class="stat-label">Interviews</div>
-          </div>
-        </div>
-
-        <!-- Job Footer -->
-        <div class="job-footer">
-          <div class="post-date">
-            <i class="fas fa-calendar"></i>
-            Posted {{ formatDate(job.postedDate) }}
-          </div>
-          <div class="job-actions">
-            <button 
-              class="action-btn primary"
-              (click)="viewApplicants(job.id)"
-            >
-              <i class="fas fa-users"></i>
-              View Applicants
-            </button>
-            <button 
-              class="action-btn secondary"
-              (click)="editJob(job.id)"
-            >
-              <i class="fas fa-edit"></i>
-              Edit
-            </button>
-            <div class="dropdown">
-              <button class="action-btn icon">
-                <i class="fas fa-ellipsis-v"></i>
-              </button>
-              <div class="dropdown-menu">
-                <button (click)="duplicateJob(job.id)" class="dropdown-item">
-                  <i class="fas fa-copy"></i> Duplicate
-                </button>
-                <button (click)="deleteJob(job.id)" class="dropdown-item delete">
-                  <i class="fas fa-trash"></i> Delete
-                </button>
-              </div>
-            </div>
-          </div>
+        <div class="job-meta">
+          <span class="department">
+            <i class="fas fa-building"></i>
+            {{ job.department }}
+          </span>
+          <span class="location">
+            <i class="fas fa-map-marker-alt"></i>
+            {{ job.location }}
+          </span>
         </div>
       </div>
+
+      <!-- Job Description -->
+      <p class="job-description">
+        {{ job.description | slice:0:120 }}{{ job.description.length > 120 ? '...' : '' }}
+        <a *ngIf="job.description.length > 120" href="javascript:void(0)" (click)="openDescription(job)"
+          class="toggle-link">
+          Read more
+        </a>
+      </p>
+      <div class="job-skills" *ngIf="job.skills && job.skills.length > 0">
+        <i class="fas fa-tools"></i>
+        <span class="skills-label">Skills:</span>
+        <span class="skill" *ngFor="let skill of job.skills; let last = last">
+          {{ skill }}<span *ngIf="!last">, </span>
+        </span>
+      </div>
+      <!-- Job Details -->
+      <div class="job-details">
+        <div class="detail-item">
+          <i class="fas fa-money-bill-wave"></i>
+          <span>{{ job.salary }}</span>
+        </div>
+        <div class="detail-item">
+          <i class="fas fa-user-tie"></i>
+          <span>{{ job.experience }}</span>
+        </div>
+        <div class="detail-item">
+          <i class="fas fa-clock"></i>
+          <span>{{ job.type }}</span>
+        </div>
+      </div>
+
+      <!-- Job Stats -->
+      <div class="job-stats">
+        <div class="stat">
+          <div class="stat-value">{{ job.applicantCount }}</div>
+          <div class="stat-label">Applicants</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">{{ job.newApplicants }}</div>
+          <div class="stat-label">New</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">{{ job.interviews }}</div>
+          <div class="stat-label">Interviews</div>
+        </div>
+      </div>
+
+      <!-- Job Footer -->
+      <div class="job-footer">
+        <div class="post-date">
+          <i class="fas fa-calendar"></i>
+          Posted {{ formatDate(job.postedDate) }}
+        </div>
+        <div class="job-actions" *ngIf="job.employeeStatusForJob!='0'">
+
+          <button class="action-btn" [ngClass]="getStatusClass(job.employeeStatusForJob)"  disabled>
+            <i [ngClass]="getStatusIconforemp(job.employeeStatusForJob)"></i>
+          {{   getName(job.employeeStatusForJob) }}
+          </button>
+
+        </div>
+ <div class="job-actions" *ngIf="job.employeeStatusForJob=='0'" >
+
+          <button  Class="action-btn primary" (click)="applyjob(job.id)" >
+            <i Class="fas fa-user-tie"></i>
+            Apply now
+          </button>
+
+        </div>
+
+      </div>
+    </div>
     } @empty {
-      <div class="empty-state">
-        <div class="empty-icon">
-          <i class="fas fa-file-alt"></i>
-        </div>
-        <h3>No Jobs Found</h3>
-        <p>No job postings match your current filters. Try adjusting your search or create a new job posting.</p>
-        <button class="primary-btn" (click)="postNewJob()">
-          <i class="fas fa-plus"></i>
-          Create New Job
-        </button>
+    <div class="empty-state">
+      <div class="empty-icon">
+        <i class="fas fa-file-alt"></i>
       </div>
+      <h3>No Jobs Found</h3>
+      <p>No job postings match your current filters. Try adjusting your search or create a new job posting.</p>
+
+    </div>
     }
   </div>
 
   <!-- Quick Actions Footer -->
   <div class="quick-actions">
-    <button class="quick-action-btn" (click)="postNewJob()">
+    <!-- <button class="quick-action-btn" (click)="postNewJob()">
       <i class="fas fa-plus"></i>
       New Job
-    </button>
+    </button> -->
     <button class="quick-action-btn" (click)="refreshJobs()">
       <i class="fas fa-sync-alt"></i>
       Refresh
     </button>
+  </div>
+</div>
+<!-- Job Description Modal -->
+<div class="modal-backdrop" *ngIf="selectedJob" (click)="closeModal()"></div>
+
+<div class="modal" *ngIf="selectedJob">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ selectedJob.title }}</h3>
+      <button class="close-btn" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p><strong>Department:</strong> {{ selectedJob.department }}</p>
+      <p><strong>Location:</strong> {{ selectedJob.location }}</p>
+      <p><strong>Type:</strong> {{ selectedJob.type }}</p>
+      <hr />
+      <p>{{ selectedJob.description }}</p>
+    </div>
   </div>
 </div>

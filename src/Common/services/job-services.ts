@@ -23,9 +23,9 @@ export class JobServices {
       
         return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveJobs}`,data ,{ headers: this.getHeaders() });
       }
-      JobToEmployee(): Observable<any> {
+      JobToEmployee(data:any): Observable<any> {
       debugger
-        return this.http.get<any>(`${this.baseUrl+ApiEndpoints.JobsToEmployee}` ,{ headers: this.getHeaders() });
+        return this.http.get<any>(`${this.baseUrl+ApiEndpoints.JobsToEmployee +data.toString()}` ,{ headers: this.getHeaders() });
       }
       GetJobsHr(data:any ): Observable<any> {
       
@@ -35,5 +35,10 @@ export class JobServices {
          GetJobsdetail(data:any ): Observable<any> {
       
         return this.http.get<any>(`${this.baseUrl+ApiEndpoints.GetJobsDetailsByJobid+data.toString()}` ,{ headers: this.getHeaders() });
+      }
+
+      ApplyForJobs(data:any ): Observable<any> {
+      
+        return this.http.post<any>(`${this.baseUrl+ApiEndpoints.ApplyForJobs}`,data ,{ headers: this.getHeaders() });
       }
 }
