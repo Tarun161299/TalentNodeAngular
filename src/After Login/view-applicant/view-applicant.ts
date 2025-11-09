@@ -1,31 +1,39 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
+import { EmployeeService } from '../../Common/services/employee-service';
 
-// Define interfaces locally
 interface Applicant {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  appliedDate: Date;
-  status: 'pending' | 'reviewed' | 'shortlisted' | 'rejected';
-  resumeUrl?: string;
-  coverLetter?: string;
-  experience: number;
-  skills: string[];
+  Id: string;
+  FirstName: string;
+  LastName: string;
+  Email: string;
+  Phone: string;
+  CurrentPosition: string;
+  Avatar: string;
+  Resume: string;
+  Location: string;
+  Experience: Experience[];
+  Skills: string[];
+  AppliedDate: Date;
+  Status: 'pending' | 'reviewed' | 'shortlisted' | 'interview' | 'rejected' | 'hired';
 }
 
-interface JobPosting {
-  id: string;
-  title: string;
-  department: string;
-  location: string;
+interface Experience {
+  company: string;
+  position: string;
+  duration: string;
+}
+
+interface ApiResponse {
   applicants: Applicant[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
 }
-
-// Define the status type explicitly
-type ApplicantStatus = 'pending' | 'reviewed' | 'shortlisted' | 'rejected';
 
 @Component({
   selector: 'view-applicant',
@@ -35,191 +43,265 @@ type ApplicantStatus = 'pending' | 'reviewed' | 'shortlisted' | 'rejected';
   styleUrl: './view-applicant.css'
 })
 export class ViewApplicant implements OnInit {
-  jobPostings: JobPosting[] = [];
-  selectedJob: JobPosting | null = null;
+  applicants: Applicant[] = [];
   selectedApplicant: Applicant | null = null;
-  searchTerm = '';
-  statusFilter = 'all';
   
-  // Define status options with proper typing
-  statusOptions: ApplicantStatus[] = ['pending', 'reviewed', 'shortlisted', 'rejected'];
+  // Pagination properties
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  totalPages: number = 0;
+  totalCount: number = 0;
+  pages: number[] = [];
+  jobId:Number=0;
+  // Loading states
+  isLoading: boolean = false;
+  isError: boolean = false;
 
-  constructor() {}
+  constructor(
+    private sanitizer: DomSanitizer,
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private empService:EmployeeService
+  ) {}
 
   ngOnInit() {
-    this.loadMockData();
+    this.jobId = Number(this.route.snapshot.paramMap.get('jobid'));
+    var data={
+  jobId: 1,
+  pageNumber: 1,
+  pageSize: 10
+};
+    this.empService.ApplicantList(data).subscribe(data=>{
+        this.applicants = data.map((app:any) => ({
+      Id: app.id,
+      FirstName: app.firstName,
+      LastName: app.lastName,
+      Email: app.email,
+      Phone: app.phone,
+      CurrentPosition: app.currentPosition,
+      Avatar:'data:image/jpeg;base64,'+ app.avatar || 'assets/default-avatar.jpg',
+      Resume: 'data:application/pdf;base64,'+app.resume,
+      Location: app.location,
+      Experience: app.experience?.map((exp:any) => ({
+        company: exp.company,
+        position: exp.position,
+        duration: `${exp.startDate} - ${exp.endDate || 'Present'}`
+      })) || [],
+      Skills: app.skills?.map((s:any) => s.name) || [],
+      AppliedDate: app.appliedDate ? new Date(app.appliedDate) : null,
+      Status: app.applicantStatus || 'Pending'
+    }));
+    })
+    this.loadApplicants();
   }
 
-  private loadMockData(): void {
-    // Mock data
-    this.jobPostings = [
-      {
-        id: '1',
-        title: 'Senior Angular Developer',
-        department: 'Engineering',
-        location: 'Remote',
-        applicants: [
-          {
-            id: '1',
-            name: 'John Doe',
-            email: 'john.doe@email.com',
-            phone: '+1-555-0101',
-            appliedDate: new Date('2024-01-15'),
-            status: 'reviewed',
-            resumeUrl: '/resumes/john-doe.pdf',
-            coverLetter: 'Experienced Angular developer with 5+ years of experience in building enterprise applications. Strong knowledge of RxJS, NgRx, and modern Angular practices.',
-            experience: 5,
-            skills: ['Angular', 'TypeScript', 'RxJS', 'NgRx', 'JavaScript']
-          },
-          {
-            id: '2',
-            name: 'Jane Smith',
-            email: 'jane.smith@email.com',
-            phone: '+1-555-0102',
-            appliedDate: new Date('2024-01-16'),
-            status: 'pending',
-            experience: 3,
-            skills: ['Angular', 'JavaScript', 'HTML/CSS', 'Bootstrap']
-          },
-          {
-            id: '3',
-            name: 'Mike Johnson',
-            email: 'mike.j@email.com',
-            phone: '+1-555-0103',
-            appliedDate: new Date('2024-01-14'),
-            status: 'shortlisted',
-            experience: 4,
-            skills: ['React', 'Angular', 'Vue', 'TypeScript']
-          }
-        ]
-      },
-      {
-        id: '2',
-        title: 'Frontend Developer',
-        department: 'Engineering',
-        location: 'New York',
-        applicants: [
-          {
-            id: '4',
-            name: 'Sarah Wilson',
-            email: 'sarah.wilson@email.com',
-            phone: '+1-555-0104',
-            appliedDate: new Date('2024-01-18'),
-            status: 'pending',
-            experience: 6,
-            skills: ['Angular', 'Node.js', 'MongoDB', 'Express']
-          }
-        ]
-      },
-      {
-        id: '3',
-        title: 'Full Stack Developer',
-        department: 'Engineering',
-        location: 'San Francisco',
-        applicants: [
-          {
-            id: '5',
-            name: 'David Brown',
-            email: 'david.brown@email.com',
-            phone: '+1-555-0105',
-            appliedDate: new Date('2024-01-20'),
-            status: 'rejected',
-            experience: 7,
-            skills: ['Angular', 'React', 'Node.js', 'PostgreSQL']
-          }
-        ]
-      }
-    ];
+  loadApplicants() {
+    this.isLoading = true;
+    this.isError = false;
 
-    // Auto-select the first job by default
-    if (this.jobPostings.length > 0) {
-      this.selectedJob = this.jobPostings[0];
-    }
-  }
-
-  selectJob(job: JobPosting): void {
-    this.selectedJob = job;
-    this.selectedApplicant = null;
-  }
-
-  selectApplicant(applicant: Applicant): void {
-    this.selectedApplicant = applicant;
-  }
-
-  // Method 1: Accept string and validate
-  updateStatus(applicantId: string, status: string): void {
-    // Validate that the status is one of the allowed values
-    const validStatus: ApplicantStatus[] = ['pending', 'reviewed', 'shortlisted', 'rejected'];
+    // Replace with your actual API endpoint
+    const apiUrl = 'https://your-api.com/applicants';
     
-    if (!validStatus.includes(status as ApplicantStatus)) {
-      console.error('Invalid status:', status);
-      return;
-    }
+    const params = new HttpParams()
+      .set('page', this.currentPage.toString())
+      .set('pageSize', this.itemsPerPage.toString());
 
-    if (this.selectedJob) {
-      // Update the status directly in the local data
-      const applicant = this.selectedJob.applicants.find((a: Applicant) => a.id === applicantId);
-      if (applicant) {
-        applicant.status = status as ApplicantStatus;
+    this.http.get<ApiResponse>(apiUrl, { params }).subscribe({
+      next: (response) => {
+        this.applicants = response.applicants;
+        this.totalCount = response.totalCount;
+        this.totalPages = response.totalPages;
+        this.currentPage = response.currentPage;
+        this.setupPagination();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading applicants:', error);
+        this.isError = true;
+        this.isLoading = false;
+        // Fallback to mock data if API fails
+        this.loadMockData();
       }
-      if (this.selectedApplicant && this.selectedApplicant.id === applicantId) {
-        this.selectedApplicant.status = status as ApplicantStatus;
-      }
-    }
-  }
-
-  // Alternative Method 2: Use strongly typed status
-  updateStatusTyped(applicantId: string, status: ApplicantStatus): void {
-    if (this.selectedJob) {
-      const applicant = this.selectedJob.applicants.find((a: Applicant) => a.id === applicantId);
-      if (applicant) {
-        applicant.status = status;
-      }
-      if (this.selectedApplicant && this.selectedApplicant.id === applicantId) {
-        this.selectedApplicant.status = status;
-      }
-    }
-  }
-
-  get filteredApplicants(): Applicant[] {
-    if (!this.selectedJob) return [];
-
-    return this.selectedJob.applicants.filter((applicant: Applicant) => {
-      const matchesSearch = applicant.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                           applicant.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                           applicant.skills.some((skill: string) => 
-                             skill.toLowerCase().includes(this.searchTerm.toLowerCase())
-                           );
-      
-      const matchesStatus = this.statusFilter === 'all' || applicant.status === this.statusFilter;
-      
-      return matchesSearch && matchesStatus;
     });
   }
 
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'pending': return 'status-pending';
-      case 'reviewed': return 'status-reviewed';
-      case 'shortlisted': return 'status-shortlisted';
-      case 'rejected': return 'status-rejected';
-      default: return '';
+  loadMockData() {
+    // Mock data with 15 records for pagination testing
+    this.applicants = [
+      {
+        Id: '1', FirstName: 'John', LastName: 'Doe', Email: 'john.doe@email.com', Phone: '+1-555-0101',
+        CurrentPosition: 'Senior Angular Developer', Avatar: 'assets/avatar1.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'New York, NY',
+        Experience: [{ company: 'Tech Solutions', position: 'Senior Developer', duration: '2020-Present' }],
+        Skills: ['Angular', 'TypeScript', 'RxJS'], AppliedDate: new Date('2024-01-15'), Status: 'pending'
+      },
+      {
+        Id: '2', FirstName: 'Jane', LastName: 'Smith', Email: 'jane.smith@email.com', Phone: '+1-555-0102',
+        CurrentPosition: 'Full Stack Developer', Avatar: 'assets/avatar2.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'San Francisco, CA',
+        Experience: [{ company: 'Digital Innovations', position: 'Full Stack Dev', duration: '2019-Present' }],
+        Skills: ['Angular', '.NET Core', 'SQL'], AppliedDate: new Date('2024-01-16'), Status: 'reviewed'
+      },
+      {
+        Id: '3', FirstName: 'Mike', LastName: 'Johnson', Email: 'mike.johnson@email.com', Phone: '+1-555-0103',
+        CurrentPosition: 'Frontend Developer', Avatar: 'assets/avatar3.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Chicago, IL',
+        Experience: [{ company: 'WebTech Ltd', position: 'Frontend Dev', duration: '2021-Present' }],
+        Skills: ['React', 'JavaScript', 'CSS'], AppliedDate: new Date('2024-01-17'), Status: 'shortlisted'
+      },
+      {
+        Id: '4', FirstName: 'Sarah', LastName: 'Wilson', Email: 'sarah.wilson@email.com', Phone: '+1-555-0104',
+        CurrentPosition: 'Backend Developer', Avatar: 'assets/avatar4.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Austin, TX',
+        Experience: [{ company: 'ServerStack Inc', position: 'Backend Dev', duration: '2018-Present' }],
+        Skills: ['Node.js', 'Python', 'MongoDB'], AppliedDate: new Date('2024-01-18'), Status: 'interview'
+      },
+      {
+        Id: '5', FirstName: 'David', LastName: 'Brown', Email: 'david.brown@email.com', Phone: '+1-555-0105',
+        CurrentPosition: 'DevOps Engineer', Avatar: 'assets/avatar5.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Seattle, WA',
+        Experience: [{ company: 'Cloud Systems', position: 'DevOps Engineer', duration: '2020-Present' }],
+        Skills: ['AWS', 'Docker', 'Kubernetes'], AppliedDate: new Date('2024-01-19'), Status: 'hired'
+      },
+      {
+        Id: '6', FirstName: 'Emily', LastName: 'Davis', Email: 'emily.davis@email.com', Phone: '+1-555-0106',
+        CurrentPosition: 'UI/UX Designer', Avatar: 'assets/avatar6.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Los Angeles, CA',
+        Experience: [{ company: 'Creative Designs', position: 'UI/UX Designer', duration: '2020-Present' }],
+        Skills: ['Figma', 'Sketch', 'Adobe XD'], AppliedDate: new Date('2024-01-20'), Status: 'rejected'
+      },
+      {
+        Id: '7', FirstName: 'Robert', LastName: 'Miller', Email: 'robert.miller@email.com', Phone: '+1-555-0107',
+        CurrentPosition: 'Project Manager', Avatar: 'assets/avatar7.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Boston, MA',
+        Experience: [{ company: 'Tech Leaders', position: 'Project Manager', duration: '2016-Present' }],
+        Skills: ['Agile', 'Scrum', 'JIRA'], AppliedDate: new Date('2024-01-21'), Status: 'pending'
+      },
+      {
+        Id: '8', FirstName: 'Lisa', LastName: 'Garcia', Email: 'lisa.garcia@email.com', Phone: '+1-555-0108',
+        CurrentPosition: 'Data Scientist', Avatar: 'assets/avatar8.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Denver, CO',
+        Experience: [{ company: 'Data Insights', position: 'Data Scientist', duration: '2021-Present' }],
+        Skills: ['Python', 'R', 'TensorFlow'], AppliedDate: new Date('2024-01-22'), Status: 'reviewed'
+      },
+      {
+        Id: '9', FirstName: 'James', LastName: 'Martinez', Email: 'james.martinez@email.com', Phone: '+1-555-0109',
+        CurrentPosition: 'Mobile Developer', Avatar: 'assets/avatar9.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Miami, FL',
+        Experience: [{ company: 'App Masters', position: 'Mobile Developer', duration: '2022-Present' }],
+        Skills: ['React Native', 'Flutter', 'iOS'], AppliedDate: new Date('2024-01-23'), Status: 'shortlisted'
+      },
+      {
+        Id: '10', FirstName: 'Amanda', LastName: 'Lee', Email: 'amanda.lee@email.com', Phone: '+1-555-0110',
+        CurrentPosition: 'QA Engineer', Avatar: 'assets/avatar10.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Portland, OR',
+        Experience: [{ company: 'Quality Assurance Pro', position: 'QA Engineer', duration: '2021-Present' }],
+        Skills: ['Selenium', 'Jest', 'Cypress'], AppliedDate: new Date('2024-01-24'), Status: 'interview'
+      },
+      {
+        Id: '11', FirstName: 'Thomas', LastName: 'Anderson', Email: 'thomas.anderson@email.com', Phone: '+1-555-0111',
+        CurrentPosition: 'System Architect', Avatar: 'assets/avatar11.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Atlanta, GA',
+        Experience: [{ company: 'Enterprise Solutions', position: 'System Architect', duration: '2017-Present' }],
+        Skills: ['Microservices', 'AWS', 'System Design'], AppliedDate: new Date('2024-01-25'), Status: 'pending'
+      },
+      {
+        Id: '12', FirstName: 'Jennifer', LastName: 'Taylor', Email: 'jennifer.taylor@email.com', Phone: '+1-555-0112',
+        CurrentPosition: 'Product Manager', Avatar: 'assets/avatar12.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Dallas, TX',
+        Experience: [{ company: 'Product Innovations', position: 'Product Manager', duration: '2019-Present' }],
+        Skills: ['Product Strategy', 'Market Research'], AppliedDate: new Date('2024-01-26'), Status: 'reviewed'
+      },
+      {
+        Id: '13', FirstName: 'Kevin', LastName: 'Clark', Email: 'kevin.clark@email.com', Phone: '+1-555-0113',
+        CurrentPosition: 'Security Engineer', Avatar: 'assets/avatar13.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Washington, DC',
+        Experience: [{ company: 'Cyber Security Pro', position: 'Security Engineer', duration: '2020-Present' }],
+        Skills: ['Network Security', 'Penetration Testing'], AppliedDate: new Date('2024-01-27'), Status: 'shortlisted'
+      },
+      {
+        Id: '14', FirstName: 'Michelle', LastName: 'Rodriguez', Email: 'michelle.rodriguez@email.com', Phone: '+1-555-0114',
+        CurrentPosition: 'Database Administrator', Avatar: 'assets/avatar14.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Phoenix, AZ',
+        Experience: [{ company: 'Data Management Inc', position: 'DBA', duration: '2021-Present' }],
+        Skills: ['SQL Server', 'MySQL', 'PostgreSQL'], AppliedDate: new Date('2024-01-28'), Status: 'interview'
+      },
+      {
+        Id: '15', FirstName: 'Daniel', LastName: 'White', Email: 'daniel.white@email.com', Phone: '+1-555-0115',
+        CurrentPosition: 'Cloud Engineer', Avatar: 'assets/avatar15.jpg',
+        Resume: 'data:application/pdf;base64,JVBERi0xLjUKJcfs...', Location: 'Salt Lake City, UT',
+        Experience: [{ company: 'Cloud Technologies', position: 'Cloud Engineer', duration: '2022-Present' }],
+        Skills: ['Azure', 'Google Cloud', 'Terraform'], AppliedDate: new Date('2024-01-29'), Status: 'hired'
+      }
+    ];
+
+    this.totalCount = this.applicants.length;
+    this.setupPagination();
+  }
+
+  setupPagination() {
+    this.totalPages = Math.ceil(this.totalCount / this.itemsPerPage);
+    this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadApplicants();
     }
   }
 
-  downloadResume(applicant: Applicant): void {
-    if (applicant.resumeUrl) {
-      window.open(applicant.resumeUrl, '_blank');
-    } else {
-      alert('No resume available for this applicant');
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.loadApplicants();
     }
   }
 
-  getApplicantCountByStatus(status: string): number {
-    return this.selectedJob?.applicants.filter((applicant: Applicant) => applicant.status === status).length || 0;
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.loadApplicants();
+    }
   }
 
-  getTotalApplicants(): number {
-    return this.selectedJob?.applicants.length || 0;
+  getDisplayRange(): string {
+    const start = (this.currentPage - 1) * this.itemsPerPage + 1;
+    const end = Math.min(this.currentPage * this.itemsPerPage, this.totalCount);
+    return `Showing ${start}-${end} of ${this.totalCount} applicants`;
+  }
+
+  onStatusChange(applicant: Applicant) {
+    // API call to update status
+    const apiUrl = `https://your-api.com/applicants/${applicant.Id}/status`;
+    this.http.put(apiUrl, { status: applicant.Status }).subscribe({
+      next: () => {
+        console.log('Status updated successfully');
+      },
+      error: (error) => {
+        console.error('Error updating status:', error);
+      }
+    });
+  }
+
+  viewResume(applicant: Applicant) {
+    this.selectedApplicant = applicant;
+  }
+
+  closeResume() {
+    this.selectedApplicant = null;
+  }
+
+  downloadResume(applicant: Applicant) {
+    if (applicant.Resume) {
+      const link = document.createElement('a');
+      link.href = applicant.Resume;
+      link.download = `${applicant.FirstName}_${applicant.LastName}_Resume.pdf`;
+      link.click();
+    }
+  }
+
+  getSafeUrl(base64String: string): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(base64String);
   }
 }

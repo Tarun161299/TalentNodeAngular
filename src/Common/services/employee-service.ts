@@ -57,5 +57,9 @@ export class EmployeeService {
    SaveDocument(data: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveDocument}`,data, { headers: this.getHeaders() });
   }
+
+    ApplicantList(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl+ApiEndpoints.ApplicantList}`,data, { headers: this.getHeaders() });
+  }
   // Add more endpoints here as needed
 }
