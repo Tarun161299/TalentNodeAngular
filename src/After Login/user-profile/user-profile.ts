@@ -76,6 +76,7 @@ export class UserProfileComponent implements OnInit {
   isEditing = false;
   isLoading = false;
   showPdf = false;
+  isResumeUploaded: boolean = false;
   skillemployee:any;
   selectedTab = 'personal';
   degree: any;
@@ -191,6 +192,8 @@ viewResume() {
         this.user = data;
         
         this.user.avatar= (data.avatar==null||data.avatar==undefined||data.avatar=='')?`data:image/png;base64,${this.showP}`:`data:image/jpeg;base64,${data.avatar}`;
+        // ✅ Update resume upload status based on whether resume exists
+      this.isResumeUploaded = !!(data.resume && data.resume !== '');
         this.profileForm.get('personal')?.patchValue({
           firstName: this.user.firstName ?? '',
           lastName: this.user.lastName ?? '',
@@ -610,7 +613,12 @@ this.user.resume = event.target.result;
     };
     this.employeeService.SaveDocument(resumeUploadModel).subscribe({next:(data:any)=>{
 if(data>0){
+  // ✅ Update local state immediately after successful upload
+          this.isResumeUploaded = true;
+          this.user.resume = reader.result as string;
 this.toastr.success('Resume uploaded successfully!', 'Success');
+// ✅ Optional: Force refresh user data from server to get the latest state
+          this.GetUserDetailsById(this.empId);
 }else{
 this.toastr.error('some error occured!');
 }

@@ -4,12 +4,25 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractContro
 import { SignupService } from '../../Common/services/signup';
 import { SignupDetails } from '../../Model/SignupDetails';
 import { ToastrService } from 'ngx-toastr';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Router } from '@angular/router';
 
+// Interface definitions
+interface PasswordRequirements {
+  length: boolean;
+  uppercase: boolean;
+  lowercase: boolean;
+  number: boolean;
+  special: boolean;
+}
+
+interface PasswordStrengthResult {
+  strength: number;
+  requirements: PasswordRequirements;
+}
 
 @Component({
   selector: 'app-signup',
-  imports: [ ReactiveFormsModule,CommonModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './signup.html',
   styleUrl: './signup.css'
 })
@@ -18,10 +31,10 @@ export class Signup implements OnInit {
   passwordVisible = false;
   confirmPasswordVisible = false;
 
-  signupdetails:SignupDetails|undefined;
+  signupdetails: SignupDetails | undefined;
   
   // Password requirements
-  requirements = {
+  requirements: PasswordRequirements = {
     length: false,
     uppercase: false,
     lowercase: false,
@@ -29,7 +42,16 @@ export class Signup implements OnInit {
     special: false
   };
 
-  constructor(private fb: FormBuilder,private signupService: SignupService,private toastr: ToastrService) {//
+  // Password strength properties
+  private strengthPercentage: number = 0;
+  private passwordStrength: string = '';
+
+  constructor(
+    private fb: FormBuilder,
+    private signupService: SignupService,
+    private toastr: ToastrService,
+    private router: Router
+  ) {
     this.signupForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
@@ -45,25 +67,27 @@ export class Signup implements OnInit {
 
   ngOnInit() {
     // Subscribe to password changes
-    // Subscribe to password changes
     this.signupForm.controls['password'].valueChanges.subscribe(value => {
       this.checkPasswordStrength(value);
       this.updateRequirements(value);
+      this.calculatePasswordStrength(value);
+    });
+
+    // Subscribe to confirm password changes
+    this.signupForm.controls['confirmPassword'].valueChanges.subscribe(() => {
+      this.validateForm();
     });
   }
 
   // Custom password strength validator
-  passwordStrengthValidator() {
+  private passwordStrengthValidator() {
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value;
       if (!value) return null;
 
-      const hasUpperCase = /[A-Z]/.test(value);
-      const hasLowerCase = /[a-z]/.test(value);
-      const hasNumber = /[0-9]/.test(value);
-      const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value);
-
-      if (!hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecial) {
+      const { strength } = this.checkPasswordStrength(value);
+      
+      if (strength < 60) {
         return { passwordStrength: true };
       }
       return null;
@@ -71,7 +95,7 @@ export class Signup implements OnInit {
   }
 
   // Password match validator
-  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+  private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.get('password');
     const confirmPassword = control.get('confirmPassword');
     
@@ -81,50 +105,79 @@ export class Signup implements OnInit {
     return null;
   }
 
-  // Form control getters
-  get name() { return this.signupForm.get('name'); }
-  get email() { return this.signupForm.get('email'); }
-  get contact() { return this.signupForm.get('contact'); }
-  get password() { return this.signupForm.get('password'); }
-  get confirmPassword() { return this.signupForm.get('confirmPassword'); }
+  // Enhanced password strength checker
+  private checkPasswordStrength(password: string): PasswordStrengthResult {
+    let strength = 0;
+    const requirements: PasswordRequirements = {
+      length: false,
+      uppercase: false,
+      lowercase: false,
+      number: false,
+      special: false
+    };
 
-  // Check password strength
-  checkPasswordStrength(password: string) {
+    // Check length
+    if (password.length >= 8) {
+      strength += 20;
+      requirements.length = true;
+    }
+
+    // Check uppercase
+    if (/[A-Z]/.test(password)) {
+      strength += 20;
+      requirements.uppercase = true;
+    }
+
+    // Check lowercase
+    if (/[a-z]/.test(password)) {
+      strength += 20;
+      requirements.lowercase = true;
+    }
+
+    // Check numbers
+    if (/[0-9]/.test(password)) {
+      strength += 20;
+      requirements.number = true;
+    }
+
+    // Check special characters
+    if (/[!@#$%^&*]/.test(password)) {
+      strength += 20;
+      requirements.special = true;
+    }
+
+    return { strength, requirements };
+  }
+
+  // Calculate and update password strength for UI
+  private calculatePasswordStrength(password: string): void {
     if (!password) {
-      this.signupForm.get('password')?.setErrors(null);
+      this.strengthPercentage = 0;
+      this.passwordStrength = '';
       return;
     }
 
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-    const isLongEnough = password.length >= 8;
+    const { strength, requirements } = this.checkPasswordStrength(password);
+    this.strengthPercentage = strength;
 
-    // Update requirements
-    this.requirements.length = isLongEnough;
-    this.requirements.uppercase = hasUpperCase;
-    this.requirements.lowercase = hasLowerCase;
-    this.requirements.number = hasNumber;
-    this.requirements.special = hasSpecial;
-
-    // Calculate strength score
-    const requirementsMet = Object.values(this.requirements).filter(Boolean).length;
-    
-    if (requirementsMet <= 2) {
-      this.signupForm.get('password')?.setErrors({ weakPassword: true });
-    } else if (requirementsMet <= 4) {
-      this.signupForm.get('password')?.setErrors({ averagePassword: true });
+    // Update strength text
+    if (strength <= 40) {
+      this.passwordStrength = 'weak';
+    } else if (strength <= 80) {
+      this.passwordStrength = 'average';
     } else {
-      this.signupForm.get('password')?.setErrors(null);
+      this.passwordStrength = 'strong';
     }
+
+    // Update requirements for UI
+    this.requirements = requirements;
   }
 
   // Update requirements visibility
-  updateRequirements(password: string) {
+  private updateRequirements(password: string): void {
     if (!password) {
       Object.keys(this.requirements).forEach(key => {
-        this.requirements[key as keyof typeof this.requirements] = false;
+        this.requirements[key as keyof PasswordRequirements] = false;
       });
       return;
     }
@@ -133,72 +186,169 @@ export class Signup implements OnInit {
     this.requirements.uppercase = /[A-Z]/.test(password);
     this.requirements.lowercase = /[a-z]/.test(password);
     this.requirements.number = /[0-9]/.test(password);
-    this.requirements.special = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    this.requirements.special = /[!@#$%^&*]/.test(password);
   }
 
-  // Get password strength for UI
-  getPasswordStrength(): string {
-    const requirementsMet = Object.values(this.requirements).filter(Boolean).length;
+  // Form validation
+  private validateForm(): void {
+    const password = this.signupForm.get('password')?.value;
+    const confirmPassword = this.signupForm.get('confirmPassword')?.value;
     
-    if (requirementsMet <= 2) return 'weak';
-    if (requirementsMet <= 4) return 'average';
-    return 'strong';
+    if (password && confirmPassword) {
+      // Trigger validation updates
+      this.signupForm.updateValueAndValidity();
+    }
   }
 
-  // Get strength percentage for progress bar
+  // Form control getters
+  get name() { return this.signupForm.get('name'); }
+  get email() { return this.signupForm.get('email'); }
+  get contact() { return this.signupForm.get('contact'); }
+  get password() { return this.signupForm.get('password'); }
+  get confirmPassword() { return this.signupForm.get('confirmPassword'); }
+
+  // Get password strength for UI (compatibility with existing template)
+  getPasswordStrength(): string {
+    return this.passwordStrength;
+  }
+
+  // Get strength percentage for progress bar (compatibility with existing template)
   getStrengthPercentage(): number {
-    const requirementsMet = Object.values(this.requirements).filter(Boolean).length;
-    return (requirementsMet / 5) * 100;
+    return this.strengthPercentage;
+  }
+
+  // Check if passwords match for UI
+  passwordsMatch(): boolean {
+    const password = this.signupForm.get('password')?.value;
+    const confirmPassword = this.signupForm.get('confirmPassword')?.value;
+    return password && confirmPassword && password === confirmPassword;
+  }
+
+  // Check if passwords don't match for UI
+  passwordsDontMatch(): boolean {
+    const password = this.signupForm.get('password')?.value;
+    const confirmPassword = this.signupForm.get('confirmPassword')?.value;
+    return password && confirmPassword && password !== confirmPassword && this.confirmPassword?.touched;
   }
 
   // Toggle password visibility
-  togglePasswordVisibility() {
+  togglePasswordVisibility(): void {
     this.passwordVisible = !this.passwordVisible;
   }
 
   // Toggle confirm password visibility
-  toggleConfirmPasswordVisibility() {
+  toggleConfirmPasswordVisibility(): void {
     this.confirmPasswordVisible = !this.confirmPasswordVisible;
   }
 
+  // Check if requirement is met for UI
+  isRequirementMet(requirement: keyof PasswordRequirements): boolean {
+    return this.requirements[requirement];
+  }
+
   // Form submission
-  onSubmit() {
+  onSubmit(): void {
     if (this.signupForm.valid) {
-      var formData = this.signupForm.value;
-     // this.toastr.success('Signup successful!', 'Success');
-      this.signupdetails={
-         name  : formData.name,
-         email : formData.email, 
-         phoneNumber : formData.contact,
-         password : formData.password,
-         confirmPassword : formData.confirmPassword
-   }
-      this.signupService.signupEmployee(this.signupdetails).subscribe({
-      next: (response) => {
-        // Handle success
-        debugger
-         this.toastr.success('Signup Successfull');
-        this.signupForm.reset();
-      this.passwordVisible = false;
-      this.confirmPasswordVisible = false;
-        this.signupForm.reset();
-      },
-      error: (error) => {
-        this.toastr.error('Signup failed!', 'Error');
-        // Handle error
-        }})
+      const formData = this.signupForm.value;
       
+      this.signupdetails = {
+        name: formData.name,
+        email: formData.email, 
+        phoneNumber: formData.contact,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword
+      };
+
+      this.signupService.signupEmployee(this.signupdetails).subscribe({
+        next: (response) => {
+          this.toastr.success('Signup Successful!');
+          this.resetForm();
+        // Navigate to login page after 2 seconds
+        setTimeout(() => {
+          this.router.navigate(['/login']); // Adjust the route as per your login page route
+        }, 2000);
+      },
+        error: (error) => {
+          console.error('Signup error:', error);
+          this.toastr.error('Signup failed! Please try again.', 'Error');
+        }
+      });
     } else {
-      // Show specific error messages
-      if (this.signupForm.hasError('passwordMismatch')) {
-       this.toastr.error('Passwords do not match!');
-      } else if (this.password?.errors?.['weakPassword']) {
-        this.toastr.warning('Weak password! Please add uppercase, numbers & special characters.');
-      } else if (this.password?.errors?.['averagePassword']) {
-        this.toastr.warning('Your password is average. Consider making it stronger!');
-      } else {
-        this.toastr.warning('Please fill all fields correctly!');
+      this.showFormErrors();
+    }
+  }
+
+  // Reset form after successful submission
+  private resetForm(): void {
+    this.signupForm.reset();
+    this.passwordVisible = false;
+    this.confirmPasswordVisible = false;
+    this.strengthPercentage = 0;
+    this.passwordStrength = '';
+    
+    // Reset requirements
+    Object.keys(this.requirements).forEach(key => {
+      this.requirements[key as keyof PasswordRequirements] = false;
+    });
+  }
+
+  // Show appropriate error messages
+  private showFormErrors(): void {
+    if (this.signupForm.hasError('passwordMismatch')) {
+      this.toastr.error('Passwords do not match!');
+    } else if (this.password?.errors?.['required']) {
+      this.toastr.warning('Password is required!');
+    } else if (this.password?.errors?.['minlength']) {
+      this.toastr.warning('Password must be at least 8 characters long!');
+    } else if (this.password?.errors?.['passwordStrength']) {
+      this.toastr.warning('Please use a stronger password with uppercase, numbers & special characters!');
+    } else if (this.name?.errors?.['required']) {
+      this.toastr.warning('Name is required!');
+    } else if (this.email?.errors?.['required']) {
+      this.toastr.warning('Email is required!');
+    } else if (this.email?.errors?.['email']) {
+      this.toastr.warning('Please enter a valid email address!');
+    } else if (this.contact?.errors?.['required']) {
+      this.toastr.warning('Contact number is required!');
+    } else if (this.contact?.errors?.['pattern']) {
+      this.toastr.warning('Please enter a valid 10-digit phone number!');
+    } else {
+      this.toastr.warning('Please fill all fields correctly!');
+    }
+  }
+
+  // Helper method to check if form is submitting (for UI)
+  isSubmitting: boolean = false;
+
+  // Enhanced submit with loading state
+  async onSubmitWithLoading(): Promise<void> {
+    if (this.signupForm.valid && !this.isSubmitting) {
+      this.isSubmitting = true;
+      
+      try {
+        const formData = this.signupForm.value;
+        
+        this.signupdetails = {
+          name: formData.name,
+          email: formData.email, 
+          phoneNumber: formData.contact,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword
+        };
+
+        await this.signupService.signupEmployee(this.signupdetails).toPromise();
+        this.toastr.success('Signup Successful!');
+        this.resetForm();
+        // Navigate to login page after successful signup
+      this.router.navigate(['/login']);
+      } catch (error) {
+        console.error('Signup error:', error);
+        this.toastr.error('Signup failed! Please try again.', 'Error');
+      } finally {
+        this.isSubmitting = false;
       }
+    } else {
+      this.showFormErrors();
     }
   }
 }

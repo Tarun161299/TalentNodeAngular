@@ -48,7 +48,7 @@ if(response!="401"){
   if(role.toString()=="3")
    this.router.navigate(['/welcome/dashboard']);
   else if(role.toString()=="4"){
-    this.router.navigate(['/welcome/CandidateDashboard']);
+    this.router.navigate(['/welcome/UserProfile']);
   }
   
 else{

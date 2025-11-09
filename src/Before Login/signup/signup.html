@@ -1,173 +1,207 @@
-<div class="signup-container">
-  <div class="card">
-    <div class="card-header">
-      <h2>Create Your Account</h2>
-      <p>Join our team and get started today</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Account</title>
+    <link rel="stylesheet" href="signup.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="signup-container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Create Your Account</h2>
+                <p>Join our team and get started today</p>
+            </div>
+
+            <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="card-body">
+                <!-- Name Field -->
+                <div class="form-group">
+                    <label for="name" class="form-label">Full Name</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            formControlName="name"
+                            class="form-control"
+                            placeholder="Enter your full name"
+                            [class.error]="name?.invalid && name?.touched">
+                    </div>
+                    <div class="validation-error" *ngIf="name?.invalid && name?.touched">
+                        <span *ngIf="name?.errors?.['required']">Name is required</span>
+                        <span *ngIf="name?.errors?.['minlength']">Name must be at least 2 characters</span>
+                    </div>
+                </div>
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            formControlName="email"
+                            class="form-control"
+                            placeholder="Enter your email"
+                            [class.error]="email?.invalid && email?.touched">
+                    </div>
+                    <div class="validation-error" *ngIf="email?.invalid && email?.touched">
+                        <span *ngIf="email?.errors?.['required']">Email is required</span>
+                        <span *ngIf="email?.errors?.['email']">Please enter a valid email</span>
+                    </div>
+                </div>
+
+                <!-- Contact Field -->
+                <div class="form-group">
+                    <label for="contact" class="form-label">Contact Number</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-phone"></i>
+                        <input 
+                            type="tel" 
+                            id="contact" 
+                            formControlName="contact"
+                            class="form-control"
+                            placeholder="Enter your 10-digit phone number"
+                            [class.error]="contact?.invalid && contact?.touched">
+                    </div>
+                    <div class="validation-error" *ngIf="contact?.invalid && contact?.touched">
+                        <span *ngIf="contact?.errors?.['required']">Contact number is required</span>
+                        <span *ngIf="contact?.errors?.['pattern']">Please enter a valid 10-digit phone number</span>
+                    </div>
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input 
+                            [type]="passwordVisible ? 'text' : 'password'"
+                            id="password" 
+                            formControlName="password"
+                            class="form-control"
+                            placeholder="Create a strong password"
+                            [class.error]="password?.invalid && password?.touched">
+                        <button 
+                            type="button" 
+                            class="password-toggle"
+                            (click)="togglePasswordVisibility()">
+                            <i [class]="passwordVisible ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                        </button>
+                    </div>
+
+                    <!-- Password Strength Indicator -->
+                    <div class="password-feedback" *ngIf="password?.value">
+                        <div class="strength-meter">
+                            <div class="strength-meter-fill" 
+                                 [style.width.%]="getStrengthPercentage()" 
+                                 [class.weak]="getPasswordStrength() === 'weak'"
+                                 [class.average]="getPasswordStrength() === 'average'"
+                                 [class.strong]="getPasswordStrength() === 'strong'"></div>
+                        </div>
+                        <div class="strength-text" 
+                             [class.weak]="getPasswordStrength() === 'weak'"
+                             [class.average]="getPasswordStrength() === 'average'"
+                             [class.strong]="getPasswordStrength() === 'strong'">
+                            {{ getPasswordStrength() === 'weak' ? 'Weak Password' : 
+                               getPasswordStrength() === 'average' ? 'Average Password' : 
+                               'Strong Password' }}
+                        </div>
+                    </div>
+
+                    <div class="validation-error" *ngIf="password?.invalid && password?.touched">
+                        <span *ngIf="password?.errors?.['required']">Password is required</span>
+                        <span *ngIf="password?.errors?.['minlength']">Password must be at least 8 characters</span>
+                        <span *ngIf="password?.errors?.['passwordStrength']">Password must contain uppercase, lowercase, number and special character</span>
+                    </div>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input 
+                            [type]="confirmPasswordVisible ? 'text' : 'password'"
+                            id="confirmPassword" 
+                            formControlName="confirmPassword"
+                            class="form-control"
+                            placeholder="Confirm your password"
+                            [class.error]="(confirmPassword?.invalid && confirmPassword?.touched) || signupForm.hasError('passwordMismatch')">
+                        <button 
+                            type="button" 
+                            class="password-toggle"
+                            (click)="toggleConfirmPasswordVisibility()">
+                            <i [class]="confirmPasswordVisible ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                        </button>
+                    </div>
+                    <div class="password-feedback">
+                        <div class="match" *ngIf="passwordsMatch() && confirmPassword?.value">
+                            ✓ Passwords match
+                        </div>
+                        <div class="not-match" *ngIf="passwordsDontMatch()">
+                            ✗ Passwords do not match
+                        </div>
+                    </div>
+                    <div class="validation-error" *ngIf="confirmPassword?.invalid && confirmPassword?.touched">
+                        <span *ngIf="confirmPassword?.errors?.['required']">Please confirm your password</span>
+                    </div>
+                    <!-- Password Match Indicator -->
+<div class="password-feedback" *ngIf="password?.value && confirmPassword?.value">
+    <div class="match" *ngIf="password?.value === confirmPassword?.value">
+        <i class="fas fa-check-circle"></i> Passwords match
     </div>
-
-    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="card-body">
-      <!-- Name Field -->
-      <div class="form-group">
-        <label for="name" class="form-label">Full Name</label>
-        <div class="input-with-icon">
-          <i class="icon-user"></i>
-          <input 
-            type="text" 
-            id="name" 
-            formControlName="name"
-            class="form-control"
-            placeholder="Enter your full name"
-            [class.error]="name?.invalid && name?.touched">
-        </div>
-        <div class="validation-error" *ngIf="name?.invalid && name?.touched">
-          <span *ngIf="name?.errors?.['required']">Name is required</span>
-          <span *ngIf="name?.errors?.['minlength']">Name must be at least 2 characters</span>
-        </div>
-      </div>
-
-      <!-- Email Field -->
-      <div class="form-group">
-        <label for="email" class="form-label">Email Address</label>
-        <div class="input-with-icon">
-          <i class="icon-email"></i>
-          <input 
-            type="email" 
-            id="email" 
-            formControlName="email"
-            class="form-control"
-            placeholder="Enter your email"
-            [class.error]="email?.invalid && email?.touched">
-        </div>
-        <div class="validation-error" *ngIf="email?.invalid && email?.touched">
-          <span *ngIf="email?.errors?.['required']">Email is required</span>
-          <span *ngIf="email?.errors?.['email']">Please enter a valid email</span>
-        </div>
-      </div>
-
-      <!-- Contact Field -->
-      <div class="form-group">
-        <label for="contact" class="form-label">Contact Number</label>
-        <div class="input-with-icon">
-          <i class="icon-phone"></i>
-          <input 
-            type="tel" 
-            id="contact" 
-            formControlName="contact"
-            class="form-control"
-            placeholder="Enter your 10-digit phone number"
-            [class.error]="contact?.invalid && contact?.touched">
-        </div>
-        <div class="validation-error" *ngIf="contact?.invalid && contact?.touched">
-          <span *ngIf="contact?.errors?.['required']">Contact number is required</span>
-          <span *ngIf="contact?.errors?.['pattern']">Please enter a valid 10-digit phone number</span>
-        </div>
-      </div>
-
-      <!-- Password Field -->
-      <div class="form-group">
-        <label for="password" class="form-label">Password</label>
-        <div class="input-with-icon">
-          <i class="icon-lock"></i>
-          <input 
-            [type]="passwordVisible ? 'text' : 'password'"
-            id="password" 
-            formControlName="password"
-            class="form-control"
-            placeholder="Create a strong password"
-            [class.error]="password?.invalid && password?.touched">
-          <button 
-            type="button" 
-            class="password-toggle"
-            (click)="togglePasswordVisibility()">
-            <i [class]="passwordVisible ? 'icon-eye-off' : 'icon-eye'"></i>
-          </button>
-        </div>
-
-        <!-- Password Strength Indicator -->
-        <div class="password-feedback" *ngIf="password?.value">
-          <div class="strength-meter">
-            <div class="strength-meter-fill" [style.width.%]="getStrengthPercentage()" 
-                 [class.weak]="getPasswordStrength() === 'weak'"
-                 [class.average]="getPasswordStrength() === 'average'"
-                 [class.strong]="getPasswordStrength() === 'strong'"></div>
-          </div>
-          <div class="strength-text" 
-               [class.weak]="getPasswordStrength() === 'weak'"
-               [class.average]="getPasswordStrength() === 'average'"
-               [class.strong]="getPasswordStrength() === 'strong'">
-            {{ getPasswordStrength() === 'weak' ? 'Weak Password' : 
-               getPasswordStrength() === 'average' ? 'Average Password' : 
-               'Strong Password' }}
-          </div>
-        </div>
-      </div>
-
-      <!-- Confirm Password Field -->
-      <div class="form-group">
-        <label for="confirmPassword" class="form-label">Confirm Password</label>
-        <div class="input-with-icon">
-          <i class="icon-lock"></i>
-          <input 
-            [type]="confirmPasswordVisible ? 'text' : 'password'"
-            id="confirmPassword" 
-            formControlName="confirmPassword"
-            class="form-control"
-            placeholder="Confirm your password"
-            [class.error]="(confirmPassword?.invalid && confirmPassword?.touched) || signupForm.hasError('passwordMismatch')">
-          <button 
-            type="button" 
-            class="password-toggle"
-            (click)="toggleConfirmPasswordVisibility()">
-            <i [class]="confirmPasswordVisible ? 'icon-eye-off' : 'icon-eye'"></i>
-          </button>
-        </div>
-        <div class="password-feedback">
-          <div class="match" *ngIf="confirmPassword?.value && !signupForm.hasError('passwordMismatch')">
-            ✓ Passwords match
-          </div>
-          <div class="not-match" *ngIf="signupForm.hasError('passwordMismatch') && confirmPassword?.touched">
-            ✗ Passwords do not match
-          </div>
-        </div>
-      </div>
-
-      <!-- Password Requirements -->
-      <div class="requirements">
-        <h3>Password Requirements:</h3>
-        <div class="requirement" [class.valid]="requirements.length">
-          <i [class]="requirements.length ? 'icon-check' : 'icon-circle'"></i>
-          <span>At least 8 characters</span>
-        </div>
-        <div class="requirement" [class.valid]="requirements.uppercase">
-          <i [class]="requirements.uppercase ? 'icon-check' : 'icon-circle'"></i>
-          <span>One uppercase letter (A-Z)</span>
-        </div>
-        <div class="requirement" [class.valid]="requirements.lowercase">
-          <i [class]="requirements.lowercase ? 'icon-check' : 'icon-circle'"></i>
-          <span>One lowercase letter (a-z)</span>
-        </div>
-        <div class="requirement" [class.valid]="requirements.number">
-          <i [class]="requirements.number ? 'icon-check' : 'icon-circle'"></i>
-          <span>One number (0-9)</span>
-        </div>
-        <div class="requirement" [class.valid]="requirements.special">
-          <i [class]="requirements.special ? 'icon-check' : 'icon-circle'"></i>
-          <span>One special character (!@#$%^&*)</span>
-        </div>
-      </div>
-
-      <!-- Submit Button -->
-      <button 
-        type="submit" 
-        class="submit-btn"
-        [class.disabled]="signupForm.invalid"
-        [disabled]="signupForm.invalid">
-        Create Account
-      </button>
-
-      <div class="login-link">
-        Already have an account? <a href="#">Sign In</a>
-      </div>
-    </form>
-  </div>
+    <div class="not-match" *ngIf="password?.value !== confirmPassword?.value && confirmPassword?.touched">
+        <i class="fas fa-times-circle"></i> Passwords do not match
+    </div>
 </div>
+                </div>
+
+                <!-- Password Requirements -->
+                <div class="requirements">
+                    <h3>Password Requirements:</h3>
+                    <div class="requirement" [class.valid]="isRequirementMet('length')">
+                        <i [class]="isRequirementMet('length') ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
+                        <span>At least 8 characters</span>
+                    </div>
+                    <div class="requirement" [class.valid]="isRequirementMet('uppercase')">
+                        <i [class]="isRequirementMet('uppercase') ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
+                        <span>One uppercase letter (A-Z)</span>
+                    </div>
+                    <div class="requirement" [class.valid]="isRequirementMet('lowercase')">
+                        <i [class]="isRequirementMet('lowercase') ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
+                        <span>One lowercase letter (a-z)</span>
+                    </div>
+                    <div class="requirement" [class.valid]="isRequirementMet('number')">
+                        <i [class]="isRequirementMet('number') ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
+                        <span>One number (0-9)</span>
+                    </div>
+                    <div class="requirement" [class.valid]="isRequirementMet('special')">
+                        <i [class]="isRequirementMet('special') ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
+                        <span>One special character (!@#$%^&*)</span>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit" 
+                    class="submit-btn"
+                    [class.disabled]="signupForm.invalid || isSubmitting"
+                    [disabled]="signupForm.invalid || isSubmitting">
+                    <span *ngIf="!isSubmitting">Create Account</span>
+                    <span *ngIf="isSubmitting">
+                        <i class="fas fa-spinner fa-spin"></i> Creating Account...
+                    </span>
+                </button>
+
+                <div class="login-link">
+                    Already have an account? <a href="#">Sign In</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
