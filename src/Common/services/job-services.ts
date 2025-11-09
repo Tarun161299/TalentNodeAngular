@@ -41,4 +41,9 @@ export class JobServices {
       
         return this.http.post<any>(`${this.baseUrl+ApiEndpoints.ApplyForJobs}`,data ,{ headers: this.getHeaders() });
       }
+
+      UpdateApllicantJobStatus(data:any ): Observable<any> {
+      
+        return this.http.post<any>(`${this.baseUrl+ApiEndpoints.UpdateApllicantJobStatus}`,data ,{ headers: this.getHeaders() });
+      }
 }

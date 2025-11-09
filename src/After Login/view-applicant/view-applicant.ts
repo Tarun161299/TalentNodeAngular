@@ -5,7 +5,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { EmployeeService } from '../../Common/services/employee-service';
-
+import { NgSelectModule } from '@ng-select/ng-select';
+import { JobServices } from '../../Common/services/job-services';
+import { ToastrService } from 'ngx-toastr';
 interface Applicant {
   Id: string;
   FirstName: string;
@@ -19,6 +21,8 @@ interface Applicant {
   Experience: Experience[];
   Skills: string[];
   AppliedDate: Date;
+  totalPages?:0;
+  totalRecords?:0;
   Status: 'pending' | 'reviewed' | 'shortlisted' | 'interview' | 'rejected' | 'hired';
 }
 
@@ -38,11 +42,12 @@ interface ApiResponse {
 @Component({
   selector: 'view-applicant',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,NgSelectModule],
   templateUrl: './view-applicant.html',
   styleUrl: './view-applicant.css'
 })
 export class ViewApplicant implements OnInit {
+  statusForApplicant:any;
   applicants: Applicant[] = [];
   selectedApplicant: Applicant | null = null;
   
@@ -61,16 +66,20 @@ export class ViewApplicant implements OnInit {
     private sanitizer: DomSanitizer,
     private http: HttpClient,
     private route: ActivatedRoute,
-    private empService:EmployeeService
+    private empService:EmployeeService,
+    private jobServices:JobServices,
+     private toastr: ToastrService
   ) {}
 
-  ngOnInit() {
-    this.jobId = Number(this.route.snapshot.paramMap.get('jobid'));
+  loadapplicantsreal(){
+    debugger
+  this.jobId = Number(this.route.snapshot.paramMap.get('jobid'));
     var data={
-  jobId: 1,
-  pageNumber: 1,
-  pageSize: 10
+  jobId: this.jobId,
+  pageNumber:  this.currentPage,
+  pageSize: this.itemsPerPage
 };
+debugger
     this.empService.ApplicantList(data).subscribe(data=>{
         this.applicants = data.map((app:any) => ({
       Id: app.id,
@@ -88,12 +97,50 @@ export class ViewApplicant implements OnInit {
         duration: `${exp.startDate} - ${exp.endDate || 'Present'}`
       })) || [],
       Skills: app.skills?.map((s:any) => s.name) || [],
-      AppliedDate: app.appliedDate ? new Date(app.appliedDate) : null,
-      Status: app.applicantStatus || 'Pending'
+      AppliedDate: app.applyDate ? new Date(app.applyDate) : null,
+      Status: app.applicantStatusID,
+      totalPages: app.totalPages,
+      totalRecords:app.totalRecords,
     }));
+
+          this.totalCount = this.applicants.length>0?this.applicants[0].totalRecords??0:0 ;
+        this.totalPages = this.applicants.length>0?this.applicants[0].totalPages??0:0 ;
+        //this.currentPage = response.currentPage;
+        this.setupPagination();
     })
-    this.loadApplicants();
   }
+  ngOnInit() {
+  this.loadapplicantsreal();
+  
+  }
+
+  applyjob(data:any){
+  //ApplyForJobs
+
+}
+formatDateRange(range: string): string {
+  if (!range) return '';
+
+  // Split the range by '-'
+  const parts = range.split('-').map(p => p.trim());
+  
+  // Expecting something like ["2025", "10", "2025", "10"]
+  if (parts.length < 4) return range;
+
+  const startYear = parts[0];
+  const startMonth = parts[1];
+  const endYear = parts[2];
+  const endMonth = parts[3];
+
+  // Convert month number to short month name
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const startMonthName = monthNames[parseInt(startMonth, 10) - 1] || startMonth;
+  const endMonthName = monthNames[parseInt(endMonth, 10) - 1] || endMonth;
+
+  return `${startMonthName} ${startYear} - ${endMonthName} ${endYear}`;
+}
 
   loadApplicants() {
     this.isLoading = true;
@@ -240,28 +287,29 @@ export class ViewApplicant implements OnInit {
   }
 
   setupPagination() {
-    this.totalPages = Math.ceil(this.totalCount / this.itemsPerPage);
+   // this.totalPages = Math.ceil(this.totalCount / this.itemsPerPage);
     this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 
   goToPage(page: number) {
+    debugger
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
-      this.loadApplicants();
+      this.loadapplicantsreal();
     }
   }
 
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
-      this.loadApplicants();
+      this.loadapplicantsreal();
     }
   }
 
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.loadApplicants();
+      this.loadapplicantsreal();
     }
   }
 
@@ -272,16 +320,31 @@ export class ViewApplicant implements OnInit {
   }
 
   onStatusChange(applicant: Applicant) {
+    debugger
     // API call to update status
-    const apiUrl = `https://your-api.com/applicants/${applicant.Id}/status`;
-    this.http.put(apiUrl, { status: applicant.Status }).subscribe({
-      next: () => {
-        console.log('Status updated successfully');
-      },
-      error: (error) => {
-        console.error('Error updating status:', error);
-      }
-    });
+   this.statusForApplicant={
+    candidateId: applicant.Id,
+  jobId: Number(this.jobId),
+  status: applicant.Status.toString(),
+  appliedDate: new Date(),
+  updatedDate: new Date(),
+  createdBy: "Recruiter"
+  };
+  this.jobServices.UpdateApllicantJobStatus(this.statusForApplicant).subscribe({
+            next: (data: any) => {
+              if (data > 0) {
+              this.loadapplicantsreal();
+                this.toastr.success('Status changed successfully!', 'Success');
+              }
+              else {
+                this.toastr.error('Some error Occured!');
+              }
+             
+            }, error: (err: any) => {
+              this.toastr.error('Some error Occured!');
+            
+            }
+          })
   }
 
   viewResume(applicant: Applicant) {

@@ -10,12 +10,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LoaderService } from '../Common/services/loader-service';
 import { LoaderComponent } from '../loader-component/loader-component';
 import { JobList } from '../After Login/job-list/job-list';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,BeforeLoginComponent,AfterLoginComponent,NgxExtendedPdfViewerModule,ReactiveFormsModule,LoaderComponent],
+  imports: [RouterOutlet,BeforeLoginComponent,NgSelectModule,AfterLoginComponent,NgxExtendedPdfViewerModule,ReactiveFormsModule,LoaderComponent],
 
     
   templateUrl: './app.html',
