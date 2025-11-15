@@ -33,6 +33,7 @@
     "@angular/router": "^20.1.0",
     "@fortawesome/fontawesome-free": "^7.0.0",
     "cropperjs": "^2.1.0",
+    "@ng-select/ng-select": "^20.7.0",
     "ng2-pdf-viewer": "^10.4.0",
     "ngx-extended-pdf-viewer": "^25.0.0-alpha.2",
     "ngx-toastr": "^19.1.0",

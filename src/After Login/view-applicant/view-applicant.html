@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <div class="applicant-container">
   <div class="page-header">
     <h2><i class="fas fa-users"></i> Job Applicants</h2>
@@ -12,11 +14,11 @@
     <p>Loading applicants...</p>
   </div>
 
-  <!-- Error State -->
+  <!-- Error State
   <div *ngIf="isError && !isLoading" class="error-state">
     <i class="fas fa-exclamation-triangle"></i>
     <p>Failed to load applicants. Showing demo data.</p>
-  </div>
+  </div> -->
 
   <!-- Vertical Applicant List -->
   <div *ngIf="!isLoading" class="applicant-vertical-list">
@@ -58,7 +60,7 @@
           <div *ngFor="let exp of applicant.Experience" class="experience-item">
             <div class="exp-header">
               <strong class="exp-position">{{ exp.position }}</strong>
-              <span class="exp-duration">{{ exp.duration }}</span>
+              <span class="exp-duration">{{ formatDateRange(exp.duration) }}</span>
             </div>
             <span class="exp-company">{{ exp.company }}</span>
           </div>
@@ -79,18 +81,17 @@
       <div class="actions-section">
         <div class="status-container">
           <label class="status-label">Application Status:</label>
-          <select 
+          <ng-select 
             [(ngModel)]="applicant.Status" 
             (change)="onStatusChange(applicant)"
             class="status-select"
             [ngClass]="'status-' + applicant.Status">
-            <option value="pending">⏳ Pending</option>
-            <option value="reviewed">👁️ Reviewed</option>
-            <option value="shortlisted">⭐ Shortlisted</option>
-            <option value="interview">💼 Interview</option>
-            <option value="rejected">❌ Rejected</option>
-            <option value="hired">✅ Hired</option>
-          </select>
+   <ng-option [value]="2"><i class="fas fa-clipboard-list"></i> Applied</ng-option>
+  <ng-option [value]="3"><i class="fas fa-user-check"></i> Shortlisted</ng-option>
+  <ng-option [value]="4"><i class="fas fa-comments"></i> Interview</ng-option>
+  <ng-option [value]="5"><i class="fas fa-user-plus"></i> Hired</ng-option>
+  <ng-option [value]="6"><i class="fas fa-times-circle"></i> Rejected</ng-option>
+          </ng-select>
         </div>
         
         <div class="resume-actions">
@@ -145,6 +146,8 @@
     <div class="page-size-selector">
       <label>Per page:</label>
       <select [(ngModel)]="itemsPerPage" (change)="goToPage(1)" class="page-size-select">
+        <option value="2">2</option>
+           <option value="5">5</option>
         <option value="10">10</option>
         <option value="20">20</option>
         <option value="50">50</option>
