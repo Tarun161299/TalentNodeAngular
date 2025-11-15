@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router,RouterModule} from '@angular/router';
 import { LoginService } from '../../Common/services/login';
 import { LoginDetails } from '../../Model/loginDetails';
 import { CommonModule } from '@angular/common';
@@ -8,7 +8,8 @@ import { LoaderService } from '../../Common/services/loader-service';
 
 @Component({
   selector: 'app-login-component',
-  imports: [ReactiveFormsModule   ,CommonModule],
+  standalone: true,
+  imports: [ReactiveFormsModule, CommonModule, RouterModule],
   templateUrl: './login-component.html',
   styleUrl: './login-component.css'
 })
@@ -48,7 +49,7 @@ if(response!="401"){
   if(role.toString()=="3")
    this.router.navigate(['/welcome/dashboard']);
   else if(role.toString()=="4"){
-    this.router.navigate(['/welcome/UserProfile']);
+    this.router.navigate(['/welcome/dashboard']);
   }
   
 else{
@@ -67,6 +68,11 @@ this.loaderService.hide()
       console.log('Form is invalid');
     }
   }
+showPassword = false;
+
+togglePassword() {
+  this.showPassword = !this.showPassword;
+}
 
   getClaimsFromToken(token: string): any {
   if (!token) return null;

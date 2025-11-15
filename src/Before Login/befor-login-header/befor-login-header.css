@@ -1,12 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 /* Header styling */
 .header {
-  background-color: #1976d2;
-  color: white;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  color: white;   
   padding: 1rem 0;
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 1000;                   
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 

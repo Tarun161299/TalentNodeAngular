@@ -1,80 +1,150 @@
-<div class="dashboard">
-  
-  <!-- Employer Header -->
-  <div class="employer-header">
-    <div class="company-logo">
-      <img src="src/company-logo.png" alt="Company Logo">
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <h1>Welcome back, <span class="user-name">{{userName}}</span>!</h1>
+    <p>Here's your job search overview</p>
+  </div>
+
+  <!-- Profile Completeness Section -->
+  <div class="profile-completeness-section">
+    <div class="completeness-header">
+      <h3>Profile Completeness</h3>
+      <span class="percentage">{{profileCompleteness}}%</span>
     </div>
-    <div class="company-info">
-      <h2>Tech Mahindra</h2>
-      <p>Recruiter: Nitin</p>
-      <p>Industry: IT Services | Location: Noida</p>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="profileCompleteness"></div>
+    </div>
+    <p class="completeness-text">Complete your profile to increase your chances of getting hired</p>
+    <button class="complete-profile-btn" (click)="completeProfile()">Complete Profile</button>
+  </div>
+
+  <!-- Total Applications Submitted -->
+  <div class="total-applications-section">
+    <div class="total-applications-header">
+      <h3>Total Applications Submitted</h3>
+      <span class="total-count">{{getTotalApplications()}}</span>
+    </div>
+    <div class="applications-breakdown">
+      <div class="breakdown-item" *ngFor="let stat of applicationStats">
+        <div class="breakdown-label">
+          <div class="breakdown-dot" [class]="stat.type"></div>
+          {{stat.label}}
+        </div>
+        <span class="breakdown-count">{{stat.count}}</span>
+      </div>
     </div>
   </div>
 
-  <!-- Stats Cards -->
-  <div class="stats-cards">
-    <div class="card">
-      <h3>12</h3>
-      <p>Post Jobs</p>
-    </div>
-    <div class="card">
-      <h3>8</h3>
-      <p>Active Jobs</p>
-    </div>
-    <div class="card">
-      <h3>150</h3>
-      <p>Applications</p>
-    </div>
-    <div class="card">
-      <h3>25</h3>
-      <p>Shortlisted</p>
+  <!-- Application Stats Section -->
+  <div class="stats-section">
+    <div class="stat-card" *ngFor="let stat of applicationStats">
+      <div class="stat-icon" [class]="stat.type">
+        <i [class]="stat.icon"></i>
+      </div>
+      <div class="stat-info">
+        <h3 class="stat-count">{{stat.count}}</h3>
+        <p class="stat-label">{{stat.label}}</p>
+      </div>
     </div>
   </div>
 
-  <!-- Recent Applications -->
-  <div class="recent-applications">
-    <h3>Recent Applications</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Candidate</th>
-          <th>Applied For</th>
-          <th>Date</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Amit Sharma</td>
-          <td>Frontend Developer</td>
-          <td>12 Aug 2025</td>
-          <td><span class="status shortlisted">Shortlisted</span></td>
-        </tr>
-        <tr>
-          <td>Priya Verma</td>
-          <td>Backend Developer</td>
-          <td>11 Aug 2025</td>
-          <td><span class="status pending">Pending</span></td>
-        </tr>
-        <tr>
-          <td>Rahul Mehta</td>
-          <td>UI/UX Designer</td>
-          <td>10 Aug 2025</td>
-          <td><span class="status rejected">Rejected</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Quick Actions -->
-  <div class="quick-actions">
-    <h3>Quick Actions</h3>
-    <div class="actions">
-      <button>Post a New Job</button>
-      <button>Search Candidates</button>
-      <button>View Reports</button>
+  <!-- Application Status Summary -->
+  <div class="status-summary-section">
+    <div class="status-summary-header">
+      <h3>Application Status Summary</h3>
+    </div>
+    <div class="status-cards">
+      <div class="status-card" *ngFor="let stat of applicationStats" [class]="stat.type">
+        <div class="status-content">
+          <div class="status-count">{{stat.count}}</div>
+          <div class="status-label">{{stat.label}}</div>
+        </div>
+        <div class="status-icon">
+          <i [class]="stat.icon"></i>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- Main Content Grid -->
+  <div class="dashboard-grid">
+    <!-- Recommended Jobs -->
+    <div class="grid-section">
+      <div class="section-header">
+        <h2>Recommended For You</h2>
+        <a href="#" class="view-all">View All</a>
+      </div>
+      <div class="jobs-list">
+        <div class="job-card" *ngFor="let job of recommendedJobs">
+          <div class="job-header">
+            <div class="company-logo">
+              <img [src]="job.companyLogo" [alt]="job.companyName + ' logo'">
+            </div>
+            <div class="job-info">
+              <h3 class="job-title">{{job.title}}</h3>
+              <p class="company-name">{{job.companyName}}</p>
+            </div>
+          </div>
+          <div class="job-details">
+            <span class="job-location">
+              <i class="fas fa-map-marker-alt"></i>
+              {{job.location}}
+            </span>
+            <span class="job-salary">
+              <i class="fas fa-money-bill-wave"></i>
+              {{job.salary}}
+            </span>
+          </div>
+          <div class="job-footer">
+            <span class="job-type" [class]="job.type.toLowerCase()">{{job.type}}</span>
+            <span class="posted-time">{{job.postedTime}}</span>
+          </div>
+          <button class="apply-btn" (click)="applyForJob(job)">Apply Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar Sections -->
+    <div class="sidebar-sections">
+      <!-- Latest Jobs -->
+      <div class="sidebar-section">
+        <div class="section-header">
+          <h3>Latest Job Postings</h3>
+          <a href="#" class="view-all">View All</a>
+        </div>
+        <div class="latest-jobs-list">
+          <div class="latest-job-item" *ngFor="let job of latestJobs">
+            <div class="latest-job-info">
+              <h4>{{job.title}}</h4>
+              <p class="company">{{job.companyName}}</p>
+              <span class="time-ago">{{job.timeAgo}}</span>
+            </div>
+            <button class="quick-apply-btn" (click)="quickApply(job)">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recently Viewed -->
+      <div class="sidebar-section">
+        <div class="section-header">
+          <h3>Recently Viewed</h3>
+          <a href="#" class="view-all">View All</a>
+        </div>
+        <div class="recently-viewed-list">
+          <div class="recent-job-item" *ngFor="let job of recentlyViewedJobs">
+            <div class="recent-job-info">
+              <h4>{{job.title}}</h4>
+              <p class="company">{{job.companyName}}</p>
+              <span class="viewed-time">{{job.viewedTime}}</span>
+            </div>
+            <button class="view-again-btn" (click)="viewJobAgain(job)">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

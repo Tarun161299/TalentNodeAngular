@@ -10,6 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LoaderService } from '../Common/services/loader-service';
 import { LoaderComponent } from '../loader-component/loader-component';
 import { JobList } from '../After Login/job-list/job-list';
+import { UserProfileComponent } from '../After Login/user-profile/user-profile';
 
 
 

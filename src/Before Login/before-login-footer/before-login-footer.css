@@ -1,6 +1,7 @@
 /* Footer main styling */
 .footer {
-  background: #1a1a1a;
+  background: linear-gradient(#6a11cb 0%, #2575fc 100%); 
+
   color: #fff;
   padding: 20px 0 0;
   font-family: Arial, sans-serif;
@@ -21,12 +22,12 @@
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 5px;
-  color: #ff9900; /* Accent color */
+  color: #fff; /* Accent color */
 }
 
 .footer-text {
   font-size: 14px;
-  color: #ccc;
+  color: #fff;
 }
 
 /* Right section (links) */
@@ -37,7 +38,7 @@
 }
 
 .footer-link {
-  color: #ccc;
+  color: #fff;
   text-decoration: none;
   font-size: 14px;
   transition: color 0.3s;
@@ -53,5 +54,6 @@
   text-align: center;
   padding: 10px;
   font-size: 12px;
-  color: #999;
+  color: #fff;
 }
+
