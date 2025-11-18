@@ -33,7 +33,8 @@ export const ApiEndpoints = {
      GetJobsDetailsByJobid:`Jobs/GetJobsbyjobid?jobid=`,
      ApplyForJobs:`Jobs/ApplyForJob`,
      UpdateApllicantJobStatus:`Jobs/UpdateApllicantJobStatus`,
-     ApplicantList:`Employee/GetApllicantList`
+     ApplicantList:`Employee/GetApllicantList`,
+     sendEmail:`EmailVerification/send-otp`
 
   
 };

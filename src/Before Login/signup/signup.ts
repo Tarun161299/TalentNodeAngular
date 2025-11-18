@@ -5,6 +5,7 @@ import { SignupService } from '../../Common/services/signup';
 import { SignupDetails } from '../../Model/SignupDetails';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { EmailService } from '../../Common/services/email-service';
 
 // Interface definitions
 interface PasswordRequirements {
@@ -28,6 +29,9 @@ interface PasswordStrengthResult {
 })
 export class Signup implements OnInit {
   signupForm: FormGroup;
+  isOpen = false;
+emailmodal:string="";
+  otpForm: FormGroup;
   passwordVisible = false;
   confirmPasswordVisible = false;
 
@@ -50,7 +54,8 @@ export class Signup implements OnInit {
     private fb: FormBuilder,
     private signupService: SignupService,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private emailservice:EmailService
   ) {
     this.signupForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -63,8 +68,63 @@ export class Signup implements OnInit {
       ]],
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
+
+        this.otpForm = this.fb.group({
+      otp: [
+        '', 
+        [
+          Validators.required,
+          Validators.pattern(/^[0-9]+$/),
+          Validators.minLength(6),
+          Validators.maxLength(6)
+        ]
+      ]
+    });
+  }
+  open() {
+    this.isOpen = true;
   }
 
+  close() {
+    this.isOpen = false;
+    this.otpForm.reset();
+  }
+
+  submit() {
+    if (this.otpForm.invalid) return;
+debugger;
+    var value = this.otpForm.value.otp;
+
+        const formData = this.signupForm.value;
+      // this.emailmodal=formData.email;
+      this.signupdetails = {
+        name: formData.name,
+        email: formData.email, 
+        phoneNumber: formData.contact,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        otp:value.toString()
+      };
+
+      this.signupService.signupEmployee(this.signupdetails).subscribe({
+        next: (response) => {
+          this.toastr.success('Signup Successful!');
+          this.resetForm();
+        // Navigate to login page after 2 seconds
+        setTimeout(() => {
+          this.router.navigate(['/login']); // Adjust the route as per your login page route
+        }, 2000);
+      },
+        error: (error) => {
+          console.error('Signup error:', error);
+          this.toastr.error('Signup failed! Please try again.', 'Error');
+        }
+      });
+
+    // TODO: call API here
+
+    this.close();
+  }
   ngOnInit() {
     // Subscribe to password changes
     this.signupForm.controls['password'].valueChanges.subscribe(value => {
@@ -249,30 +309,20 @@ export class Signup implements OnInit {
   // Form submission
   onSubmit(): void {
     if (this.signupForm.valid) {
-      const formData = this.signupForm.value;
-      
-      this.signupdetails = {
-        name: formData.name,
-        email: formData.email, 
-        phoneNumber: formData.contact,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword
-      };
-
-      this.signupService.signupEmployee(this.signupdetails).subscribe({
-        next: (response) => {
-          this.toastr.success('Signup Successful!');
-          this.resetForm();
-        // Navigate to login page after 2 seconds
-        setTimeout(() => {
-          this.router.navigate(['/login']); // Adjust the route as per your login page route
-        }, 2000);
-      },
-        error: (error) => {
-          console.error('Signup error:', error);
-          this.toastr.error('Signup failed! Please try again.', 'Error');
-        }
-      });
+      debugger
+     const formData = this.signupForm.value;
+       this.emailmodal=formData.email;
+       var emailsetting={
+  email: this.emailmodal
+}
+this.emailservice.Sendemail(emailsetting).subscribe((data:any)=>{
+  if(data==0){
+    this.toastr.error("email is invalid !!")
+  }
+  if(data==1){
+this.isOpen = true;
+  }
+})
     } else {
       this.showFormErrors();
     }
@@ -321,34 +371,34 @@ export class Signup implements OnInit {
   isSubmitting: boolean = false;
 
   // Enhanced submit with loading state
-  async onSubmitWithLoading(): Promise<void> {
-    if (this.signupForm.valid && !this.isSubmitting) {
-      this.isSubmitting = true;
+  // async onSubmitWithLoading(): Promise<void> {
+  //   if (this.signupForm.valid && !this.isSubmitting) {
+  //     this.isSubmitting = true;
       
-      try {
-        const formData = this.signupForm.value;
+  //     try {
+  //       const formData = this.signupForm.value;
         
-        this.signupdetails = {
-          name: formData.name,
-          email: formData.email, 
-          phoneNumber: formData.contact,
-          password: formData.password,
-          confirmPassword: formData.confirmPassword
-        };
+  //       this.signupdetails = {
+  //         name: formData.name,
+  //         email: formData.email, 
+  //         phoneNumber: formData.contact,
+  //         password: formData.password,
+  //         confirmPassword: formData.confirmPassword
+  //       };
 
-        await this.signupService.signupEmployee(this.signupdetails).toPromise();
-        this.toastr.success('Signup Successful!');
-        this.resetForm();
-        // Navigate to login page after successful signup
-      this.router.navigate(['/login']);
-      } catch (error) {
-        console.error('Signup error:', error);
-        this.toastr.error('Signup failed! Please try again.', 'Error');
-      } finally {
-        this.isSubmitting = false;
-      }
-    } else {
-      this.showFormErrors();
-    }
-  }
+  //       await this.signupService.signupEmployee(this.signupdetails).toPromise();
+  //       this.toastr.success('Signup Successful!');
+  //       this.resetForm();
+  //       // Navigate to login page after successful signup
+  //     this.router.navigate(['/login']);
+  //     } catch (error) {
+  //       console.error('Signup error:', error);
+  //       this.toastr.error('Signup failed! Please try again.', 'Error');
+  //     } finally {
+  //       this.isSubmitting = false;
+  //     }
+  //   } else {
+  //     this.showFormErrors();
+  //   }
+  // }
 }

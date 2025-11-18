@@ -1,3 +1,41 @@
+<!-- OTP Modal -->
+<!-- OTP Modal -->
+<div id="otpModal" class="otp-modal" [class.show]="isOpen">
+    <div class="otp-modal-content">
+
+        <h2 class="otp-title">Enter OTP</h2>
+  <p class="otp-info">An OTP has been sent to your {{emailmodal}}.</p>
+        <form [formGroup]="otpForm">
+            <input 
+                type="text"
+                id="otpInput"
+                class="otp-input"
+                formControlName="otp"
+                placeholder="Enter 6-digit OTP"
+                maxlength="6">
+
+            <!-- Validation errors -->
+            <div class="otp-error" *ngIf="otpForm.controls['otp'].touched && otpForm.controls['otp'].invalid">
+                <span *ngIf="otpForm.controls['otp'].errors?.['required']">OTP is required.</span>
+                <span *ngIf="otpForm.controls['otp'].errors?.['pattern']">Enter only digits.</span>
+                <span *ngIf="otpForm.controls['otp'].errors?.['minlength']">OTP must be 6 digits.</span>
+            </div>
+
+            <div class="otp-buttons">
+                <button type="button" class="otp-cancel-btn" (click)="close()">Cancel</button>
+                <button 
+                    type="button" 
+                    class="otp-submit-btn"
+                    [disabled]="otpForm.invalid"
+                    (click)="submit()">
+                    Submit
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
