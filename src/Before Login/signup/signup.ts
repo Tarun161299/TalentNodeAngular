@@ -110,7 +110,11 @@ this.loader.show();
 
       this.signupService.signupEmployee(this.signupdetails).subscribe({
         next: (response) => {
-          this.toastr.success('Signup Successful!');
+        
+         
+this.toastr.success('Signup Successful!');
+        
+          
           this.resetForm();
           this.loader.hide();
         // Navigate to login page after 2 seconds
@@ -321,6 +325,9 @@ this.loader.show();
   email: this.emailmodal
 }
 this.emailservice.Sendemail(emailsetting).subscribe({next:(data:any)=>{
+    if(data==333){
+               this.toastr.warning('Already have an account with this email');
+          }
   if(data==0){
     this.toastr.error("email is invalid !!")
   }
