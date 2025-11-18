@@ -3,14 +3,13 @@ import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class LoaderService {
-  private _loading = new BehaviorSubject<boolean>(false);
-  public readonly loading$ = this._loading.asObservable();
+ isLoading: boolean = false;
 
-  show() {
-    this._loading.next(true);
+ show() {
+    this.isLoading = true;
   }
 
   hide() {
-    this._loading.next(false);
+    this.isLoading = false;
   }
 }

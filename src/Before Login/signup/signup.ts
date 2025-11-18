@@ -6,6 +6,7 @@ import { SignupDetails } from '../../Model/SignupDetails';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { EmailService } from '../../Common/services/email-service';
+import { LoaderService } from '../../Common/services/loader-service';
 
 // Interface definitions
 interface PasswordRequirements {
@@ -55,6 +56,7 @@ emailmodal:string="";
     private signupService: SignupService,
     private toastr: ToastrService,
     private router: Router,
+     private loader: LoaderService,
     private emailservice:EmailService
   ) {
     this.signupForm = this.fb.group({
@@ -92,7 +94,7 @@ emailmodal:string="";
 
   submit() {
     if (this.otpForm.invalid) return;
-debugger;
+this.loader.show();
     var value = this.otpForm.value.otp;
 
         const formData = this.signupForm.value;
@@ -110,12 +112,14 @@ debugger;
         next: (response) => {
           this.toastr.success('Signup Successful!');
           this.resetForm();
+          this.loader.hide();
         // Navigate to login page after 2 seconds
         setTimeout(() => {
           this.router.navigate(['/login']); // Adjust the route as per your login page route
         }, 2000);
       },
         error: (error) => {
+          this.loader.hide();
           console.error('Signup error:', error);
           this.toastr.error('Signup failed! Please try again.', 'Error');
         }
@@ -310,22 +314,28 @@ debugger;
   onSubmit(): void {
     if (this.signupForm.valid) {
       debugger
+      this.loader.show();
      const formData = this.signupForm.value;
        this.emailmodal=formData.email;
        var emailsetting={
   email: this.emailmodal
 }
-this.emailservice.Sendemail(emailsetting).subscribe((data:any)=>{
+this.emailservice.Sendemail(emailsetting).subscribe({next:(data:any)=>{
   if(data==0){
     this.toastr.error("email is invalid !!")
   }
   if(data==1){
 this.isOpen = true;
   }
-})
+  this.loader.hide();
+},error:(err:any)=>{
+     this.toastr.error("email is invalid !!"),
+     this.loader.hide();
+}})
     } else {
       this.showFormErrors();
-    }
+    };
+    
   }
 
   // Reset form after successful submission

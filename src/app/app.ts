@@ -27,7 +27,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 export class App {
 isLoading:any;
   constructor(private loaderService: LoaderService) {
-      this.isLoading = this.loaderService.loading$;
+      this.isLoading = this.loaderService.isLoading;
   }
   protected readonly title = signal('TalentNodeAngular');
 }
