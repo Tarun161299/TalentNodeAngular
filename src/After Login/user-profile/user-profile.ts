@@ -7,6 +7,8 @@ import { Employee } from '../../Model/AddProfile';
 import { MasterServices } from '../../Common/services/master-services';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { Imageupload } from '../../Common/services/imageupload';
+import { LoaderComponent } from '../../loader-component/loader-component';
+import { LoaderService } from '../../Common/services/loader-service';
 
 interface Education {
   degEmpId: number;
@@ -154,7 +156,8 @@ closeModal() {
     private toastr: ToastrService,
     private employeeService: EmployeeService,
     private masterServices: MasterServices,
-    private imageperofile:Imageupload
+    private imageperofile:Imageupload,
+    private loader:LoaderService
   ) {
     this.showP=this.imageperofile.base64String();
     this.profileForm = this.createForm();
@@ -170,6 +173,7 @@ viewResume() {
     // Implement PDF opening logic here
   }
   ngOnInit() {
+      this.loader.show()
     var token = localStorage.getItem('token');
     if (this.isEditing == false) {
       this.profileForm.get('personal.State')?.disable();
@@ -186,9 +190,12 @@ viewResume() {
   }
 
   GetUserDetailsById(id: number) {
+
+
     this.employeeService.getEmployeedetailsById(id).subscribe({
       next: (data: any) => {
         debugger;
+        this.loader.hide()
         this.user = data;
         
         this.user.avatar= (data.avatar==null||data.avatar==undefined||data.avatar=='')?`data:image/png;base64,${this.showP}`:`data:image/jpeg;base64,${data.avatar}`;
@@ -222,7 +229,7 @@ viewResume() {
         this.setFormArray('experience', this.user.experience);
         this.setFormArray('skills', this.user.skills);
       }, error: (err: any) => {
-
+this.loader.hide()
       }
     })
   }

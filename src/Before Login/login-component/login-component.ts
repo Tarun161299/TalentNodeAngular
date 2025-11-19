@@ -5,6 +5,7 @@ import { LoginService } from '../../Common/services/login';
 import { LoginDetails } from '../../Model/loginDetails';
 import { CommonModule } from '@angular/common';
 import { LoaderService } from '../../Common/services/loader-service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login-component',
@@ -19,7 +20,13 @@ export class LoginComponent {
   loginForm: FormGroup;
   submitted = false;
   loginDetails:LoginDetails|undefined;
-  constructor(private fb: FormBuilder,private router: Router,private loginService:LoginService,private loaderService: LoaderService) {
+  constructor(private fb: FormBuilder,
+    private router: Router,
+    private loginService:LoginService,
+    private loaderService: LoaderService,
+    private loader:LoaderService,
+    private toastr:ToastrService
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -29,10 +36,11 @@ email_input:string="";
 Password_input:string="";
 
   onLogin() {
-    this.loaderService.hide()
+    
     this.submitted = true;
 
     if (this.loginForm.valid) {
+      this.loader.show();
       const email = this.loginForm.value.email;
       const password = this.loginForm.value.password;
       this.loginDetails={
@@ -53,14 +61,14 @@ if(response!="401"){
   }
   
 else{
-  alert("invalid role")
+  this.toastr.error("invalid role")
 }
-this.loaderService.hide()
+this.loader.hide()
 }
     },error:(err:any)=>{
 
-alert("invalid credentials")
-this.loaderService.hide()
+this.toastr.error("invalid credentials")
+this.loader.hide()
     }})
     
     } else {

@@ -7,6 +7,7 @@ import { EmployeeData } from '../../Model/EmployeeData';
 import { DocumentDetails } from '../../Model/DocumentDetails';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Imageupload } from '../../Common/services/imageupload';
+import { LoaderService } from '../../Common/services/loader-service';
 
 @Component({
   selector: 'app-all-application',
@@ -24,7 +25,7 @@ pdfBlobUrl: string | null = null;
 documentdetails:any ;
 employeeList:EmployeeData[] =[];
 showP:any='';
-constructor(private employeeService:EmployeeService,private imageperofile:Imageupload) {
+constructor(private employeeService:EmployeeService,private imageperofile:Imageupload,private loader:LoaderService) {
   this.showP=this.imageperofile.base64String();
 }
 candidates = [
@@ -64,6 +65,7 @@ candidates = [
 ];
 showPdf = false;
 ngOnInit(): void {
+  this.loader.show();
   // This code runs when the page/component loads
   console.log('Page loaded!');
    this.loadAllEmployeeData();
@@ -76,10 +78,11 @@ loadAllEmployeeData(){
   
 this.employeeService.getEmployeesDetails().subscribe({
   next: (res) => {
-   
+   this.loader.hide();
     this.employeeList= res;
   },
   error: (err) => {
+       this.loader.hide();
     console.error('Error fetching documents', err);
   }
 });;
@@ -88,17 +91,18 @@ closeModal() {
     this.showPdf = false;
   }
   openPdf(id: number) {
-  
+  this.loader.show();
     debugger
     this.employeeService.getResumeByEmployeeId(id).subscribe({
       next: (res) => {
-        debugger
+        this.loader.hide()
         this.documentdetails= res;
         this.pdfBase64=this.documentdetails.fileContentBase64;//"data:application/pdf;base64,"+
         //this.pdfBase64=this.base64ToUint8Array(this.documentdetails.fileContentBase64);
         this.showPdf = true;
       },
       error: (err) => {
+        this.loader.hide()
         console.error('Error fetching documents', err);
       }
     });;

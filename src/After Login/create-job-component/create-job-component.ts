@@ -5,6 +5,7 @@ import { MasterServices } from '../../Common/services/master-services';
 import { JobServices } from '../../Common/services/job-services';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LoaderService } from '../../Common/services/loader-service';
 
 @Component({
   selector: 'app-job-create',
@@ -98,7 +99,7 @@ this. skillsOptions = [
 
   }
  ngOnInit() {
-  
+  this.loader.show()
     var token = localStorage.getItem('token');
    
     this.hrID = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).HRId);
@@ -107,10 +108,12 @@ this. skillsOptions = [
   this. getAllDepartments();
   this.getAllSkills();
   this.GetAllJobType();
+  this.loader.hide();
    this.jobId = Number(this.route.snapshot.paramMap.get('jobid'));
    if(this.jobId>0){
+    this.loader.show()
     this.jobServices.GetJobsdetail(this.jobId).subscribe((data:any)=>{
-      
+      this.loader.hide()
 this.fillJobForm(data);
     })
    }
@@ -164,7 +167,13 @@ this.fillJobForm(data);
     // { id: 'redis', name: 'Redis' }
   ];
 
-  constructor(private fb: FormBuilder,private MdServices:MasterServices,public jobServices: JobServices,   private toastr: ToastrService,private route: ActivatedRoute,private router:Router) {
+  constructor(private fb: FormBuilder,
+    private MdServices:MasterServices,
+    public jobServices: JobServices, 
+      private toastr: ToastrService,
+      private route: ActivatedRoute,
+      private loader:LoaderService,
+      private router:Router) {
     this.jobForm = this.createForm();
   }
 
@@ -341,6 +350,7 @@ private fillJobForm(job: any): void {
     this.submitted = true;
 
     if (this.jobForm.valid) {
+      this.loader.show()
       this.isSubmitting = true;
 
       // Simulate API call
@@ -357,6 +367,7 @@ private fillJobForm(job: any): void {
         };
         debugger
 this.jobServices.SaveJob(formData).subscribe({next:(data:any)=>{
+  this.loader.hide()
   if(data>0){
     if(this.jobId>0){
       this.toastr.success("updated Successfully!!")
@@ -378,6 +389,7 @@ this.toastr.success("Saved Successfully!!")
         this.jobForm.reset();
         this.resetFormArrays();
 },error:(err:any)=>{
+  this.loader.hide()
  console.log('error:', err);
         this.isSubmitting = false;
         

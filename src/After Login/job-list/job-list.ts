@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { JobServices } from '../../Common/services/job-services';
 import { Route, Router } from '@angular/router';
+import { LoaderService } from '../../Common/services/loader-service';
 
 export interface Job {
   id: number;
@@ -31,7 +32,7 @@ standalone: true,
 })
 export class JobList implements OnInit {
   hrID:number=0;
-  constructor(private jobServices:JobServices,private router:Router){
+  constructor(private jobServices:JobServices,private router:Router,private loader:LoaderService){
 
   }
   // Signals for reactive state management
@@ -183,10 +184,10 @@ closeModal(): void {
 }
   ngOnInit(): void {
     var token = localStorage.getItem('token');
-   
+   this.loader.show()
     this.hrID = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).HRId);
     this.jobServices.GetJobsHr(this.hrID).subscribe({next:(data:any)=>{
-      
+        this.loader.hide()
       
 this.jobsData=signal<Job[]>(data);
   this.filteredJobs = computed(() => {
@@ -212,7 +213,7 @@ this.jobsData=signal<Job[]>(data);
     
     return filtered;
   })},error:(err:any)=>{
-
+this.loader.hide()
     }})
     // Component initialization if needed
   }

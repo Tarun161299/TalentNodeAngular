@@ -6,6 +6,7 @@ import { JobServices } from '../../Common/services/job-services';
 import { Route, Router, RouterModule } from '@angular/router';
 import { ApplyForJob } from '../../Model/ApplyForJob';
 import { ToastrService } from 'ngx-toastr';
+import { LoaderService } from '../../Common/services/loader-service';
 
 
 export interface Job {
@@ -37,7 +38,7 @@ export interface Job {
 export class UserJoblist implements OnInit {
   empId:number=0;
   applyForJob:ApplyForJob | undefined;
-   constructor(private jobServices:JobServices,private router:Router,   private toastr: ToastrService,){
+   constructor(private jobServices:JobServices,private router:Router,private loader:LoaderService,   private toastr: ToastrService,){
  
    }
    // Signals for reactive statape management
@@ -155,6 +156,7 @@ getName(status: string): string {
 }
 applyjob(data:any){
   //ApplyForJobs
+    this.loader.show()
   this.applyForJob={
     candidateId: this.empId,
   jobId: Number(data),
@@ -165,6 +167,7 @@ applyjob(data:any){
   };
   this.jobServices.ApplyForJobs(this.applyForJob).subscribe({
             next: (data: any) => {
+              this.loader.hide()
               if (data > 0) {
                  this.getEmployeeList(this.empId);
                 this.toastr.success('Applied successfully!', 'Success');
@@ -175,7 +178,7 @@ applyjob(data:any){
              
             }, error: (err: any) => {
               this.toastr.error('Some error Occured!');
-            
+            this.loader.hide()
             }
           })
 }
@@ -185,7 +188,7 @@ applyjob(data:any){
  }
    ngOnInit(): void {
      var token = localStorage.getItem('token');
-    
+      this.loader.show()
      this.empId = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).EmpId);
      this.getEmployeeList(this.empId);
 //      this.jobServices.JobToEmployee(this.empId).subscribe({next:(data:any)=>{
@@ -222,7 +225,7 @@ applyjob(data:any){
    getEmployeeList(empid:any){
     this.jobServices.JobToEmployee(empid).subscribe({next:(data:any)=>{
        
-       
+       this.loader.hide()
  this.jobsData=signal<Job[]>(data);
    this.filteredJobs = computed(() => {
      const jobs = this.jobsData();
@@ -247,7 +250,7 @@ applyjob(data:any){
      
      return filtered;
    })},error:(err:any)=>{
- 
+ this.loader.hide()
      }})
    }
  

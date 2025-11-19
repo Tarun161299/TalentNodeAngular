@@ -8,6 +8,7 @@ import { EmployeeService } from '../../Common/services/employee-service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { JobServices } from '../../Common/services/job-services';
 import { ToastrService } from 'ngx-toastr';
+import { LoaderService } from '../../Common/services/loader-service';
 interface Applicant {
   Id: string;
   FirstName: string;
@@ -68,7 +69,8 @@ export class ViewApplicant implements OnInit {
     private route: ActivatedRoute,
     private empService:EmployeeService,
     private jobServices:JobServices,
-     private toastr: ToastrService
+     private toastr: ToastrService,
+     private loader:LoaderService
   ) {}
 
   loadapplicantsreal(){
@@ -81,6 +83,7 @@ export class ViewApplicant implements OnInit {
 };
 debugger
     this.empService.ApplicantList(data).subscribe(data=>{
+      this.loader.hide()
         this.applicants = data.map((app:any) => ({
       Id: app.id,
       FirstName: app.firstName,
@@ -110,6 +113,7 @@ debugger
     })
   }
   ngOnInit() {
+    this.loader.show();
   this.loadapplicantsreal();
   
   }
