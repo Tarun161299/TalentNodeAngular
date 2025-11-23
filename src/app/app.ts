@@ -12,6 +12,7 @@ import { LoaderComponent } from '../loader-component/loader-component';
 import { JobList } from '../After Login/job-list/job-list';
 import { UserProfileComponent } from '../After Login/user-profile/user-profile';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { LandingPage } from '../Before Login/landing-page/landing-page';
 
 
 
