@@ -1,0 +1,219 @@
+<div class="landing-page">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="logo">
+        <i class="fas fa-handshake"></i>
+        <span>Job World</span>
+      </div>
+      
+      <h1>Your Next Career Move Starts Here</h1>
+      <p>Connect with top employers and discover thousands of jobs that match your skills and aspirations. Join thousands of professionals who found their dream jobs through Job World.</p>
+      
+      <div class="hero-buttons">
+        <button class="btn seeker-btn" (click)="onRoleSelection('Job Seeker')">
+          <i class="fas fa-user-tie"></i>
+          I'm a Job Seeker, Find Jobs
+        </button>
+        <button class="btn employer-btn" (click)="onRoleSelection('Employer')">
+          <i class="fas fa-building"></i>
+          I'm an Employer, Hire Talent
+        </button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <h3>10K+</h3>
+          <p>Jobs Available</p>
+        </div>
+        <div class="stat">
+          <h3>5K+</h3>
+          <p>Companies Hiring</p>
+        </div>
+        <div class="stat">
+          <h3>50K+</h3>
+          <p>Success Stories</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search Section -->
+  <section class="search-section">
+    <div class="search-container">
+      <div class="search-box">
+        <div class="search-input-group">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Job title, keywords, or company" #jobSearch>
+        </div>
+        <div class="search-input-group">
+          <i class="fas fa-map-marker-alt"></i>
+          <input type="text" placeholder="City, state, or remote" #locationSearch>
+        </div>
+        <button class="btn search-btn" (click)="onSearch()">
+          <i class="fas fa-search"></i>
+          Search Jobs
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Jobs -->
+  <section class="featured-jobs">
+    <div class="container">
+      <div class="section-header">
+        <h2>Featured Jobs</h2>
+        <p>Discover opportunities from top companies</p>
+      </div>
+      
+      <div class="jobs-grid">
+        <!-- Job Card 1 -->
+        <div class="job-card">
+          <div class="job-header">
+            <div class="job-badge">Featured</div>
+            <h3>Senior Frontend Developer</h3>
+            <div class="company">
+              <i class="fas fa-building"></i>
+              <span>TechNova Solutions</span>
+            </div>
+          </div>
+          <div class="job-details">
+            <div class="job-meta">
+              <span><i class="fas fa-map-marker-alt"></i> San Francisco, CA</span>
+              <span><i class="fas fa-clock"></i> Full-time</span>
+              <span><i class="fas fa-laptop-house"></i> Remote</span>
+            </div>
+            <div class="job-tags">
+              <span class="tag">React</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">TypeScript</span>
+            </div>
+          </div>
+          <div class="job-actions">
+            <button class="btn apply-btn" (click)="onApplyJob('Senior Frontend Developer at TechNova Solutions')">Apply Now</button>
+            <button class="save-btn" (click)="onSaveJob($event)">
+              <i class="far fa-bookmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Job Card 2 -->
+        <div class="job-card">
+          <div class="job-header">
+            <div class="job-badge">Hot</div>
+            <h3>Product Manager</h3>
+            <div class="company">
+              <i class="fas fa-building"></i>
+              <span>InnovateCo</span>
+            </div>
+          </div>
+          <div class="job-details">
+            <div class="job-meta">
+              <span><i class="fas fa-map-marker-alt"></i> New York, NY</span>
+              <span><i class="fas fa-clock"></i> Full-time</span>
+              <span><i class="fas fa-briefcase"></i> On-site</span>
+            </div>
+            <div class="job-tags">
+              <span class="tag">Product Strategy</span>
+              <span class="tag">Agile</span>
+              <span class="tag">UX</span>
+            </div>
+          </div>
+          <div class="job-actions">
+            <button class="btn apply-btn" (click)="onApplyJob('Product Manager at InnovateCo')">Apply Now</button>
+            <button class="save-btn" (click)="onSaveJob($event)">
+              <i class="far fa-bookmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Job Card 3 -->
+        <div class="job-card">
+          <div class="job-header">
+            <h3>Data Scientist</h3>
+            <div class="company">
+              <i class="fas fa-building"></i>
+              <span>DataInsights Inc.</span>
+            </div>
+          </div>
+          <div class="job-details">
+            <div class="job-meta">
+              <span><i class="fas fa-map-marker-alt"></i> Remote</span>
+              <span><i class="fas fa-clock"></i> Full-time</span>
+              <span><i class="fas fa-laptop-house"></i> Remote</span>
+            </div>
+            <div class="job-tags">
+              <span class="tag">Python</span>
+              <span class="tag">Machine Learning</span>
+              <span class="tag">SQL</span>
+            </div>
+          </div>
+          <div class="job-actions">
+            <button class="btn apply-btn" (click)="onApplyJob('Data Scientist at DataInsights Inc.')">Apply Now</button>
+            <button class="save-btn" (click)="onSaveJob($event)">
+              <i class="far fa-bookmark"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="view-all">
+        <button class="btn view-all-btn" (click)="onViewAllJobs()">View All Jobs</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why Choose Job World?</h2>
+        <p>We make job searching and career growth easier than ever</p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-upload"></i>
+          </div>
+          <h3>Upload Your CV</h3>
+          <p>Create your profile and upload your resume to get discovered by employers.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <h3>Apply in 1-Click</h3>
+          <p>Save time with our quick apply feature for jobs that match your profile.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-bell"></i>
+          </div>
+          <h3>Job Alerts</h3>
+          <p>Get notified when new jobs matching your criteria are posted.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Top Companies -->
+  <section class="companies-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Top Companies Hiring</h2>
+        <p>Join thousands of professionals at leading companies</p>
+      </div>
+      
+      <div class="companies-grid">
+        <div class="company-logo">TechNova</div>
+        <div class="company-logo">InnovateCo</div>
+        <div class="company-logo">DataInsights</div>
+        <div class="company-logo">FutureTech</div>
+        <div class="company-logo">CloudSystems</div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -14,6 +14,7 @@ import { UserJoblist } from '../After Login/user-joblist/user-joblist';
 
 import { CreateJobComponent } from '../After Login/create-job-component/create-job-component';
 import { ViewApplicant } from '../After Login/view-applicant/view-applicant';
+import { LandingPage } from '../Before Login/landing-page/landing-page';
 
 
 
@@ -22,7 +23,7 @@ export const routes: Routes = [
     path: '',
     component: BeforeLoginComponent,
     children: [
-      { path: '', component: LoginComponent }, // default
+      { path: '', component: LandingPage},
       { path: 'login', component: LoginComponent },
       { path: 'signup', component: Signup,pathMatch: 'full'},
       
