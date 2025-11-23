@@ -399,7 +399,7 @@
                     <div class="skill-inputs">
                          <input type="number" formControlName="skillEmpId" style="display:none;"[readonly]="!isEditing" step="0.01" min="0" max="100">
 <select formControlName="name" [disabled]="!isEditing">
-                        <option *ngFor="let level of skillemployee" [value]="level.skillID">{{ level.skillName }}</option>
+                        <option *ngFor="let level of skillemployee" [ngValue]="level.skillID">{{ level.skillName }}</option>
                       </select>
                       
                       <select formControlName="level" [disabled]="!isEditing">

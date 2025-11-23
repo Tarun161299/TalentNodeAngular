@@ -33,45 +33,26 @@
   <!-- Filters & Search Section -->
   <div class="filters-section">
     <div class="search-container">
-      <div class="search-box">
-        <i class="fas fa-search search-icon"></i>
-        <input
-          type="text"
-          placeholder="Search jobs by title, department, or description..."
-          class="search-input"
-          [value]="searchQuery()"
-          (input)="updateSearchQuery($any($event.target).value)"
-        >
-      </div>
-    </div>
-    
+  <div class="search-box">
+    <i class="fas fa-search search-icon"
+       (click)="onSearchClick()"></i>
+
+    <input type="text"
+           placeholder="Search jobs..."
+           class="search-input"
+           [(ngModel)]="searchQueryfilter">
+  </div>
+</div>
+
     <div class="filter-tabs">
-      <button
-        class="filter-tab"
-        [class.active]="activeFilter() === 'all'"
-        (click)="updateFilter('all')"
-      >
+      <button class="filter-tab" [class.active]="activeFilter() === 'all'" (click)="updateFilter('')">
         All Jobs
       </button>
-      <button
-        class="filter-tab"
-        [class.active]="activeFilter() === 'active'"
-        (click)="updateFilter('active')"
-      >
+      <button class="filter-tab" [class.active]="activeFilter() === 'active'" (click)="updateFilter('active')">
         Active
       </button>
-      <button
-        class="filter-tab"
-        [class.active]="activeFilter() === 'draft'"
-        (click)="updateFilter('draft')"
-      >
-        Drafts
-      </button>
-      <button
-        class="filter-tab"
-        [class.active]="activeFilter() === 'closed'"
-        (click)="updateFilter('closed')"
-      >
+      
+      <button class="filter-tab" [class.active]="activeFilter() === 'closed'" (click)="updateFilter('closed')">
         Closed
       </button>
     </div>

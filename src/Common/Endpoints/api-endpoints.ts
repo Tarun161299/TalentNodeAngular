@@ -29,7 +29,7 @@ export const ApiEndpoints = {
      getEmployeeDetails:'Employee/GetEmployeeDetails?EmployeeID=',
      saveJobs:`Jobs/SaveJobs`,
      GetJobsHr:`Jobs/GetJobsHr?hrid=`,
-     JobsToEmployee:'Jobs/JobsToEmployee?empId=',
+     JobsToEmployee:'Jobs/JobsToEmployee',
      GetJobsDetailsByJobid:`Jobs/GetJobsbyjobid?jobid=`,
      ApplyForJobs:`Jobs/ApplyForJob`,
      UpdateApllicantJobStatus:`Jobs/UpdateApllicantJobStatus`,

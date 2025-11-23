@@ -32,6 +32,19 @@ standalone: true,
 })
 export class JobList implements OnInit {
   hrID:number=0;
+  searchQueryfilter='';
+  jobstatus='';
+   stats = computed(() => {
+     const jobs = this.jobsData();
+     return {
+       total: jobs.length,
+       active: jobs.filter(job => job.status === 'active').length,
+       drafts: jobs.filter(job => job.status === 'draft').length,
+       closed: jobs.filter(job => job.status === 'closed').length,
+       totalApplicants: jobs.reduce((sum, job) => sum + job.applicantCount, 0),
+       newApplicants: jobs.reduce((sum, job) => sum + job.newApplicants, 0)
+     };
+   });
   constructor(private jobServices:JobServices,private router:Router,private loader:LoaderService){
 
   }
@@ -148,17 +161,7 @@ export class JobList implements OnInit {
     return filtered;
   });
 
-  stats = computed(() => {
-    const jobs = this.jobsData();
-    return {
-      total: jobs.length,
-      active: jobs.filter(job => job.status === 'active').length,
-      drafts: jobs.filter(job => job.status === 'draft').length,
-      closed: jobs.filter(job => job.status === 'closed').length,
-      totalApplicants: jobs.reduce((sum, job) => sum + job.applicantCount, 0),
-      newApplicants: jobs.reduce((sum, job) => sum + job.newApplicants, 0)
-    };
-  });
+  
 
   getClaimsFromToken(token: string): any {
     if (!token) return null;
@@ -183,11 +186,37 @@ closeModal(): void {
   this.selectedJob = null;
 }
   ngOnInit(): void {
-    var token = localStorage.getItem('token');
+   
    this.loader.show()
-    this.hrID = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).HRId);
-    this.jobServices.GetJobsHr(this.hrID).subscribe({next:(data:any)=>{
+  this.getJobList()
+    // Component initialization if needed
+  }
+   onSearchClick(){
+     this.loader.show()
+     this.getJobList()
+
+   }
+  getJobList(){
+     var token = localStorage.getItem('token');
+  this.hrID = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).HRId);
+    var data={
+hrId: this.hrID,
+search:this.searchQueryfilter,
+status:this.jobstatus
+    };
+    this.jobServices.GetJobsHr(data).subscribe({next:(data:any)=>{
         this.loader.hide()
+        this. stats = computed(() => {
+     var jobs = data;
+     return {
+       total: jobs.length,
+       active: jobs.filter((job:any) => job.status === 'active').length,
+       drafts: jobs.filter((job:any) => job.status === 'draft').length,
+       closed: jobs.filter((job:any) => job.status === 'closed').length,
+       totalApplicants: jobs.reduce((sum:any, job:any) => sum + job.applicantCount, 0),
+       newApplicants: jobs.reduce((sum:any, job:any) => sum + job.newApplicants, 0)
+     };
+   });
       
 this.jobsData=signal<Job[]>(data);
   this.filteredJobs = computed(() => {
@@ -215,16 +244,16 @@ this.jobsData=signal<Job[]>(data);
   })},error:(err:any)=>{
 this.loader.hide()
     }})
-    // Component initialization if needed
   }
-
   // Actions
   updateSearchQuery(query: string): void {
     this.searchQuery.set(query);
   }
 
   updateFilter(filter: string): void {
-    this.activeFilter.set(filter);
+    this.jobstatus=filter;
+    this.loader.show();
+    this.getJobList();
   }
 
   viewApplicants(jobId: number): void {

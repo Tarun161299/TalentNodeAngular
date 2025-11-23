@@ -299,7 +299,7 @@ this.loader.hide()
     return this.fb.group({
       personal: this.fb.group({
         firstName: ['', [Validators.required, Validators.minLength(2)]],
-        lastName: ['', [Validators.required, Validators.minLength(2)]],
+        lastName: ['', [ Validators.minLength(2)]],
         email: ['', [Validators.required, Validators.email]],
         phone: ['', [Validators.required, Validators.pattern(/^\+?[\d\s-]+$/)]],
         location: ['', Validators.required],
@@ -440,6 +440,7 @@ this.loader.hide()
   }
 
   onSubmit() {
+    debugger
     if (this.profileForm.valid) {
       this.isLoading = true;
 
@@ -541,8 +542,8 @@ debugger
             }
           })
         }
-if (this.selectedTab === 'skills') {
-debugger
+        if (this.selectedTab === 'skills') {
+          debugger
           this.employeeService.saveSkillDetails(this.user.skills).subscribe({
             next: (data: any) => {
               if (data > 0) {

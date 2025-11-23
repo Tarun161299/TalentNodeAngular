@@ -24,12 +24,12 @@ export class JobServices {
         return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveJobs}`,data ,{ headers: this.getHeaders() });
       }
       JobToEmployee(data:any): Observable<any> {
-      debugger
-        return this.http.get<any>(`${this.baseUrl+ApiEndpoints.JobsToEmployee +data.toString()}` ,{ headers: this.getHeaders() });
+      
+        return this.http.post<any>(`${this.baseUrl+ApiEndpoints.JobsToEmployee }`,data ,{ headers: this.getHeaders() });
       }
       GetJobsHr(data:any ): Observable<any> {
       
-        return this.http.get<any>(`${this.baseUrl+ApiEndpoints.GetJobsHr+data.toString()}` ,{ headers: this.getHeaders() });
+        return this.http.post<any>(`${this.baseUrl+ApiEndpoints.GetJobsHr}`,data ,{ headers: this.getHeaders() });
       }
 
          GetJobsdetail(data:any ): Observable<any> {
