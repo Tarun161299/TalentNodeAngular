@@ -15,7 +15,7 @@
           <i class="fas fa-user-tie"></i>
           I'm a Job Seeker, Find Jobs
         </button>
-        <button class="btn employer-btn" (click)="onRoleSelection('Employer')">
+        <button class="btn employer-btn" (click)="openEmployerModal()">
           <i class="fas fa-building"></i>
           I'm an Employer, Hire Talent
         </button>
@@ -216,4 +216,24 @@
       </div>
     </div>
   </section>
+
+  <!-- Employer Contact Modal -->
+  <div class="modal-overlay" *ngIf="showEmployerModal" (click)="closeEmployerModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Contact Administrator</h3>
+        <button class="close-btn" (click)="closeEmployerModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>For employer accounts, please contact our administrator:</p>
+        <div class="contact-info">
+          <p><i class="fas fa-envelope"></i> Email: info@jobworld4u.com</p>
+          <p><i class="fas fa-phone"></i> Phone: 7678247606</p>
+          <p><i class="fas fa-phone"></i> Phone: 8700204880</p>
+          
+        </div>
+        <p class="modal-note">After Verification, We will send you login credential.</p>
+      </div>
+    </div>
+  </div>
 </div>

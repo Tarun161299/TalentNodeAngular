@@ -1,28 +1,43 @@
+import { CommonModule } from '@angular/common';
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-landing-page',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './landing-page.html',
   styleUrls: ['./landing-page.css']
 })
 export class LandingPage {
   
   constructor(private router: Router) {}
+  
+  showEmployerModal = false; // Make sure this is false initially
+
+  openEmployerModal(): void {
+    console.log('Opening employer modal'); // Debug log
+    this.showEmployerModal = true;
+  }
+
+  closeEmployerModal(): void {
+    console.log('Closing employer modal'); // Debug log
+    this.showEmployerModal = false;
+  }
 
   @ViewChild('jobSearch') jobSearchInput!: ElementRef<HTMLInputElement>;
   @ViewChild('locationSearch') locationSearchInput!: ElementRef<HTMLInputElement>;
 
-onRoleSelection(role: string): void {
-  if (role === 'Job Seeker') {  // Change this
-    this.router.navigate(['login']);
-    return;
+  onRoleSelection(role: string): void {
+    if (role === 'Job Seeker') {
+      this.router.navigate(['login']);
+      return;
+    }
+    if (role === 'Employer') {
+      this.openEmployerModal();
+      return;
+    }
   }
-  if (role === 'Employer') {    // Change this
-    this.router.navigate(['login']);
-    return;
-  }
-}
 
   onSearch(): void {
     const jobTerm = this.jobSearchInput?.nativeElement?.value || '';
