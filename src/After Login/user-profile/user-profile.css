@@ -181,11 +181,13 @@
 .tab-nav {
   display: flex;
   padding: 0 2rem;
+  flex-wrap: wrap;
 }
 
 .tab-btn {
   flex: 1;
-  padding: 1.5rem 2rem;
+  min-width: 150px;
+  padding: 1.5rem 1rem;
   border: none;
   background: none;
   cursor: pointer;
@@ -304,7 +306,8 @@
 }
 
 .form-group input:read-only,
-.form-group textarea:read-only {
+.form-group textarea:read-only,
+.form-group select:read-only {
   background-color: #f7fafc;
   border-color: #e2e8f0;
   color: #718096;
@@ -454,9 +457,100 @@
   text-align: right;
 }
 
+/* Key Skills Styles */
+.key-skills-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.key-skill-item {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.key-skill-item:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.key-skill-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.key-skill-inputs {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.key-skill-inputs input {
+  flex: 2;
+  min-width: 200px;
+}
+
+.key-skill-inputs select {
+  flex: 1;
+  min-width: 140px;
+}
+
+.proficiency-indicator {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.proficiency-bar {
+  flex: 1;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.proficiency-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.proficiency-basic .proficiency-fill {
+  background: #e53e3e;
+}
+
+.proficiency-intermediate .proficiency-fill {
+  background: #dd6b20;
+}
+
+.proficiency-advanced .proficiency-fill {
+  background: #d69e2e;
+}
+
+.proficiency-expert .proficiency-fill {
+  background: #38a169;
+}
+
+.proficiency-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4a5568;
+  min-width: 100px;
+  text-align: right;
+}
+
 /* Experience and Education Items */
 .experience-item,
-.education-item {
+.education-item,
+.project-item {
   background: white;
   padding: 2rem;
   border-radius: 16px;
@@ -467,13 +561,15 @@
 }
 
 .experience-item:hover,
-.education-item:hover {
+.education-item:hover,
+.project-item:hover {
   border-color: #667eea;
   box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
 }
 
 .experience-header,
-.education-header {
+.education-header,
+.project-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -483,7 +579,8 @@
 }
 
 .experience-header h4,
-.education-header h4 {
+.education-header h4,
+.project-header h4 {
   margin: 0;
   color: #2d3748;
   font-weight: 600;
@@ -573,30 +670,36 @@
   .tab-btn {
     justify-content: flex-start;
     padding: 1rem 1.5rem;
+    min-width: 100%;
   }
 
   .form-grid {
     grid-template-columns: 1fr;
   }
 
-  .skills-container {
+  .skills-container,
+  .key-skills-container {
     grid-template-columns: 1fr;
   }
 
-  .skill-content {
+  .skill-content,
+  .key-skill-content {
     flex-direction: column;
   }
   
-  .skill-inputs {
+  .skill-inputs,
+  .key-skill-inputs {
     flex-direction: column;
   }
   
-  .skill-level-indicator {
+  .skill-level-indicator,
+  .proficiency-indicator {
     width: 100%;
   }
   
   .experience-header,
-  .education-header {
+  .education-header,
+  .project-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
@@ -619,6 +722,19 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .tab-nav {
+    flex-wrap: wrap;
+  }
+  
+  .tab-btn {
+    min-width: 150px;
+    flex: none;
+    padding: 1rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
 /* Loading States */
 .btn-primary:disabled {
   opacity: 0.6;
@@ -637,8 +753,8 @@ select:focus {
 
 /* Read-only State Improvements */
 input:read-only,
-textarea:read-only
- {
+textarea:read-only,
+select:read-only {
   background-color: #f7fafc !important;
   border-color: #e2e8f0 !important;
   color: #718096 !important;

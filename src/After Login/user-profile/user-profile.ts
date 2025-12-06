@@ -35,6 +35,25 @@ interface Skill {
   level: 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert';
 }
 
+// New interfaces for Key Skills and Projects
+interface KeySkill {
+  keySkillEmpId: number;
+  name: string;
+  proficiency: 'Basic' | 'Intermediate' | 'Advanced' | 'Expert';
+}
+
+interface Project {
+  projectEmpId: number;
+  name: string;
+  //role: string;
+  startDate: string;
+  endDate: string;
+  ongoing: boolean;
+  description: string;
+  technologies: string;
+  url: string;
+}
+
 export interface UserProfile {
   id: number;
   firstName: string;
@@ -42,7 +61,6 @@ export interface UserProfile {
   email: string;
   phone: string;
   bio: string;
-
   currentSalary: number
   location: string;
   currentPosition: string;
@@ -50,14 +68,14 @@ export interface UserProfile {
   expectedSalary: number;
   noticePeriod: number;
   avatar: string;
-  
   resume: string;
   stateid: Number;
   districtId: Number;
   education: Education[];
   experience: Experience[];
   skills: Skill[];
-
+  keySkills: KeySkill[];  // Added
+  projects: Project[];    // Added
   languages: string[];
   socialLinks: {
     linkedin: string;
@@ -87,70 +105,58 @@ export class UserProfileComponent implements OnInit {
   showP:string='';
   states: any;
   empProfile: Employee | undefined;
-  user: UserProfile
-    = {
-      id: 1,
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      bio: '',
-      location: '',
-      currentPosition: '',
-      currentCompany: '',
-      expectedSalary: 0,
-      currentSalary: 0,
-      stateid: 0,
-      districtId: 0,
-      noticePeriod: 30,
-      avatar: '',
-      resume: '',
-      education: [
-        {
-          degEmpId: 0,
-          degree: 0,
-          institution: '',
-          year: 2018,
-          percentage: 85
-        }
-      ],
-      experience: [
-        {
-          employeeID: 0,
-          experienceId: 0,
-          company: '',
-          position: '',
-          startDate: '',
-          endDate: '',
-          current: true,
-          description: ''
-        },
-        {
-          employeeID: 0,
-          experienceId: 0,
-          company: '',
-          position: '',
-          startDate: '',
-          endDate: '',
-          current: false,
-          description: ''
-        }
-      ],
-      skills: [
-        
-      ],
-      languages: [],
-      socialLinks: {
-        linkedin: '',
-        github: '',
-        portfolio: ''
+  user: UserProfile = {
+    id: 1,
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    bio: '',
+    location: '',
+    currentPosition: '',
+    currentCompany: '',
+    expectedSalary: 0,
+    currentSalary: 0,
+    stateid: 0,
+    districtId: 0,
+    noticePeriod: 30,
+    avatar: '',
+    resume: '',
+    education: [
+      {
+        degEmpId: 0,
+        degree: 0,
+        institution: '',
+        year: 2018,
+        percentage: 85
       }
-    };
+    ],
+    experience: [
+      {
+        employeeID: 0,
+        experienceId: 0,
+        company: '',
+        position: '',
+        startDate: '',
+        endDate: '',
+        current: true,
+        description: ''
+      }
+    ],
+    skills: [],
+    keySkills: [],  // Added
+    projects: [],   // Added
+    languages: [],
+    socialLinks: {
+      linkedin: '',
+      github: '',
+      portfolio: ''
+    }
+  };
 
   skillLevels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
-closeModal() {
-    this.showPdf = false;
-  }
+  proficiencyLevels = ['Basic', 'Intermediate', 'Advanced', 'Expert']; // Added for Key Skills
+
   constructor(
     private fb: FormBuilder,
     private toastr: ToastrService,
@@ -161,19 +167,14 @@ closeModal() {
   ) {
     this.showP=this.imageperofile.base64String();
     this.profileForm = this.createForm();
-   
   }
-viewResume() {
-  
-    
-        this.showPdf = true;
-     
-  
-    
-    // Implement PDF opening logic here
+
+  closeModal() {
+    this.showPdf = false;
   }
+
   ngOnInit() {
-      this.loader.show()
+    this.loader.show()
     var token = localStorage.getItem('token');
     if (this.isEditing == false) {
       this.profileForm.get('personal.State')?.disable();
@@ -189,18 +190,19 @@ viewResume() {
     this.GetUserDetailsById(this.empId);
   }
 
+  viewResume() {
+    this.showPdf = true;
+  }
+
   GetUserDetailsById(id: number) {
-
-
     this.employeeService.getEmployeedetailsById(id).subscribe({
       next: (data: any) => {
         debugger;
         this.loader.hide()
         this.user = data;
-        
         this.user.avatar= (data.avatar==null||data.avatar==undefined||data.avatar=='')?`data:image/png;base64,${this.showP}`:`data:image/jpeg;base64,${data.avatar}`;
-        // ✅ Update resume upload status based on whether resume exists
-      this.isResumeUploaded = !!(data.resume && data.resume !== '');
+        this.isResumeUploaded = !!(data.resume && data.resume !== '');
+        
         this.profileForm.get('personal')?.patchValue({
           firstName: this.user.firstName ?? '',
           lastName: this.user.lastName ?? '',
@@ -217,42 +219,40 @@ viewResume() {
           bio: this.user.bio ?? ''
         });
 
-        // patch social links
         this.profileForm.get('socialLinks')?.patchValue({
           linkedin: this.user.socialLinks?.linkedin ?? '',
           github: this.user.socialLinks?.github ?? '',
           portfolio: this.user.socialLinks?.portfolio ?? ''
         });
 
-        // patch education, experience, skills if needed
         this.setFormArray('education', this.user.education);
         this.setFormArray('experience', this.user.experience);
         this.setFormArray('skills', this.user.skills);
+        this.setFormArray('keySkills', this.user.keySkills);  // Added
+        this.setFormArray('projects', this.user.projects);    // Added
       }, error: (err: any) => {
-this.loader.hide()
+        this.loader.hide()
       }
     })
   }
+
   getClaimsFromToken(token: string): any {
     if (!token) return null;
-
     try {
-      const payload = token.split('.')[1];  // JWT = header.payload.signature
-      const decoded = atob(payload);        // Base64 decode
-      return JSON.parse(decoded);           // Convert to JSON
+      const payload = token.split('.')[1];
+      const decoded = atob(payload);
+      return JSON.parse(decoded);
     } catch (error) {
       console.error('Invalid token', error);
       return null;
     }
-
   }
+
   setFormArray(arrayName: string, data: any[]) {
     debugger
     const formArray = this.profileForm.get(arrayName) as FormArray;
     formArray.clear();
-
     if (!data || !data.length) return;
-
     data.forEach(item => {
       formArray.push(this.fb.group({ ...item }));
     });
@@ -262,9 +262,7 @@ this.loader.hide()
     this.masterServices.GetAllState().subscribe({
       next: (data: any) => {
         this.states = data;
-      }, error: (err: any) => {
-
-      }
+      }, error: (err: any) => {}
     })
   }
 
@@ -272,29 +270,26 @@ this.loader.hide()
     this.masterServices.GetAllQualification().subscribe({
       next: (data: any) => {
         this.degree = data;
-      }, error: (err: any) => {
-
-      }
+      }, error: (err: any) => {}
     })
   }
+
   getAllSkills() {
     this.masterServices.GetAllSkill().subscribe({
       next: (data: any) => {
         this.skillemployee = data;
-      }, error: (err: any) => {
-
-      }
+      }, error: (err: any) => {}
     })
   }
+
   getAllDistricts() {
     this.masterServices.GetAllDistrict().subscribe({
       next: (data: any) => {
         this.disticts = data;
-      }, error: (err: any) => {
-
-      }
+      }, error: (err: any) => {}
     })
   }
+
   createForm(): FormGroup {
     return this.fb.group({
       personal: this.fb.group({
@@ -315,6 +310,8 @@ this.loader.hide()
       education: this.fb.array([]),
       experience: this.fb.array([]),
       skills: this.fb.array([]),
+      keySkills: this.fb.array([]),  // Added
+      projects: this.fb.array([]),   // Added
       socialLinks: this.fb.group({
         linkedin: [''],
         github: [''],
@@ -323,6 +320,7 @@ this.loader.hide()
     });
   }
 
+  // Form Array Getters
   get educationForms() {
     return this.profileForm.get('education') as FormArray;
   }
@@ -335,6 +333,15 @@ this.loader.hide()
     return this.profileForm.get('skills') as FormArray;
   }
 
+  get keySkillForms() {  // Added
+    return this.profileForm.get('keySkills') as FormArray;
+  }
+
+  get projectForms() {   // Added
+    return this.profileForm.get('projects') as FormArray;
+  }
+
+  // Education Methods
   addEducation() {
     const educationGroup = this.fb.group({
       degEmpId: [this.empId],
@@ -350,6 +357,7 @@ this.loader.hide()
     this.educationForms.removeAt(index);
   }
 
+  // Experience Methods
   addExperience() {
     debugger
     const experienceGroup = this.fb.group({
@@ -369,6 +377,7 @@ this.loader.hide()
     this.experienceForms.removeAt(index);
   }
 
+  // Skills Methods
   addSkill() {
     const skillGroup = this.fb.group({
       skillEmpId:[this.empId],
@@ -382,6 +391,41 @@ this.loader.hide()
     this.skillForms.removeAt(index);
   }
 
+  // Key Skills Methods (Added)
+  addKeySkill() {
+    const keySkillGroup = this.fb.group({
+      keySkillEmpId: [this.empId],
+      name: ['', Validators.required],
+      proficiency: ['Intermediate', Validators.required]
+    });
+    this.keySkillForms.push(keySkillGroup);
+  }
+
+  removeKeySkill(index: number) {
+    this.keySkillForms.removeAt(index);
+  }
+
+  // Projects Methods (Added)
+  addProject() {
+    const projectGroup = this.fb.group({
+      projectEmpId: [this.empId],
+      name: ['', Validators.required],
+      //role: ['', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: [''],
+      ongoing: [false],
+      description: ['', Validators.required],
+      technologies: [''],
+      url: ['']
+    });
+    this.projectForms.push(projectGroup);
+  }
+
+  removeProject(index: number) {
+    this.projectForms.removeAt(index);
+  }
+
+  // Helper Methods
   loadUserData() {
     // Personal Info
     this.profileForm.get('personal')?.patchValue({
@@ -399,20 +443,32 @@ this.loader.hide()
 
     // Education
     this.educationForms.clear();
-    this.user.education.forEach(edu => {
+    this.user.education?.forEach(edu => {
       this.educationForms.push(this.fb.group(edu));
     });
 
     // Experience
     this.experienceForms.clear();
-    this.user.experience.forEach(exp => {
+    this.user.experience?.forEach(exp => {
       this.experienceForms.push(this.fb.group(exp));
     });
 
     // Skills
     this.skillForms.clear();
-    this.user.skills.forEach(skill => {
+    this.user.skills?.forEach(skill => {
       this.skillForms.push(this.fb.group(skill));
+    });
+
+    // Key Skills (Added)
+    this.keySkillForms.clear();
+    this.user.keySkills?.forEach(skill => {
+      this.keySkillForms.push(this.fb.group(skill));
+    });
+
+    // Projects (Added)
+    this.projectForms.clear();
+    this.user.projects?.forEach(project => {
+      this.projectForms.push(this.fb.group(project));
     });
 
     // Social Links
@@ -444,7 +500,6 @@ this.loader.hide()
     if (this.profileForm.valid) {
       this.isLoading = true;
 
-      // Simulate API call
       setTimeout(() => {
         var formValue = this.profileForm.value;
         this.user = {
@@ -453,8 +508,11 @@ this.loader.hide()
           education: formValue.education,
           experience: formValue.experience,
           skills: formValue.skills,
+          keySkills: formValue.keySkills,  // Added
+          projects: formValue.projects,    // Added
           socialLinks: formValue.socialLinks
         };
+
         if (this.selectedTab === 'personal') {
           debugger
           this.empProfile = {
@@ -490,11 +548,10 @@ this.loader.hide()
             }
           })
         }
+
         if (this.selectedTab === 'experience') {
           debugger
-
           var now = new Date().toISOString();
-
           var experiences = this.user.experience.map((exp: any) => ({
             ...exp,
             startDate: exp.startDate ? new Date(exp.startDate + '-01T' + now.split('T')[1]).toISOString() : null,
@@ -506,15 +563,13 @@ this.loader.hide()
               if (data > 0) {
                 this.toastr.success('Profile updated successfully!', 'Success');
                 this.isLoading = false;
-              this.isEditing = false;
+                this.isEditing = false;
               }
               else {
                 this.toastr.error('Some error Occured!');
                 this.isLoading = false;
-              this.isEditing = false;
+                this.isEditing = false;
               }
-              this.isLoading = false;
-              this.isEditing = false;
             }, error: (err: any) => {
               this.toastr.error('Some error Occured!');
               this.isLoading = false;
@@ -522,8 +577,9 @@ this.loader.hide()
             }
           })
         }
+
         if (this.selectedTab === 'education') {
-debugger
+          debugger
           this.employeeService.SaveQuaification(this.user.education).subscribe({
             next: (data: any) => {
               if (data > 0) {
@@ -562,6 +618,26 @@ debugger
           })
         }
 
+        // Handle Key Skills tab (Added)
+        if (this.selectedTab === 'key-skills') {
+          debugger
+          // Add your API call for key skills here
+          // Example: this.employeeService.saveKeySkills(this.user.keySkills).subscribe(...)
+          this.toastr.success('Key skills updated successfully!', 'Success');
+          this.isLoading = false;
+          this.isEditing = false;
+        }
+
+        // Handle Projects tab (Added)
+        if (this.selectedTab === 'projects') {
+          debugger
+          // Add your API call for projects here
+          // Example: this.employeeService.saveProjects(this.user.projects).subscribe(...)
+          this.toastr.success('Projects updated successfully!', 'Success');
+          this.isLoading = false;
+          this.isEditing = false;
+        }
+
       }, 1500);
     } else {
       this.markFormGroupTouched();
@@ -569,99 +645,72 @@ debugger
     }
   }
 
-  // onAvatarChange(event: any) {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     if (file.size > 5 * 1024 * 1024) {
-  //       this.toastr.error('File size should be less than 5MB', 'Error');
-  //       return;
-  //     }
+  onResumeUpload(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-  //     const reader = new FileReader();
-  //     reader.onload = (e: any) => {
-  //       this.user.avatar = e.target.result;
-  //       this.toastr.success('Profile picture updated!', 'Success');
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // }
+    if (file.type !== 'application/pdf') {
+      this.toastr.error('Please upload a PDF file', 'Error');
+      return;
+    }
 
-onResumeUpload(event: any) {
-  const file = event.target.files[0];
-  if (!file) return;
+    const maxSizeMB = 500;
+    const fileSizeMB = file.size / (1024 * 1024);
+    if (fileSizeMB > maxSizeMB) {
+      this.toastr.error('File size exceeds 500MB limit', 'Error');
+      return;
+    }
 
-  // ✅ Validate file type
-  if (file.type !== 'application/pdf') {
-    this.toastr.error('Please upload a PDF file', 'Error');
-    return;
-  }
+    this.user.resume = event.target.result;
+    var fileName = file.name;
+    var fileType = file.name.split('.').pop()?.toLowerCase() || 'pdf';
 
-  // ✅ Validate file size (max 500MB)
-  const maxSizeMB = 500;
-  const fileSizeMB = file.size / (1024 * 1024);
-  if (fileSizeMB > maxSizeMB) {
-    this.toastr.error('File size exceeds 500MB limit', 'Error');
-    return;
-  }
-this.user.resume = event.target.result;
-  var fileName = file.name;
-  var fileType = file.name.split('.').pop()?.toLowerCase() || 'pdf';
+    const reader = new FileReader();
+    reader.onload = (e:any) => {
+      var base64String = (reader.result as string).split(',')[1];
 
-  const reader = new FileReader();
-  reader.onload = (e:any) => {
-    var base64String = (reader.result as string).split(',')[1];
-
-    var resumeUploadModel = {
-      employeeID: this.empId,
-      docName: 'Resume',
-      fileName: fileName,
-      fileType: fileType,
-      fileContentBase64: base64String,
-      mode:"R"
+      var resumeUploadModel = {
+        employeeID: this.empId,
+        docName: 'Resume',
+        fileName: fileName,
+        fileType: fileType,
+        fileContentBase64: base64String,
+        mode:"R"
+      };
+      this.employeeService.SaveDocument(resumeUploadModel).subscribe({
+        next:(data:any)=>{
+          if(data>0){
+            this.isResumeUploaded = true;
+            this.user.resume = reader.result as string;
+            this.toastr.success('Resume uploaded successfully!', 'Success');
+            this.GetUserDetailsById(this.empId);
+          } else {
+            this.toastr.error('some error occured!');
+          }
+        },
+        error:(err:any)=>{
+          this.toastr.error('some error occured!');
+        }
+      })
     };
-    this.employeeService.SaveDocument(resumeUploadModel).subscribe({next:(data:any)=>{
-if(data>0){
-  // ✅ Update local state immediately after successful upload
-          this.isResumeUploaded = true;
-          this.user.resume = reader.result as string;
-this.toastr.success('Resume uploaded successfully!', 'Success');
-// ✅ Optional: Force refresh user data from server to get the latest state
-          this.GetUserDetailsById(this.empId);
-}else{
-this.toastr.error('some error occured!');
-}
-    },
-  error:(err:any)=>{
-this.toastr.error('some error occured!');
-  }})
-    
-    console.log('Resume Upload Model:', resumeUploadModel);
-    
-
-    // 🔹 Optionally: Call API here
-    // this.employeeService.uploadResume(resumeUploadModel).subscribe(...);
-  };
-
-  reader.readAsDataURL(file);
-}
-onAvatarChange(event: any) {
-  debugger
-  const file = event.target.files[0];
-  if (!file) return;
-
-  let allowedType = '';
-  let docName = '';
-  let fileExt = file.name.split('.').pop()?.toLowerCase() || '';
-  const maxSizeMB = 500;
-  const fileSizeMB = file.size / (1024 * 1024);
-
-  // ✅ Common validation for size
-  if (fileSizeMB > maxSizeMB) {
-    this.toastr.error('File size exceeds 500MB limit', 'Error');
-    return;
+    reader.readAsDataURL(file);
   }
 
-  // ✅ Type-specific validation
+  onAvatarChange(event: any) {
+    debugger
+    const file = event.target.files[0];
+    if (!file) return;
+
+    let allowedType = '';
+    let docName = '';
+    let fileExt = file.name.split('.').pop()?.toLowerCase() || '';
+    const maxSizeMB = 500;
+    const fileSizeMB = file.size / (1024 * 1024);
+
+    if (fileSizeMB > maxSizeMB) {
+      this.toastr.error('File size exceeds 500MB limit', 'Error');
+      return;
+    }
 
     allowedType = 'image/jpeg';
     docName = 'ProfileImage';
@@ -669,44 +718,37 @@ onAvatarChange(event: any) {
       this.toastr.error('Please upload a JPEG image only', 'Error');
       return;
     }
-  
 
-  // ✅ Read the file and convert to Base64
-  var reader = new FileReader();
-  reader.onload = (e:any) => {
-    var base64String = (reader.result as string).split(',')[1];
+    var reader = new FileReader();
+    reader.onload = (e:any) => {
+      var base64String = (reader.result as string).split(',')[1];
 
-    var uploadModel = {
-      employeeID: this.empId,
-      docName: docName,
-      fileName: file.name,
-      fileType: fileExt,
-      fileContentBase64: base64String,
-      mode: "P"  // R = Resume, I = Image
-    };
+      var uploadModel = {
+        employeeID: this.empId,
+        docName: docName,
+        fileName: file.name,
+        fileType: fileExt,
+        fileContentBase64: base64String,
+        mode: "P"
+      };
 
-    console.log('Upload Model:', uploadModel);
-
-    // ✅ API Call
-    this.employeeService.SaveDocument(uploadModel).subscribe({
-      next: (data: any) => {
-        if (data > 0) {
-          this.user.avatar = e.target.result;
-          var successMsg = 'Profile image uploaded successfully!';
-          this.toastr.success(successMsg, 'Success');
-        } else {
-          this.toastr.error('Some error occurred!', 'Error');
+      this.employeeService.SaveDocument(uploadModel).subscribe({
+        next: (data: any) => {
+          if (data > 0) {
+            this.user.avatar = e.target.result;
+            var successMsg = 'Profile image uploaded successfully!';
+            this.toastr.success(successMsg, 'Success');
+          } else {
+            this.toastr.error('Some error occurred!', 'Error');
+          }
+        },
+        error: (err:any) => {
+          this.toastr.error('Some error occurred while uploading!', 'Error');
         }
-      },
-      error: (err:any) => {
-        this.toastr.error('Some error occurred while uploading!', 'Error');
-      }
-    });
-  };
-
-  reader.readAsDataURL(file);
-}
-
+      });
+    };
+    reader.readAsDataURL(file);
+  }
 
   getTotalExperience(): string {
     const experiences = this.user.experience;
@@ -715,7 +757,6 @@ onAvatarChange(event: any) {
     }
 
     let totalMonths = 0;
-
     experiences.forEach(exp => {
       if (exp.startDate) {
         const start = new Date(exp.startDate);
@@ -748,6 +789,16 @@ onAvatarChange(event: any) {
     }
   }
 
+  getProficiencyPercentage(proficiency: string): number {  // Added
+    switch (proficiency) {
+      case 'Basic': return 25;
+      case 'Intermediate': return 50;
+      case 'Advanced': return 75;
+      case 'Expert': return 100;
+      default: return 0;
+    }
+  }
+
   private markFormGroupTouched() {
     Object.keys(this.profileForm.controls).forEach(key => {
       const control = this.profileForm.get(key);
@@ -764,6 +815,6 @@ onAvatarChange(event: any) {
           }
         });
       }
-    });
+    }); 
   }
 }
