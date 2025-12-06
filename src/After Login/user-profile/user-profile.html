@@ -98,6 +98,20 @@
         <i class="fas fa-code"></i>
         Skills
       </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="selectedTab === 'key-skills'"
+        (click)="selectTab('key-skills')">
+        <i class="fas fa-star"></i>
+        Key Skills
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="selectedTab === 'projects'"
+        (click)="selectTab('projects')">
+        <i class="fas fa-project-diagram"></i>
+        Projects
+      </button>
     </nav>
   </div>
 
@@ -430,6 +444,132 @@
         </div>
       </div>
 
+      <!-- Key Skills Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'key-skills'">
+        <div class="card">
+          <div class="card-header">
+            <h3>Key Skills</h3>
+            <button type="button" class="btn-add" (click)="addKeySkill()" *ngIf="isEditing">
+              <i class="fas fa-plus"></i> Add Key Skill
+            </button>
+          </div>
+          <div class="card-body">
+            <div formArrayName="keySkills">
+              <div class="key-skills-container">
+                <div class="key-skill-item" *ngFor="let skill of keySkillForms.controls; let i = index" [formGroupName]="i">
+                  <div class="key-skill-content">
+                    <div class="key-skill-inputs">
+                      <input type="text" formControlName="name" [readonly]="!isEditing" placeholder="Enter key skill">
+                      <select formControlName="proficiency" [disabled]="!isEditing">
+                        <option value="">Select Proficiency</option>
+                        <option value="Basic">Basic</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                        <option value="Expert">Expert</option>
+                      </select>
+                    </div>
+                    <button type="button" class="btn-remove" (click)="removeKeySkill(i)" *ngIf="isEditing && keySkillForms.length > 1">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                  <div class="proficiency-indicator" *ngIf="!isEditing">
+                    <div class="proficiency-bar" [class]="'proficiency-' + skill.get('proficiency')?.value?.toLowerCase()">
+                      <div class="proficiency-fill" [style.width.%]="getProficiencyPercentage(skill.get('proficiency')?.value)"></div>
+                    </div>
+                    <span class="proficiency-text">{{ skill.get('proficiency')?.value }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="no-data" *ngIf="keySkillForms.length === 0 && !isEditing">
+                <i class="fas fa-star"></i>
+                <p>No key skills added yet</p>
+                <button type="button" class="btn-primary" (click)="isEditing = true; addKeySkill()">
+                  Add Key Skills
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projects Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'projects'">
+        <div class="card">
+          <div class="card-header">
+            <h3>Projects</h3>
+            <button type="button" class="btn-add" (click)="addProject()" *ngIf="isEditing">
+              <i class="fas fa-plus"></i> Add Project
+            </button>
+          </div>
+          <div class="card-body">
+            <div formArrayName="projects">
+              <div class="project-item" *ngFor="let project of projectForms.controls; let i = index" [formGroupName]="i">
+                <div class="project-header">
+                  <h4>Project {{ i + 1 }}</h4>
+                  <button type="button" class="btn-remove" (click)="removeProject(i)" *ngIf="isEditing && projectForms.length > 1">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+                
+                <div class="form-grid">
+                  <div class="form-group" style="display: none;">
+                    <label>projectEmpId *</label>
+                    <input type="number" formControlName="projectEmpId" [readonly]="!isEditing">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Project Name *</label>
+                    <input type="text" formControlName="name" [readonly]="!isEditing">
+                  </div>
+                  <!-- <div class="form-group">
+                    <label>Role *</label>
+                    <input type="text" formControlName="role" [readonly]="!isEditing">
+                  </div> -->
+                  <div class="form-group">
+                    <label>Start Date *</label>
+                    <input type="month" formControlName="startDate" [readonly]="!isEditing">
+                  </div>
+                  <div class="form-group">
+                    <label>End Date</label>
+                    <input type="month" formControlName="endDate" [readonly]="!isEditing || project.get('ongoing')?.value">
+                    <label class="checkbox-label">
+                      <input type="checkbox" formControlName="ongoing" [disabled]="!isEditing">
+                      Currently working on this project
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="form-group full-width">
+                  <label>Description *</label>
+                  <textarea formControlName="description" rows="3" [readonly]="!isEditing" 
+                            placeholder="Describe the project, your contributions, technologies used..."></textarea>
+                </div>
+                
+                <div class="form-group full-width">
+                  <label>Technologies Used</label>
+                  <input type="text" formControlName="technologies" [readonly]="!isEditing" 
+                         placeholder="e.g., Angular, Node.js, MongoDB (comma separated)">
+                </div>
+                
+                <div class="form-group full-width">
+                  <label>Project URL (Optional)</label>
+                  <input type="url" formControlName="url" [readonly]="!isEditing" 
+                         placeholder="https://github.com/username/project">
+                </div>
+              </div>
+              
+              <div class="no-data" *ngIf="projectForms.length === 0 && !isEditing">
+                <i class="fas fa-project-diagram"></i>
+                <p>No projects added yet</p>
+                <button type="button" class="btn-primary" (click)="isEditing = true; addProject()">
+                  Add Your First Project
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Submit Button -->
       <div class="form-actions" *ngIf="isEditing">
         <button type="submit" class="btn-primary" [disabled]="isLoading || profileForm.invalid">
@@ -439,5 +579,6 @@
       </div>
     </form>
   </div>
+</div>
 </div>
 </div>
