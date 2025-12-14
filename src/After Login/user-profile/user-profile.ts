@@ -98,6 +98,7 @@ export class UserProfileComponent implements OnInit {
   showPdf = false;
   isResumeUploaded: boolean = false;
   skillemployee:any;
+  keySkills:any;
   selectedTab = 'personal';
   degree: any;
   empId: number = 0;
@@ -187,6 +188,7 @@ export class UserProfileComponent implements OnInit {
     this.getAllStates();
     this.getAllQual();
     this.getAllSkills();
+    this. getAllKeySkills()
     this.GetUserDetailsById(this.empId);
   }
 
@@ -278,6 +280,15 @@ export class UserProfileComponent implements OnInit {
     this.masterServices.GetAllSkill().subscribe({
       next: (data: any) => {
         this.skillemployee = data;
+      }, error: (err: any) => {}
+    })
+  }
+
+  
+  getAllKeySkills() {
+    this.masterServices.GetAllKeySkill().subscribe({
+      next: (data: any) => {
+        this.keySkills = data;
       }, error: (err: any) => {}
     })
   }
@@ -394,9 +405,9 @@ export class UserProfileComponent implements OnInit {
   // Key Skills Methods (Added)
   addKeySkill() {
     const keySkillGroup = this.fb.group({
-      keySkillEmpId: [this.empId],
-      name: ['', Validators.required],
-      proficiency: ['Intermediate', Validators.required]
+      empId: [this.empId],
+      keySkillId: [0, Validators.required],
+      level: ['Intermediate', Validators.required]
     });
     this.keySkillForms.push(keySkillGroup);
   }
@@ -412,12 +423,26 @@ export class UserProfileComponent implements OnInit {
       name: ['', Validators.required],
       //role: ['', Validators.required],
       startDate: ['', Validators.required],
-      endDate: [''],
+      endDate: ['', Validators.required],
       ongoing: [false],
       description: ['', Validators.required],
       technologies: [''],
       url: ['']
     });
+
+     projectGroup.get('ongoing')?.valueChanges.subscribe(isOngoing => {
+    const endDateCtrl = projectGroup.get('endDate');
+
+    if (isOngoing) {
+      endDateCtrl?.clearValidators();   // remove required
+      endDateCtrl?.setValue('');        // clear value
+    } else {
+      endDateCtrl?.setValidators(Validators.required); // add required back
+    }
+
+    endDateCtrl?.updateValueAndValidity();
+  });
+
     this.projectForms.push(projectGroup);
   }
 
@@ -600,6 +625,7 @@ export class UserProfileComponent implements OnInit {
         }
         if (this.selectedTab === 'skills') {
           debugger
+          
           this.employeeService.saveSkillDetails(this.user.skills).subscribe({
             next: (data: any) => {
               if (data > 0) {
@@ -621,21 +647,47 @@ export class UserProfileComponent implements OnInit {
         // Handle Key Skills tab (Added)
         if (this.selectedTab === 'key-skills') {
           debugger
+       
+
+          this.employeeService.saveKeySkillDetails(this.user.keySkills).subscribe({
+            next: (data: any) => {
+              if (data > 0) {
+                this.toastr.success('Profile updated successfully!', 'Success');
+              }
+              else {
+                this.toastr.error('Some error Occured!');
+              }
+              this.isLoading = false;
+              this.isEditing = false;
+            }, error: (err: any) => {
+              this.toastr.error('Some error Occured!');
+              this.isLoading = false;
+              this.isEditing = false;
+            }
+          })
           // Add your API call for key skills here
-          // Example: this.employeeService.saveKeySkills(this.user.keySkills).subscribe(...)
-          this.toastr.success('Key skills updated successfully!', 'Success');
-          this.isLoading = false;
-          this.isEditing = false;
+          
         }
 
         // Handle Projects tab (Added)
         if (this.selectedTab === 'projects') {
           debugger
-          // Add your API call for projects here
-          // Example: this.employeeService.saveProjects(this.user.projects).subscribe(...)
-          this.toastr.success('Projects updated successfully!', 'Success');
-          this.isLoading = false;
-          this.isEditing = false;
+          this.employeeService.saveProjectlDetails(this.user.projects).subscribe({
+            next: (data: any) => {
+              if (data > 0) {
+                this.toastr.success('Projects updated successfully!', 'Success');
+              }
+              else {
+                this.toastr.error('Some error Occured!');
+              }
+              this.isLoading = false;
+              this.isEditing = false;
+            }, error: (err: any) => {
+              this.toastr.error('Some error Occured!');
+              this.isLoading = false;
+              this.isEditing = false;
+            }
+          })
         }
 
       }, 1500);

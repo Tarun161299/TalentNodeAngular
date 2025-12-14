@@ -459,8 +459,11 @@
                 <div class="key-skill-item" *ngFor="let skill of keySkillForms.controls; let i = index" [formGroupName]="i">
                   <div class="key-skill-content">
                     <div class="key-skill-inputs">
-                      <input type="text" formControlName="name" [readonly]="!isEditing" placeholder="Enter key skill">
-                      <select formControlName="proficiency" [disabled]="!isEditing">
+                      <select formControlName="keySkillId" [disabled]="!isEditing" placeholder="select key skill">
+                         <option  [ngValue]=0>--select Key Skills--</option>
+                        <option *ngFor="let level of keySkills" [ngValue]="level.keyskillId">{{ level.description }}</option>
+                      </select>
+                      <select formControlName="level" [disabled]="!isEditing">
                         <option value="">Select Proficiency</option>
                         <option value="Basic">Basic</option>
                         <option value="Intermediate">Intermediate</option>
@@ -473,10 +476,10 @@
                     </button>
                   </div>
                   <div class="proficiency-indicator" *ngIf="!isEditing">
-                    <div class="proficiency-bar" [class]="'proficiency-' + skill.get('proficiency')?.value?.toLowerCase()">
-                      <div class="proficiency-fill" [style.width.%]="getProficiencyPercentage(skill.get('proficiency')?.value)"></div>
+                    <div class="proficiency-bar" [class]="'proficiency-' + skill.get('level')?.value?.toLowerCase()">
+                      <div class="proficiency-fill" [style.width.%]="getProficiencyPercentage(skill.get('level')?.value)"></div>
                     </div>
-                    <span class="proficiency-text">{{ skill.get('proficiency')?.value }}</span>
+                    <span class="proficiency-text">{{ skill.get('level')?.value }}</span>
                   </div>
                 </div>
               </div>
