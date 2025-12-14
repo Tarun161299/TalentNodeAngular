@@ -16,6 +16,31 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) { }
 
+ // In your EmployeeService file, fix the getApplicationStats method:
+
+getApplicationStats(employeeId: number): Observable<any> {
+  // Change this.apiUrl to this.baseUrl
+  return this.http.get<any>(`${this.baseUrl}/applications/stats/${employeeId}`);
+}
+  // Or if you don't have an API endpoint yet, create a mock method
+  getMockApplicationStats(employeeId: number): Observable<any> {
+    // Return mock data
+    const mockStats = {
+      total: 24,
+      pending: 8,
+      shortlisted: 6,
+      rejected: 5,
+      selected: 2
+    };
+    
+    return new Observable(observer => {
+      setTimeout(() => {
+        observer.next(mockStats);
+        observer.complete();
+      }, 500);
+    });
+  }
+
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',
