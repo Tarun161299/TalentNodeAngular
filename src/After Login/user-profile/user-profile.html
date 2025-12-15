@@ -7,578 +7,754 @@
           [show-all]="true"
           style="display: block; height: 100%; width: 100%;">
         </pdf-viewer>
-
    </div>
-</div> 
-<div class="dashboard">
-<div class="profile-content scrollable">
-<div class="profile-container">
-  <!-- Header Section -->
-  <div class="profile-header">
-    <div class="header-content">
-      <div class="avatar-section">
-        <div class="avatar-container">
-          <img [src]="user.avatar" alt="Profile" class="avatar">
-          <div class="avatar-overlay" *ngIf="isEditing">
-            <label for="avatar-upload" class="upload-btn">
-              <i class="fas fa-camera"></i>
-            </label>
-            <input type="file" id="avatar-upload" (change)="onAvatarChange($event)" accept="image/*">
+</div>
+<div class="avatar-preview-modal" *ngIf="showPreviewModal" (click)="closePreviewModal()">
+  <img [src]="previewImageUrl" alt="Profile Preview" (click)="$event.stopPropagation()">
+  <button class="close-preview-btn" (click)="closePreviewModal()">
+    <i class="fas fa-times"></i>
+  </button>
+</div>
+<!-- Avatar Upload Modal -->
+<div class="avatar-modal" *ngIf="showAvatarModal">
+  <div class="avatar-modal-content">
+    <div class="avatar-modal-header">
+      <h3>Update Profile Photo</h3>
+      <button class="close-modal-btn" (click)="closeAvatarModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="avatar-modal-body">
+      <!-- Error Message -->
+      <div class="error-message-container" *ngIf="uploadError">
+        <p class="error-text">{{ uploadError }}</p>
+      </div>
+      
+      <!-- Upload Progress -->
+      <div class="upload-progress" *ngIf="isUploading">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+        </div>
+        <div class="progress-text">
+          Uploading: {{ uploadProgress }}%
+        </div>
+      </div>
+      
+      <!-- Image Cropper -->
+      <div class="cropper-container" *ngIf="imageChangedEvent">
+        <div class="cropper-wrapper">
+          <image-cropper
+            [imageChangedEvent]="imageChangedEvent"
+            [maintainAspectRatio]="maintainAspectRatio"
+            [aspectRatio]="aspectRatio"
+            [resizeToWidth]="resizeToWidth"
+            [cropperMinWidth]="100"
+            [roundCropper]="true"
+            [onlyScaleDown]="true"
+            [canvasRotation]="rotation"
+            [transform]="{ scale: scale }"
+            (imageCropped)="imageCropped($event)"
+            (imageLoaded)="imageLoaded($event)"
+            (cropperReady)="cropperReady()"
+            (loadImageFailed)="loadImageFailed()"
+            format="png">
+          </image-cropper>
+        </div>
+        
+        <!-- Cropper Controls -->
+        <div class="cropper-controls" *ngIf="showCropper">
+          <div class="control-group">
+            <span class="control-label">Rotate:</span>
+            <button class="control-btn" (click)="rotateLeft()" title="Rotate Left">
+              <i class="fas fa-undo"></i>
+            </button>
+            <button class="control-btn" (click)="rotateRight()" title="Rotate Right">
+              <i class="fas fa-redo"></i>
+            </button>
+          </div>
+          
+          <div class="control-group">
+            <span class="control-label">Flip:</span>
+            <button class="control-btn" (click)="flipHorizontal()" title="Flip Horizontal">
+              <i class="fas fa-arrows-alt-h"></i>
+            </button>
+            <button class="control-btn" (click)="flipVertical()" title="Flip Vertical">
+              <i class="fas fa-arrows-alt-v"></i>
+            </button>
+          </div>
+          
+          <div class="control-group">
+            <span class="control-label">Zoom:</span>
+            <button class="control-btn" (click)="zoomOut()" title="Zoom Out">
+              <i class="fas fa-search-minus"></i>
+            </button>
+            <button class="control-btn" (click)="zoomIn()" title="Zoom In">
+              <i class="fas fa-search-plus"></i>
+            </button>
+          </div>
+          
+          <div class="zoom-control">
+            <span class="control-label">Scale:</span>
+            <input type="range" min="0.1" max="3" step="0.1" [(ngModel)]="scale">
+            <span class="control-label">{{ scale.toFixed(1) }}x</span>
           </div>
         </div>
-        <div class="user-basic-info">
-          <h1>{{ user.firstName }} {{ user.lastName }}</h1>
-          <p class="current-role">{{ user.currentPosition }} {{ (user.currentPosition==null || user.currentPosition=='')||(user.currentCompany==null || user.currentCompany=='')?'':'at'  }} {{ user.currentCompany }}</p>
-          <div class="user-stats">
-            <span class="stat">
-              <i class="fas fa-briefcase"></i>
-              {{ getTotalExperience() }}
-            </span>
-            <span class="stat">
-              <i class="fas fa-map-marker-alt"></i>
-              {{ user.location }}
-            </span>
-            <span class="stat">
-              <i class="fas fa-clock"></i>
-              {{ user.noticePeriod }} days notice
-            </span>
-            <span class="stat">
-  <i class="fas fa-file-pdf"></i>
-  <a *ngIf="user.resume" (click)="viewResume()">View Resume</a>
-  <span *ngIf="!user.resume">No Resume Uploaded</span>
-</span>
+        
+        <!-- Preview -->
+        <div class="preview-container" *ngIf="croppedImage">
+          <h4 class="preview-title">Preview</h4>
+          <div class="preview-images">
+            <div class="preview-item">
+              <img [src]="croppedImage" alt="Preview" class="preview-avatar">
+              <span class="preview-label">Small (60x60)</span>
+            </div>
+            <div class="preview-item">
+              <img [src]="croppedImage" alt="Preview" class="preview-avatar large">
+              <span class="preview-label">Large (100x100)</span>
+            </div>
+            <div class="preview-item">
+              <img [src]="croppedImage" alt="Preview" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 2px solid #e2e8f0;">
+              <span class="preview-label">Original</span>
+            </div>
           </div>
         </div>
       </div>
       
-      <div class="header-actions">
-        <button class="btn-resume" *ngIf="!isEditing">
-          <label for="resume-upload">
-            <i class="fas fa-upload"></i>
-            {{ user.resume ? 'Update Resume' : 'Upload Resume' }}
-          </label>
-          <input type="file" id="resume-upload" (change)="onResumeUpload($event)" accept=".pdf">
+      <!-- Action Buttons
+      <div class="cropper-actions">
+        <button 
+          type="button" 
+          class="btn-primary" 
+          (click)="saveCroppedAvatar()"
+          [disabled]="!croppedImage || isUploading">
+          <i class="fas fa-check"></i>
+          {{ isUploading ? 'Uploading...' : 'Save Photo' }}
+        </button> -->
+        <!-- Replace your current Save button with this: -->
+    <button 
+      type="button" 
+      class="btn-primary" 
+      (click)="saveCroppedAvatar()"
+      [disabled]="!canSaveImage() || isUploading">
+      <i class="fas fa-check"></i>
+      {{ isUploading ? 'Uploading...' : 'Save Photo' }}
+    </button>
+        
+        <button 
+          type="button" 
+          class="btn-reset" 
+          (click)="resetCropper()"
+          *ngIf="imageChangedEvent">
+          <i class="fas fa-redo"></i>
+          Reset
         </button>
-        <button class="btn-edit" (click)="toggleEdit()">
-          <i class="fas" [class.fa-edit]="!isEditing" [class.fa-times]="isEditing"></i>
-          {{ isEditing ? 'Cancel' : 'Edit Profile' }}
+        
+        <button 
+          type="button" 
+          class="btn-cancel" 
+          (click)="closeAvatarModal()">
+          <i class="fas fa-times"></i>
+          Cancel
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Navigation Tabs -->
-  <div class="profile-tabs">
-    <nav class="tab-nav">
-      <button 
-        class="tab-btn" 
-        [class.active]="selectedTab === 'personal'"
-        (click)="selectTab('personal')">
-        <i class="fas fa-user"></i>
-        Personal Info
-      </button>
-      <button 
-        class="tab-btn" 
-        [class.active]="selectedTab === 'experience'"
-        (click)="selectTab('experience')">
-        <i class="fas fa-briefcase"></i>
-        Experience
-      </button>
-      <button 
-        class="tab-btn" 
-        [class.active]="selectedTab === 'education'"
-        (click)="selectTab('education')">
-        <i class="fas fa-graduation-cap"></i>
-        Education
-      </button>
-      <button 
-        class="tab-btn" 
-        [class.active]="selectedTab === 'skills'"
-        (click)="selectTab('skills')">
-        <i class="fas fa-code"></i>
-        Skills
-      </button>
-      <button 
-        class="tab-btn" 
-        [class.active]="selectedTab === 'key-skills'"
-        (click)="selectTab('key-skills')">
-        <i class="fas fa-star"></i>
-        Key Skills
-      </button>
-      <button 
-        class="tab-btn" 
-        [class.active]="selectedTab === 'projects'"
-        (click)="selectTab('projects')">
-        <i class="fas fa-project-diagram"></i>
-        Projects
-      </button>
-    </nav>
-  </div>
 
-  <!-- Profile Content -->
-  <div class="profile-content">
-    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-      
-      <!-- Personal Info Tab -->
-      <div class="tab-content" *ngIf="selectedTab === 'personal'" [formGroupName]="'personal'">
-        <div class="card">
-          <div class="card-header">
-            <h3>Personal Information</h3>
+<div class="dashboard">
+  <div class="profile-content scrollable">
+    <div class="profile-container">
+      <!-- Header Section -->
+      <div class="profile-header">
+        <div class="header-content">
+          <div class="avatar-section">
+            <div class="avatar-container">
+              <!-- Show avatar if exists, otherwise show placeholder -->
+              <div *ngIf="!user.avatar || user.avatar === ''" class="avatar-placeholder">
+                {{ user.firstName?.charAt(0) || 'U' }}{{ user.lastName?.charAt(0) || '' }}
+              </div>
+              <!-- Profile photo with click for preview when NOT editing -->
+              <img 
+                *ngIf="user.avatar && user.avatar !== ''" 
+                [src]="user.avatar" 
+                alt="Profile" 
+                class="avatar">
+                
+              
+                <!-- Show Change Photo overlay ONLY when in edit mode -->
+              <div class="avatar-overlay" (click)="triggerAvatarUpload()">
+                <div class="upload-btn">
+                  <i class="fas fa-camera"></i>
+                  <span>Change Photo</span>
+                </div>
+              </div>
+            </div>
+            
+            <input 
+              type="file" 
+              #fileInput
+              (change)="onAvatarFileSelected($event)"
+              accept="image/*"
+              style="display: none">
+            
+            <div class="user-basic-info">
+              <h1>{{ user.firstName }} {{ user.lastName }}</h1>
+              <p class="current-role">{{ user.currentPosition }} {{ (user.currentPosition==null || user.currentPosition=='')||(user.currentCompany==null || user.currentCompany=='')?'':'at'  }} {{ user.currentCompany }}</p>
+              <div class="user-stats">
+                <span class="stat">
+                  <i class="fas fa-briefcase"></i>
+                  {{ getTotalExperience() }}
+                </span>
+                <span class="stat">
+                  <i class="fas fa-map-marker-alt"></i>
+                  {{ user.location }}
+                </span>
+                <span class="stat">
+                  <i class="fas fa-clock"></i>
+                  {{ user.noticePeriod }} days notice
+                </span>
+                <span class="stat">
+                  <i class="fas fa-file-pdf"></i>
+                  <a *ngIf="user.resume" (click)="viewResume()">View Resume</a>
+                  <span *ngIf="!user.resume">No Resume Uploaded</span>
+                </span>
+              </div>
+            </div>
           </div>
-          <div class="card-body" >
-            <div class="form-grid">
-              <div class="form-group" >
-                <label>First Name *</label>
-                <input 
-                  type="text" 
-                  formControlName="firstName"
-                  [class.error]="profileForm.get('personal.firstName')?.invalid && profileForm.get('personal.firstName')?.touched"
-                  [readonly]="!isEditing">
-                <div class="error-message" *ngIf="profileForm.get('personal.firstName')?.invalid && profileForm.get('personal.firstName')?.touched">
-                  <span *ngIf="profileForm.get('personal.firstName')?.errors?.['required']">First name is required</span>
-                  <span *ngIf="profileForm.get('personal.firstName')?.errors?.['minlength']">Minimum 2 characters required</span>
-                </div>
-              </div>
-              
-              <div class="form-group">
-                <label>Last Name *</label>
-                <input 
-                  type="text" 
-                  formControlName="lastName"
-                  [class.error]="profileForm.get('personal.lastName')?.invalid && profileForm.get('personal.lastName')?.touched"
-                  [readonly]="!isEditing">
-                <div class="error-message" *ngIf="profileForm.get('personal.lastName')?.invalid && profileForm.get('personal.lastName')?.touched">
-                  <span *ngIf="profileForm.get('personal.lastName')?.errors?.['required']">Last name is required</span>
-                  <span *ngIf="profileForm.get('personal.lastName')?.errors?.['minlength']">Minimum 2 characters required</span>
-                </div>
-              </div>
-              
-              <div class="form-group">
-                <label>Email *</label>
-                <input 
-                  type="email" 
-                  formControlName="email"
-                  [class.error]="profileForm.get('personal.email')?.invalid && profileForm.get('personal.email')?.touched"
-                  [readonly]="!isEditing">
-                <div class="error-message" *ngIf="profileForm.get('personal.email')?.invalid && profileForm.get('personal.email')?.touched">
-                  <span *ngIf="profileForm.get('personal.email')?.errors?.['required']">Email is required</span>
-                  <span *ngIf="profileForm.get('personal.email')?.errors?.['email']">Please enter a valid email</span>
-                </div>
-              </div>
-              
-              <div class="form-group">
-                <label>Phone *</label>
-                <input 
-                  type="tel" 
-                  formControlName="phone"
-                  [class.error]="profileForm.get('personal.phone')?.invalid && profileForm.get('personal.phone')?.touched"
-                  [readonly]="!isEditing">
-                <div class="error-message" *ngIf="profileForm.get('personal.phone')?.invalid && profileForm.get('personal.phone')?.touched">
-                  <span *ngIf="profileForm.get('personal.phone')?.errors?.['required']">Phone number is required</span>
-                  <span *ngIf="profileForm.get('personal.phone')?.errors?.['pattern']">Please enter a valid phone number</span>
-                </div>
-              </div>
-              
-              <div class="form-group">
-                <label>Location *</label>
-                <input 
-                  type="text" 
-                  formControlName="location"
-                  [readonly]="!isEditing">
-              </div>
-              
-              <div class="form-group">
-                <label>Current Position</label>
-                <input 
-                  type="text" 
-                  formControlName="currentPosition"
-                  [readonly]="!isEditing">
-              </div>
+          
+          <div class="header-actions">
+            <button class="btn-resume" *ngIf="!isEditing">
+              <label for="resume-upload">
+                <i class="fas fa-upload"></i>
+                {{ user.resume ? 'Update Resume' : 'Upload Resume' }}
+              </label>
+              <input type="file" id="resume-upload" (change)="onResumeUpload($event)" accept=".pdf">
+            </button>
             
-                <div class="form-group">
-  <label for="State">State</label>
-  <select
-    id="district"
-    class="form-control"
-    formControlName="stateid"
-    [disabled]="!isEditing"
-  >
-    <option value="" disabled>Select State</option>
-    <option *ngFor="let sta of states" [value]="sta.stateId">
-      {{ sta.state }}
-    </option>
-  </select>
-</div>
-             <div class="form-group">
-  <label for="district">District</label>
-  <select
-    id="district"
-    class="form-control"
-    formControlName="districtId"
-    [disabled]="!isEditing"
-  >
-    <option value="" disabled>Select District</option>
-    <option *ngFor="let district of disticts" [value]="district.districtId">
-      {{ district.name }}
-    </option>
-  </select>
-</div>
-
-              <div class="form-group">
-                <label>Current Company</label>
-                <input 
-                  type="text" 
-                  formControlName="currentCompany"
-                  [readonly]="!isEditing">
-              </div>
-
-              <div class="form-group">
-                <label>Current Salary (₹)</label>
-                <input 
-                  type="number" 
-                  formControlName="currentSalary"
-                  [readonly]="!isEditing">
-              </div>
-              
-              <div class="form-group">
-                <label>Expected Salary (₹)</label>
-                <input 
-                  type="number" 
-                  formControlName="expectedSalary"
-                  [readonly]="!isEditing">
-              </div>
-            </div>
+            <!-- Add Avatar Remove Button when in edit mode -->
+            <button 
+              class="btn-resume" 
+              *ngIf="isEditing && user.avatar && user.avatar !== ''"
+              (click)="removeAvatar()"
+              style="background: #fed7d7; color: #c53030;">
+              <i class="fas fa-trash-alt"></i>
+              Remove Photo
+            </button>
             
-            <div class="form-group full-width">
-              <label>Professional Summary</label>
-              <textarea 
-                formControlName="bio"
-                rows="4"
-                [readonly]="!isEditing"
-                placeholder="Describe your professional background, skills, and career objectives..."></textarea>
-              <div class="char-count">{{ profileForm.get('personal.bio')?.value?.length || 0 }}/1000</div>
-            </div>
+            <button class="btn-edit" (click)="toggleEdit()">
+              <i class="fas" [class.fa-edit]="!isEditing" [class.fa-times]="isEditing"></i>
+              {{ isEditing ? 'Cancel' : 'Edit Profile' }}
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Experience Tab -->
-      <div class="tab-content" *ngIf="selectedTab === 'experience'">
-        <div class="card">
-          <div class="card-header">
-            <h3>Work Experience</h3>
-            <button type="button" class="btn-add" (click)="addExperience()" *ngIf="isEditing">
-              <i class="fas fa-plus"></i> Add Experience
-            </button>
-          </div>
-          <div class="card-body">
-            <div formArrayName="experience">
-              <div class="experience-item" *ngFor="let exp of experienceForms.controls; let i = index" [formGroupName]="i">
-                <div class="experience-header">
-                  <h4>Experience {{ i + 1 }}</h4>
-                  <button type="button" class="btn-remove" (click)="removeExperience(i)" *ngIf="isEditing && experienceForms.length > 1">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-                
+      <!-- Navigation Tabs -->
+      <div class="profile-tabs">
+        <nav class="tab-nav">
+          <button 
+            class="tab-btn" 
+            [class.active]="selectedTab === 'personal'"
+            (click)="selectTab('personal')">
+            <i class="fas fa-user"></i>
+            Personal Info
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="selectedTab === 'experience'"
+            (click)="selectTab('experience')">
+            <i class="fas fa-briefcase"></i>
+            Experience
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="selectedTab === 'education'"
+            (click)="selectTab('education')">
+            <i class="fas fa-graduation-cap"></i>
+            Education
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="selectedTab === 'skills'"
+            (click)="selectTab('skills')">
+            <i class="fas fa-code"></i>
+            Skills
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="selectedTab === 'key-skills'"
+            (click)="selectTab('key-skills')">
+            <i class="fas fa-star"></i>
+            Key Skills
+          </button>
+          <button 
+            class="tab-btn" 
+            [class.active]="selectedTab === 'projects'"
+            (click)="selectTab('projects')">
+            <i class="fas fa-project-diagram"></i>
+            Projects
+          </button>
+        </nav>
+      </div>
+
+      <!-- Profile Content -->
+      <div class="profile-content">
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+          
+          <!-- Personal Info Tab -->
+          <div class="tab-content" *ngIf="selectedTab === 'personal'" [formGroupName]="'personal'">
+            <div class="card">
+              <div class="card-header">
+                <h3>Personal Information</h3>
+              </div>
+              <div class="card-body" >
                 <div class="form-grid">
-                  <div class="form-group" style="display: none;">
-                    <label>employeeID *</label>
-                    <input type="text" formControlName="employeeID" [readonly]="!isEditing">
-                  </div>
-                   <div class="form-group" style="display: none;">
-                    <label>ExperienceId *</label>
-                    <input type="text" formControlName="experienceId" [readonly]="!isEditing">
+                  <div class="form-group" >
+                    <label>First Name *</label>
+                    <input 
+                      type="text" 
+                      formControlName="firstName"
+                      [class.error]="profileForm.get('personal.firstName')?.invalid && profileForm.get('personal.firstName')?.touched"
+                      [readonly]="!isEditing">
+                    <div class="error-message" *ngIf="profileForm.get('personal.firstName')?.invalid && profileForm.get('personal.firstName')?.touched">
+                      <span *ngIf="profileForm.get('personal.firstName')?.errors?.['required']">First name is required</span>
+                      <span *ngIf="profileForm.get('personal.firstName')?.errors?.['minlength']">Minimum 2 characters required</span>
+                    </div>
                   </div>
                   
                   <div class="form-group">
-                    <label>Company *</label>
-                    <input type="text" formControlName="company" [readonly]="!isEditing">
+                    <label>Last Name *</label>
+                    <input 
+                      type="text" 
+                      formControlName="lastName"
+                      [class.error]="profileForm.get('personal.lastName')?.invalid && profileForm.get('personal.lastName')?.touched"
+                      [readonly]="!isEditing">
+                    <div class="error-message" *ngIf="profileForm.get('personal.lastName')?.invalid && profileForm.get('personal.lastName')?.touched">
+                      <span *ngIf="profileForm.get('personal.lastName')?.errors?.['required']">Last name is required</span>
+                      <span *ngIf="profileForm.get('personal.lastName')?.errors?.['minlength']">Minimum 2 characters required</span>
+                    </div>
                   </div>
+                  
                   <div class="form-group">
-                    <label>Position *</label>
-                    <input type="text" formControlName="position" [readonly]="!isEditing">
+                    <label>Email *</label>
+                    <input 
+                      type="email" 
+                      formControlName="email"
+                      [class.error]="profileForm.get('personal.email')?.invalid && profileForm.get('personal.email')?.touched"
+                      [readonly]="!isEditing">
+                    <div class="error-message" *ngIf="profileForm.get('personal.email')?.invalid && profileForm.get('personal.email')?.touched">
+                      <span *ngIf="profileForm.get('personal.email')?.errors?.['required']">Email is required</span>
+                      <span *ngIf="profileForm.get('personal.email')?.errors?.['email']">Please enter a valid email</span>
+                    </div>
                   </div>
+                  
                   <div class="form-group">
-                    <label>Start Date *</label>
-                    <input type="month" formControlName="startDate" [readonly]="!isEditing">
+                    <label>Phone *</label>
+                    <input 
+                      type="tel" 
+                      formControlName="phone"
+                      [class.error]="profileForm.get('personal.phone')?.invalid && profileForm.get('personal.phone')?.touched"
+                      [readonly]="!isEditing">
+                    <div class="error-message" *ngIf="profileForm.get('personal.phone')?.invalid && profileForm.get('personal.phone')?.touched">
+                      <span *ngIf="profileForm.get('personal.phone')?.errors?.['required']">Phone number is required</span>
+                      <span *ngIf="profileForm.get('personal.phone')?.errors?.['pattern']">Please enter a valid phone number</span>
+                    </div>
                   </div>
+                  
                   <div class="form-group">
-                    <label>End Date</label>
-                    <input type="month" formControlName="endDate" [readonly]="!isEditing || exp.get('current')?.value">
-                    <label class="checkbox-label">
-                      <input type="checkbox" formControlName="current" [disabled]="!isEditing">
-                      Currently working here
-                    </label>
+                    <label>Location *</label>
+                    <input 
+                      type="text" 
+                      formControlName="location"
+                      [readonly]="!isEditing">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Current Position</label>
+                    <input 
+                      type="text" 
+                      formControlName="currentPosition"
+                      [readonly]="!isEditing">
+                  </div>
+                
+                  <div class="form-group">
+                    <label for="State">State</label>
+                    <select
+                      id="district"
+                      class="form-control"
+                      formControlName="stateid"
+                      [disabled]="!isEditing"
+                    >
+                      <option value="" disabled>Select State</option>
+                      <option *ngFor="let sta of states" [value]="sta.stateId">
+                        {{ sta.state }}
+                      </option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="district">District</label>
+                    <select
+                      id="district"
+                      class="form-control"
+                      formControlName="districtId"
+                      [disabled]="!isEditing"
+                    >
+                      <option value="" disabled>Select District</option>
+                      <option *ngFor="let district of disticts" [value]="district.districtId">
+                        {{ district.name }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Current Company</label>
+                    <input 
+                      type="text" 
+                      formControlName="currentCompany"
+                      [readonly]="!isEditing">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Current Salary (₹)</label>
+                    <input 
+                      type="number" 
+                      formControlName="currentSalary"
+                      [readonly]="!isEditing">
+                  </div>
+                  
+                  <div class="form-group">
+                    <label>Expected Salary (₹)</label>
+                    <input 
+                      type="number" 
+                      formControlName="expectedSalary"
+                      [readonly]="!isEditing">
                   </div>
                 </div>
+                
                 <div class="form-group full-width">
-                  <label>Description</label>
-                  <textarea formControlName="description" rows="3" [readonly]="!isEditing" placeholder="Describe your responsibilities and achievements..."></textarea>
+                  <label>Professional Summary</label>
+                  <textarea 
+                    formControlName="bio"
+                    rows="4"
+                    [readonly]="!isEditing"
+                    placeholder="Describe your professional background, skills, and career objectives..."></textarea>
+                  <div class="char-count">{{ profileForm.get('personal.bio')?.value?.length || 0 }}/1000</div>
                 </div>
-              </div>
-              <div class="no-data" *ngIf="experienceForms.length === 0 && !isEditing">
-                <i class="fas fa-briefcase"></i>
-                <p>No work experience added yet</p>
-                <button type="button" class="btn-primary" (click)="isEditing = true; addExperience()">
-                  Add Your First Experience
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Education Tab -->
-      <div class="tab-content" *ngIf="selectedTab === 'education'">
-        <div class="card">
-          <div class="card-header">
-            <h3>Education</h3>
-            <button type="button" class="btn-add" (click)="addEducation()" *ngIf="isEditing">
-              <i class="fas fa-plus"></i> Add Education
-            </button>
-          </div>
-          <div class="card-body">
-            <div formArrayName="education">
-              <div class="education-item" *ngFor="let edu of educationForms.controls; let i = index" [formGroupName]="i">
-                <div class="education-header">
-                  <h4>Education {{ i + 1 }}</h4>
-                  <button type="button" class="btn-remove" (click)="removeEducation(i)" *ngIf="isEditing && educationForms.length > 1">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-                <div class="form-grid">
-                  <!-- <div class="form-group">
-                    <label>Degree *</label>
-                    <input type="text" formControlName="degree" [readonly]="!isEditing" placeholder="e.g., B.Tech Computer Science">
-                  </div> -->
-                  <div class="form-group" style="display: none;">
-                    <label>EmpId *</label>
-                    <input type="text" formControlName="degEmpId" [readonly]="!isEditing" placeholder="e.g., IIT Delhi">
-                  </div>
-                  <div class="form-group">
-  <label for="State">Degree *</label>
-  <select
-    id="district"
-    class="form-control"
-    formControlName="degree"
-    [disabled]="!isEditing"
-  >
-    <option value="" disabled>Select Degree</option>
-    <option *ngFor="let de of degree" [value]="de.qualID">
-      {{ de.qualificationName }}
-    </option>
-  </select>
-</div>
-                  <div class="form-group">
-                    <label>Institution *</label>
-                    <input type="text" formControlName="institution" [readonly]="!isEditing" placeholder="e.g., IIT Delhi">
-                  </div>
-                  <div class="form-group">
-                    <label>Year *</label>
-                    <input type="number" formControlName="year" [readonly]="!isEditing" >
-                  </div>
-                  <div class="form-group">
-                    <label>Percentage/CGPA</label>
-                    <input type="number" formControlName="percentage" [readonly]="!isEditing" step="0.01" min="0" max="100">
-                  </div>
-                </div>
-              </div>
-              <div class="no-data" *ngIf="educationForms.length === 0 && !isEditing">
-                <i class="fas fa-graduation-cap"></i>
-                <p>No education details added yet</p>
-                <button type="button" class="btn-primary" (click)="isEditing = true; addEducation()">
-                  Add Your Education
+          <!-- Experience Tab -->
+          <div class="tab-content" *ngIf="selectedTab === 'experience'">
+            <div class="card">
+              <div class="card-header">
+                <h3>Work Experience</h3>
+                <button type="button" class="btn-add" (click)="addExperience()" *ngIf="isEditing">
+                  <i class="fas fa-plus"></i> Add Experience
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Skills Tab -->
-      <div class="tab-content" *ngIf="selectedTab === 'skills'">
-        <div class="card">
-          <div class="card-header">
-            <h3>Skills</h3>
-            <button type="button" class="btn-add" (click)="addSkill()" *ngIf="isEditing">
-              <i class="fas fa-plus"></i> Add Skill
-            </button>
-          </div>
-          <div class="card-body">
-            <div formArrayName="skills">
-              <div class="skills-container">
-                <div class="skill-item" *ngFor="let skill of skillForms.controls; let i = index" [formGroupName]="i">
-                  <div class="skill-content">
-                    <div class="skill-inputs">
-                         <input type="number" formControlName="skillEmpId" style="display:none;"[readonly]="!isEditing" step="0.01" min="0" max="100">
-<select formControlName="name" [disabled]="!isEditing">
-                        <option *ngFor="let level of skillemployee" [value]="level.skillID">{{ level.skillName }}</option>
-                      </select>
+              <div class="card-body">
+                <div formArrayName="experience">
+                  <div class="experience-item" *ngFor="let exp of experienceForms.controls; let i = index" [formGroupName]="i">
+                    <div class="experience-header">
+                      <h4>Experience {{ i + 1 }}</h4>
+                      <button type="button" class="btn-remove" (click)="removeExperience(i)" *ngIf="isEditing && experienceForms.length > 1">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                    
+                    <div class="form-grid">
+                      <div class="form-group" style="display: none;">
+                        <label>employeeID *</label>
+                        <input type="text" formControlName="employeeID" [readonly]="!isEditing">
+                      </div>
+                      <div class="form-group" style="display: none;">
+                        <label>ExperienceId *</label>
+                        <input type="text" formControlName="experienceId" [readonly]="!isEditing">
+                      </div>
                       
-                      <select formControlName="level" [disabled]="!isEditing">
-                        <option *ngFor="let level of skillLevels" [value]="level">{{ level }}</option>
-                      </select>
+                      <div class="form-group">
+                        <label>Company *</label>
+                        <input type="text" formControlName="company" [readonly]="!isEditing">
+                      </div>
+                      <div class="form-group">
+                        <label>Position *</label>
+                        <input type="text" formControlName="position" [readonly]="!isEditing">
+                      </div>
+                      <div class="form-group">
+                        <label>Start Date *</label>
+                        <input type="month" formControlName="startDate" [readonly]="!isEditing">
+                      </div>
+                      <div class="form-group">
+                        <label>End Date</label>
+                        <input type="month" formControlName="endDate" [readonly]="!isEditing || exp.get('current')?.value">
+                        <label class="checkbox-label">
+                          <input type="checkbox" formControlName="current" [disabled]="!isEditing">
+                          Currently working here
+                        </label>
+                      </div>
                     </div>
-                    <button type="button" class="btn-remove" (click)="removeSkill(i)" *ngIf="isEditing && skillForms.length > 1">
-                      <i class="fas fa-times"></i>
+                    <div class="form-group full-width">
+                      <label>Description</label>
+                      <textarea formControlName="description" rows="3" [readonly]="!isEditing" placeholder="Describe your responsibilities and achievements..."></textarea>
+                    </div>
+                  </div>
+                  <div class="no-data" *ngIf="experienceForms.length === 0 && !isEditing">
+                    <i class="fas fa-briefcase"></i>
+                    <p>No work experience added yet</p>
+                    <button type="button" class="btn-primary" (click)="isEditing = true; addExperience()">
+                      Add Your First Experience
                     </button>
                   </div>
-                  <div class="skill-level-indicator" *ngIf="!isEditing">
-                    <div class="level-bar" [class]="'level-' + skill.get('level')?.value?.toLowerCase()">
-                      <div class="level-fill" [style.width.%]="getSkillLevelPercentage(skill.get('level')?.value)"></div>
-                    </div>
-                    <span class="level-text">{{ skill.get('level')?.value }}</span>
-                  </div>
                 </div>
-              </div>
-              <div class="no-data" *ngIf="skillForms.length === 0 && !isEditing">
-                <i class="fas fa-code"></i>
-                <p>No skills added yet</p>
-                <button type="button" class="btn-primary" (click)="isEditing = true; addSkill()">
-                  Add Your Skills
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Key Skills Tab -->
-      <div class="tab-content" *ngIf="selectedTab === 'key-skills'">
-        <div class="card">
-          <div class="card-header">
-            <h3>Key Skills</h3>
-            <button type="button" class="btn-add" (click)="addKeySkill()" *ngIf="isEditing">
-              <i class="fas fa-plus"></i> Add Key Skill
-            </button>
-          </div>
-          <div class="card-body">
-            <div formArrayName="keySkills">
-              <div class="key-skills-container">
-                <div class="key-skill-item" *ngFor="let skill of keySkillForms.controls; let i = index" [formGroupName]="i">
-                  <div class="key-skill-content">
-                    <div class="key-skill-inputs">
-                      <input type="text" formControlName="name" [readonly]="!isEditing" placeholder="Enter key skill">
-                      <select formControlName="proficiency" [disabled]="!isEditing">
-                        <option value="">Select Proficiency</option>
-                        <option value="Basic">Basic</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                        <option value="Expert">Expert</option>
-                      </select>
+          <!-- Education Tab -->
+          <div class="tab-content" *ngIf="selectedTab === 'education'">
+            <div class="card">
+              <div class="card-header">
+                <h3>Education</h3>
+                <button type="button" class="btn-add" (click)="addEducation()" *ngIf="isEditing">
+                  <i class="fas fa-plus"></i> Add Education
+                </button>
+              </div>
+              <div class="card-body">
+                <div formArrayName="education">
+                  <div class="education-item" *ngFor="let edu of educationForms.controls; let i = index" [formGroupName]="i">
+                    <div class="education-header">
+                      <h4>Education {{ i + 1 }}</h4>
+                      <button type="button" class="btn-remove" (click)="removeEducation(i)" *ngIf="isEditing && educationForms.length > 1">
+                        <i class="fas fa-trash"></i>
+                      </button>
                     </div>
-                    <button type="button" class="btn-remove" (click)="removeKeySkill(i)" *ngIf="isEditing && keySkillForms.length > 1">
-                      <i class="fas fa-times"></i>
+                    <div class="form-grid">
+                      <div class="form-group" style="display: none;">
+                        <label>EmpId *</label>
+                        <input type="text" formControlName="degEmpId" [readonly]="!isEditing" placeholder="e.g., IIT Delhi">
+                      </div>
+                      <div class="form-group">
+                        <label for="State">Degree *</label>
+                        <select
+                          id="district"
+                          class="form-control"
+                          formControlName="degree"
+                          [disabled]="!isEditing"
+                        >
+                          <option value="" disabled>Select Degree</option>
+                          <option *ngFor="let de of degree" [value]="de.qualID">
+                            {{ de.qualificationName }}
+                          </option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Institution *</label>
+                        <input type="text" formControlName="institution" [readonly]="!isEditing" placeholder="e.g., IIT Delhi">
+                      </div>
+                      <div class="form-group">
+                        <label>Year *</label>
+                        <input type="number" formControlName="year" [readonly]="!isEditing" >
+                      </div>
+                      <div class="form-group">
+                        <label>Percentage/CGPA</label>
+                        <input type="number" formControlName="percentage" [readonly]="!isEditing" step="0.01" min="0" max="100">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="no-data" *ngIf="educationForms.length === 0 && !isEditing">
+                    <i class="fas fa-graduation-cap"></i>
+                    <p>No education details added yet</p>
+                    <button type="button" class="btn-primary" (click)="isEditing = true; addEducation()">
+                      Add Your Education
                     </button>
                   </div>
-                  <div class="proficiency-indicator" *ngIf="!isEditing">
-                    <div class="proficiency-bar" [class]="'proficiency-' + skill.get('proficiency')?.value?.toLowerCase()">
-                      <div class="proficiency-fill" [style.width.%]="getProficiencyPercentage(skill.get('proficiency')?.value)"></div>
-                    </div>
-                    <span class="proficiency-text">{{ skill.get('proficiency')?.value }}</span>
-                  </div>
                 </div>
-              </div>
-              <div class="no-data" *ngIf="keySkillForms.length === 0 && !isEditing">
-                <i class="fas fa-star"></i>
-                <p>No key skills added yet</p>
-                <button type="button" class="btn-primary" (click)="isEditing = true; addKeySkill()">
-                  Add Key Skills
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Projects Tab -->
-      <div class="tab-content" *ngIf="selectedTab === 'projects'">
-        <div class="card">
-          <div class="card-header">
-            <h3>Projects</h3>
-            <button type="button" class="btn-add" (click)="addProject()" *ngIf="isEditing">
-              <i class="fas fa-plus"></i> Add Project
-            </button>
-          </div>
-          <div class="card-body">
-            <div formArrayName="projects">
-              <div class="project-item" *ngFor="let project of projectForms.controls; let i = index" [formGroupName]="i">
-                <div class="project-header">
-                  <h4>Project {{ i + 1 }}</h4>
-                  <button type="button" class="btn-remove" (click)="removeProject(i)" *ngIf="isEditing && projectForms.length > 1">
-                    <i class="fas fa-trash"></i>
-                  </button>
+          <!-- Skills Tab -->
+          <div class="tab-content" *ngIf="selectedTab === 'skills'">
+            <div class="card">
+              <div class="card-header">
+                <h3>Skills</h3>
+                <button type="button" class="btn-add" (click)="addSkill()" *ngIf="isEditing">
+                  <i class="fas fa-plus"></i> Add Skill
+                </button>
+              </div>
+              <div class="card-body">
+                <div formArrayName="skills">
+                  <div class="skills-container">
+                    <div class="skill-item" *ngFor="let skill of skillForms.controls; let i = index" [formGroupName]="i">
+                      <div class="skill-content">
+                        <div class="skill-inputs">
+                          <input type="number" formControlName="skillEmpId" style="display:none;"[readonly]="!isEditing" step="0.01" min="0" max="100">
+                          <select formControlName="name" [disabled]="!isEditing">
+                            <option *ngFor="let level of skillemployee" [value]="level.skillID">{{ level.skillName }}</option>
+                          </select>
+                          
+                          <select formControlName="level" [disabled]="!isEditing">
+                            <option *ngFor="let level of skillLevels" [value]="level">{{ level }}</option>
+                          </select>
+                        </div>
+                        <button type="button" class="btn-remove" (click)="removeSkill(i)" *ngIf="isEditing && skillForms.length > 1">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                      <div class="skill-level-indicator" *ngIf="!isEditing">
+                        <div class="level-bar" [class]="'level-' + skill.get('level')?.value?.toLowerCase()">
+                          <div class="level-fill" [style.width.%]="getSkillLevelPercentage(skill.get('level')?.value)"></div>
+                        </div>
+                        <span class="level-text">{{ skill.get('level')?.value }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="no-data" *ngIf="skillForms.length === 0 && !isEditing">
+                    <i class="fas fa-code"></i>
+                    <p>No skills added yet</p>
+                    <button type="button" class="btn-primary" (click)="isEditing = true; addSkill()">
+                      Add Your Skills
+                    </button>
+                  </div>
                 </div>
-                
-                <div class="form-grid">
-                  <div class="form-group" style="display: none;">
-                    <label>projectEmpId *</label>
-                    <input type="number" formControlName="projectEmpId" [readonly]="!isEditing">
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Skills Tab -->
+          <div class="tab-content" *ngIf="selectedTab === 'key-skills'">
+            <div class="card">
+              <div class="card-header">
+                <h3>Key Skills</h3>
+                <button type="button" class="btn-add" (click)="addKeySkill()" *ngIf="isEditing">
+                  <i class="fas fa-plus"></i> Add Key Skill
+                </button>
+              </div>
+              <div class="card-body">
+                <div formArrayName="keySkills">
+                  <div class="key-skills-container">
+                    <div class="key-skill-item" *ngFor="let skill of keySkillForms.controls; let i = index" [formGroupName]="i">
+                      <div class="key-skill-content">
+                        <div class="key-skill-inputs">
+                          <input type="text" formControlName="name" [readonly]="!isEditing" placeholder="Enter key skill">
+                          <select formControlName="proficiency" [disabled]="!isEditing">
+                            <option value="">Select Proficiency</option>
+                            <option value="Basic">Basic</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                            <option value="Expert">Expert</option>
+                          </select>
+                        </div>
+                        <button type="button" class="btn-remove" (click)="removeKeySkill(i)" *ngIf="isEditing && keySkillForms.length > 1">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                      <div class="proficiency-indicator" *ngIf="!isEditing">
+                        <div class="proficiency-bar" [class]="'proficiency-' + skill.get('proficiency')?.value?.toLowerCase()">
+                          <div class="proficiency-fill" [style.width.%]="getProficiencyPercentage(skill.get('proficiency')?.value)"></div>
+                        </div>
+                        <span class="proficiency-text">{{ skill.get('proficiency')?.value }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="no-data" *ngIf="keySkillForms.length === 0 && !isEditing">
+                    <i class="fas fa-star"></i>
+                    <p>No key skills added yet</p>
+                    <button type="button" class="btn-primary" (click)="isEditing = true; addKeySkill()">
+                      Add Key Skills
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Projects Tab -->
+          <div class="tab-content" *ngIf="selectedTab === 'projects'">
+            <div class="card">
+              <div class="card-header">
+                <h3>Projects</h3>
+                <button type="button" class="btn-add" (click)="addProject()" *ngIf="isEditing">
+                  <i class="fas fa-plus"></i> Add Project
+                </button>
+              </div>
+              <div class="card-body">
+                <div formArrayName="projects">
+                  <div class="project-item" *ngFor="let project of projectForms.controls; let i = index" [formGroupName]="i">
+                    <div class="project-header">
+                      <h4>Project {{ i + 1 }}</h4>
+                      <button type="button" class="btn-remove" (click)="removeProject(i)" *ngIf="isEditing && projectForms.length > 1">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                    
+                    <div class="form-grid">
+                      <div class="form-group" style="display: none;">
+                        <label>projectEmpId *</label>
+                        <input type="number" formControlName="projectEmpId" [readonly]="!isEditing">
+                      </div>
+                      
+                      <div class="form-group">
+                        <label>Project Name *</label>
+                        <input type="text" formControlName="name" [readonly]="!isEditing">
+                      </div>
+                      <div class="form-group">
+                        <label>Start Date *</label>
+                        <input type="month" formControlName="startDate" [readonly]="!isEditing">
+                      </div>
+                      <div class="form-group">
+                        <label>End Date</label>
+                        <input type="month" formControlName="endDate" [readonly]="!isEditing || project.get('ongoing')?.value">
+                        <label class="checkbox-label">
+                          <input type="checkbox" formControlName="ongoing" [disabled]="!isEditing">
+                          Currently working on this project
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                      <label>Description *</label>
+                      <textarea formControlName="description" rows="3" [readonly]="!isEditing" 
+                                placeholder="Describe the project, your contributions, technologies used..."></textarea>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                      <label>Technologies Used</label>
+                      <input type="text" formControlName="technologies" [readonly]="!isEditing" 
+                            placeholder="e.g., Angular, Node.js, MongoDB (comma separated)">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                      <label>Project URL (Optional)</label>
+                      <input type="url" formControlName="url" [readonly]="!isEditing" 
+                            placeholder="https://github.com/username/project">
+                    </div>
                   </div>
                   
-                  <div class="form-group">
-                    <label>Project Name *</label>
-                    <input type="text" formControlName="name" [readonly]="!isEditing">
-                  </div>
-                  <!-- <div class="form-group">
-                    <label>Role *</label>
-                    <input type="text" formControlName="role" [readonly]="!isEditing">
-                  </div> -->
-                  <div class="form-group">
-                    <label>Start Date *</label>
-                    <input type="month" formControlName="startDate" [readonly]="!isEditing">
-                  </div>
-                  <div class="form-group">
-                    <label>End Date</label>
-                    <input type="month" formControlName="endDate" [readonly]="!isEditing || project.get('ongoing')?.value">
-                    <label class="checkbox-label">
-                      <input type="checkbox" formControlName="ongoing" [disabled]="!isEditing">
-                      Currently working on this project
-                    </label>
+                  <div class="no-data" *ngIf="projectForms.length === 0 && !isEditing">
+                    <i class="fas fa-project-diagram"></i>
+                    <p>No projects added yet</p>
+                    <button type="button" class="btn-primary" (click)="isEditing = true; addProject()">
+                      Add Your First Project
+                    </button>
                   </div>
                 </div>
-                
-                <div class="form-group full-width">
-                  <label>Description *</label>
-                  <textarea formControlName="description" rows="3" [readonly]="!isEditing" 
-                            placeholder="Describe the project, your contributions, technologies used..."></textarea>
-                </div>
-                
-                <div class="form-group full-width">
-                  <label>Technologies Used</label>
-                  <input type="text" formControlName="technologies" [readonly]="!isEditing" 
-                         placeholder="e.g., Angular, Node.js, MongoDB (comma separated)">
-                </div>
-                
-                <div class="form-group full-width">
-                  <label>Project URL (Optional)</label>
-                  <input type="url" formControlName="url" [readonly]="!isEditing" 
-                         placeholder="https://github.com/username/project">
-                </div>
-              </div>
-              
-              <div class="no-data" *ngIf="projectForms.length === 0 && !isEditing">
-                <i class="fas fa-project-diagram"></i>
-                <p>No projects added yet</p>
-                <button type="button" class="btn-primary" (click)="isEditing = true; addProject()">
-                  Add Your First Project
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Submit Button -->
-      <div class="form-actions" *ngIf="isEditing">
-        <button type="submit" class="btn-primary" [disabled]="isLoading || profileForm.invalid">
-          <i class="fas fa-save"></i>
-          {{ isLoading ? 'Saving...' : 'Save Changes' }}
-        </button>
+          <!-- Submit Button -->
+          <div class="form-actions" *ngIf="isEditing">
+            <button type="submit" class="btn-primary" [disabled]="isLoading || profileForm.invalid">
+              <i class="fas fa-save"></i>
+              {{ isLoading ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   </div>
-</div>
-</div>
 </div>

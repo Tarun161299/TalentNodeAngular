@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormArray, FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -9,6 +9,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { Imageupload } from '../../Common/services/imageupload';
 import { LoaderComponent } from '../../loader-component/loader-component';
 import { LoaderService } from '../../Common/services/loader-service';
+import { ImageCropperComponent, ImageCroppedEvent, LoadedImage } from 'ngx-image-cropper';
 
 interface Education {
   degEmpId: number;
@@ -87,7 +88,7 @@ export interface UserProfile {
 @Component({
   selector: 'app-user-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule,PdfViewerModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, PdfViewerModule, ImageCropperComponent,],
   templateUrl: './user-profile.html',
   styleUrls: ['./user-profile.css']
 })
@@ -105,6 +106,23 @@ export class UserProfileComponent implements OnInit {
   showP:string='';
   states: any;
   empProfile: Employee | undefined;
+  
+  // Avatar upload properties
+  @ViewChild('fileInput') fileInput: any;
+  showAvatarModal = false;
+  avatarPreview: string | null = null;
+  isUploading = false;
+  uploadError: string | null = null;
+  imageChangedEvent: any = null;
+  croppedImage: string = '';
+  showCropper = false;
+  rotation = 0;
+  scale = 1;
+  maintainAspectRatio = true;
+  aspectRatio = 1;
+  resizeToWidth = 200;
+  uploadProgress = 0;
+
   user: UserProfile = {
     id: 1,
     firstName: '',
@@ -235,7 +253,11 @@ export class UserProfileComponent implements OnInit {
       }
     })
   }
-
+  // Add this method to your component class
+canSaveImage(): boolean {
+  // Return true if we have a cropped image AND the cropper is showing
+  return !!this.croppedImage && this.showCropper && !this.isUploading;
+}
   getClaimsFromToken(token: string): any {
     if (!token) return null;
     try {
@@ -696,6 +718,261 @@ export class UserProfileComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
+  // ===========================================
+  // Avatar Upload and Cropping Methods
+  // ===========================================
+
+  triggerAvatarUpload() {
+    if (!this.isEditing) {
+      this.toastr.info('Please enable edit mode to change avatar', 'Info');
+      return;
+    }
+    this.fileInput.nativeElement.click();
+  }
+
+  onAvatarFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      this.toastr.error('Please upload a valid image file (JPG, PNG, GIF, WEBP)', 'Error');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      this.toastr.error('Image size must be less than 5MB', 'Error');
+      return;
+    }
+
+    // Reset cropper state
+    this.showCropper = false;
+    this.croppedImage = '';
+    this.rotation = 0;
+    this.scale = 1;
+    this.uploadProgress = 0;
+
+    // Show the modal
+    this.imageChangedEvent = event;
+    this.showAvatarModal = true;
+    this.uploadError = null;
+  }
+
+  imageCropped(event: ImageCroppedEvent) {
+    console.log('Image cropped! Event data:', event);
+    // Store the cropped image data
+  if (event.blob) {
+    // For newer versions that return blob
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.croppedImage = e.target.result;
+      console.log('Cropped image set from blob');
+      
+      // Manually trigger change detection
+      setTimeout(() => {
+        console.log('Save button should now be enabled');
+      }, 0);
+    };
+    reader.readAsDataURL(event.blob);
+  } else if (event.base64) {
+    // For versions that return base64 directly
+    this.croppedImage = event.base64;
+    console.log('Cropped image set from base64');
+    
+    // Manually trigger change detection
+    setTimeout(() => {
+      console.log('Save button should now be enabled');
+    }, 0);
+  } else {
+    console.error('No image data in cropped event');
+    this.croppedImage = '';
+  }
+
+  }
+  showPreviewModal = false;
+previewImageUrl: string = '';
+showImagePreview() {
+  if (!this.isEditing && this.user.avatar) {
+    this.previewImageUrl = this.user.avatar;
+    this.showPreviewModal = true;
+  }
+}
+
+// Close preview method
+closePreviewModal() {
+  this.showPreviewModal = false;
+  this.previewImageUrl = '';
+}
+
+  imageLoaded(image: LoadedImage) {
+    this.showCropper = true;
+  }
+
+  cropperReady() {
+    // Cropper ready
+  }
+
+  loadImageFailed() {
+    this.uploadError = 'Failed to load image. Please try another image.';
+    this.toastr.error('Failed to load image', 'Error');
+  }
+
+  rotateLeft() {
+    this.rotation -= 90;
+  }
+
+  rotateRight() {
+    this.rotation += 90;
+  }
+
+  flipHorizontal() {
+    this.scale = -this.scale;
+  }
+
+  flipVertical() {
+    this.scale = Math.abs(this.scale) * -1;
+  }
+
+  zoomIn() {
+    this.scale += 0.1;
+  }
+
+  zoomOut() {
+    this.scale -= 0.1;
+  }
+
+  resetCropper() {
+    this.rotation = 0;
+    this.scale = 1;
+    this.imageChangedEvent = null;
+    this.croppedImage = '';
+    this.avatarPreview = null;
+    this.showCropper = false;
+  }
+
+  closeAvatarModal() {
+    this.showAvatarModal = false;
+    this.resetCropper();
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+  }
+
+  saveCroppedAvatar() {
+    if (!this.croppedImage) {
+      this.toastr.error('Please crop the image first', 'Error');
+      return;
+    }
+
+    this.isUploading = true;
+    this.uploadProgress = 0;
+    
+    // Simulate upload progress
+    const progressInterval = setInterval(() => {
+      if (this.uploadProgress < 90) {
+        this.uploadProgress += 10;
+      }
+    }, 200);
+
+    // Convert base64 to blob
+    const byteString = atob(this.croppedImage.split(',')[1]);
+    const mimeString = this.croppedImage.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    
+    const blob = new Blob([ab], { type: mimeString });
+    const file = new File([blob], 'avatar.jpg', { type: mimeString });
+
+    // Upload the cropped image
+    this.uploadAvatar(file, progressInterval);
+  }
+
+  uploadAvatar(file: File, progressInterval: any) {
+    let allowedType = '';
+    let docName = '';
+    let fileExt = file.name.split('.').pop()?.toLowerCase() || '';
+    const maxSizeMB = 5; // Changed from 500MB to 5MB for avatar
+    const fileSizeMB = file.size / (1024 * 1024);
+
+    if (fileSizeMB > maxSizeMB) {
+      this.toastr.error('File size exceeds 5MB limit', 'Error');
+      clearInterval(progressInterval);
+      this.isUploading = false;
+      return;
+    }
+
+    allowedType = 'image/jpeg';
+    docName = 'ProfileImage';
+    if (file.type !== allowedType && fileExt !== 'jpg' && fileExt !== 'jpeg' && fileExt !== 'png') {
+      this.toastr.error('Please upload a JPEG or PNG image only', 'Error');
+      clearInterval(progressInterval);
+      this.isUploading = false;
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const base64String = (reader.result as string).split(',')[1];
+
+      const uploadModel = {
+        employeeID: this.empId,
+        docName: docName,
+        fileName: file.name,
+        fileType: fileExt,
+        fileContentBase64: base64String,
+        mode: "P"
+      };
+
+      this.employeeService.SaveDocument(uploadModel).subscribe({
+        next: (data: any) => {
+          clearInterval(progressInterval);
+          this.uploadProgress = 100;
+          
+          if (data > 0) {
+            this.user.avatar = e.target.result as string;
+            const successMsg = 'Profile image uploaded successfully!';
+            this.toastr.success(successMsg, 'Success');
+            
+            // Refresh user data after a delay to show progress completion
+            setTimeout(() => {
+              this.isUploading = false;
+              this.closeAvatarModal();
+              this.GetUserDetailsById(this.empId); // Refresh user data
+            }, 500);
+          } else {
+            this.toastr.error('Some error occurred!', 'Error');
+            this.isUploading = false;
+          }
+        },
+        error: (err: any) => {
+          clearInterval(progressInterval);
+          this.toastr.error('Some error occurred while uploading!', 'Error');
+          this.isUploading = false;
+        }
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeAvatar() {
+    if (confirm('Are you sure you want to remove your profile photo?')) {
+      // Reset avatar to default
+      this.user.avatar = `data:image/png;base64,${this.showP}`;
+      this.toastr.success('Profile photo removed successfully!', 'Success');
+      
+      // Here you might want to call an API to remove the avatar from server
+      // Example: this.employeeService.removeAvatar(this.empId).subscribe(...)
+    }
+  }
+
+  // Keep the original onAvatarChange method as backup
   onAvatarChange(event: any) {
     debugger
     const file = event.target.files[0];
