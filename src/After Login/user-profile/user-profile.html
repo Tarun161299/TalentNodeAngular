@@ -460,7 +460,7 @@
                   <div class="key-skill-content">
                     <div class="key-skill-inputs">
                       <select formControlName="keySkillId" [disabled]="!isEditing" placeholder="select key skill">
-                         <option  [ngValue]=0>--select Key Skills--</option>
+                         <option  [value]=''>--select Key Skills--</option>
                         <option *ngFor="let level of keySkills" [ngValue]="level.keyskillId">{{ level.description }}</option>
                       </select>
                       <select formControlName="level" [disabled]="!isEditing">
@@ -575,7 +575,7 @@
 
       <!-- Submit Button -->
       <div class="form-actions" *ngIf="isEditing">
-        <button type="submit" class="btn-primary" [disabled]="isLoading || profileForm.invalid">
+        <button type="submit" class="btn-primary" [disabled]="isLoading || !isCurrentTabValid()">
           <i class="fas fa-save"></i>
           {{ isLoading ? 'Saving...' : 'Save Changes' }}
         </button>
