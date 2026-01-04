@@ -10,6 +10,7 @@ export interface Employee {
   currentPosition: string;
   currentSallary: number;
   expectedSallary: number;
+  noticeperiod:string;
   bio:string;
   resumeID: Number;
   empImageID: Number;

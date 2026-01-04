@@ -67,7 +67,7 @@ export interface UserProfile {
   currentPosition: string;
   currentCompany: string;
   expectedSalary: number;
-  noticePeriod: number;
+  noticePeriod: string;
   avatar: string;
   resume: string;
   stateid: Number;
@@ -137,7 +137,7 @@ export class UserProfileComponent implements OnInit {
     currentSalary: 0,
     stateid: 0,
     districtId: 0,
-    noticePeriod: 30,
+    noticePeriod: '',
     avatar: '',
     resume: '',
     education: [
@@ -232,7 +232,7 @@ export class UserProfileComponent implements OnInit {
           currentCompany: this.user.currentCompany ?? '',
           currentSalary: this.user.currentSalary ?? '',
           expectedSalary: this.user.expectedSalary ?? 0,
-          noticePeriod: this.user.noticePeriod ?? 0,
+          noticePeriod: this.user.noticePeriod ?? '',
           bio: this.user.bio ?? ''
         });
 
@@ -325,7 +325,7 @@ canSaveImage(): boolean {
         currentCompany: [''],
         currentSalary: [''],
         expectedSalary: [0],
-        noticePeriod: [0],
+        noticePeriod: [''],
         bio: ['', [Validators.maxLength(1000)]]
       }),
       education: this.fb.array([]),
@@ -517,6 +517,7 @@ canSaveImage(): boolean {
   }
 
   onSubmit() {
+    debugger
     if (this.profileForm.valid) {
       this.isLoading = true;
 
@@ -534,7 +535,6 @@ canSaveImage(): boolean {
         };
 
         if (this.selectedTab === 'personal') {
-          debugger
           this.empProfile = {
             empId: this.empId,
             firstName: this.user.firstName,
@@ -548,6 +548,7 @@ canSaveImage(): boolean {
             currentPosition: this.user.currentPosition,
             currentSallary: this.user.currentSalary,
             expectedSallary: this.user.expectedSalary,
+            noticeperiod: this.user.noticePeriod,
             resumeID: 0,
             empImageID: 0
           }

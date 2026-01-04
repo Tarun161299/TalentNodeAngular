@@ -386,8 +386,7 @@
                       id="district"
                       class="form-control"
                       formControlName="stateid"
-                      [disabled]="!isEditing"
-                    >
+                      [disabled]="!isEditing">
                       <option value="" disabled>Select State</option>
                       <option *ngFor="let sta of states" [value]="sta.stateId">
                         {{ sta.state }}
@@ -431,6 +430,13 @@
                     <input 
                       type="number" 
                       formControlName="expectedSalary"
+                      [readonly]="!isEditing">
+                  </div>
+                  <div class="form-group">
+                    <label>Notice Period (Days)</label>
+                    <input 
+                      type="text" 
+                      formControlName="noticePeriod"
                       [readonly]="!isEditing">
                   </div>
                 </div>
