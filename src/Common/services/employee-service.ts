@@ -75,6 +75,14 @@ getApplicationStats(employeeId: number): Observable<any> {
     return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveSkillDetails}`,data, { headers: this.getHeaders() });
   }
 
+   saveKeySkillDetails(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveKeySkillDetails}`,data, { headers: this.getHeaders() });
+  }
+
+saveProjectlDetails(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl+ApiEndpoints.saveProjectlDetails}`,data, { headers: this.getHeaders() });
+  }
+
    SaveQuaification(data: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl+ApiEndpoints.AddEducation}`,data, { headers: this.getHeaders() });
   }

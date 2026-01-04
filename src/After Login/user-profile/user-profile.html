@@ -584,101 +584,104 @@
             </div>
           </div>
 
-          <!-- Skills Tab -->
-          <div class="tab-content" *ngIf="selectedTab === 'skills'">
-            <div class="card">
-              <div class="card-header">
-                <h3>Skills</h3>
-                <button type="button" class="btn-add" (click)="addSkill()" *ngIf="isEditing">
-                  <i class="fas fa-plus"></i> Add Skill
-                </button>
-              </div>
-              <div class="card-body">
-                <div formArrayName="skills">
-                  <div class="skills-container">
-                    <div class="skill-item" *ngFor="let skill of skillForms.controls; let i = index" [formGroupName]="i">
-                      <div class="skill-content">
-                        <div class="skill-inputs">
-                          <input type="number" formControlName="skillEmpId" style="display:none;"[readonly]="!isEditing" step="0.01" min="0" max="100">
-                          <select formControlName="name" [disabled]="!isEditing">
-                            <option *ngFor="let level of skillemployee" [value]="level.skillID">{{ level.skillName }}</option>
-                          </select>
-                          
-                          <select formControlName="level" [disabled]="!isEditing">
-                            <option *ngFor="let level of skillLevels" [value]="level">{{ level }}</option>
-                          </select>
-                        </div>
-                        <button type="button" class="btn-remove" (click)="removeSkill(i)" *ngIf="isEditing && skillForms.length > 1">
-                          <i class="fas fa-times"></i>
-                        </button>
-                      </div>
-                      <div class="skill-level-indicator" *ngIf="!isEditing">
-                        <div class="level-bar" [class]="'level-' + skill.get('level')?.value?.toLowerCase()">
-                          <div class="level-fill" [style.width.%]="getSkillLevelPercentage(skill.get('level')?.value)"></div>
-                        </div>
-                        <span class="level-text">{{ skill.get('level')?.value }}</span>
-                      </div>
+      <!-- Skills Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'skills'">
+        <div class="card">
+          <div class="card-header">
+            <h3>Skills</h3>
+            <button type="button" class="btn-add" (click)="addSkill()" *ngIf="isEditing">
+              <i class="fas fa-plus"></i> Add Skill
+            </button>
+          </div>
+          <div class="card-body">
+            <div formArrayName="skills">
+              <div class="skills-container">
+                <div class="skill-item" *ngFor="let skill of skillForms.controls; let i = index" [formGroupName]="i">
+                  <div class="skill-content">
+                    <div class="skill-inputs">
+                         <input type="number" formControlName="skillEmpId" style="display:none;"[readonly]="!isEditing" step="0.01" min="0" max="100">
+<select formControlName="name" [disabled]="!isEditing">
+                        <option *ngFor="let level of skillemployee" [ngValue]="level.skillID">{{ level.skillName }}</option>
+                      </select>
+                      
+                      <select formControlName="level" [disabled]="!isEditing">
+                        <option *ngFor="let level of skillLevels" [value]="level">{{ level }}</option>
+                      </select>
                     </div>
-                  </div>
-                  <div class="no-data" *ngIf="skillForms.length === 0 && !isEditing">
-                    <i class="fas fa-code"></i>
-                    <p>No skills added yet</p>
-                    <button type="button" class="btn-primary" (click)="isEditing = true; addSkill()">
-                      Add Your Skills
+                    <button type="button" class="btn-remove" (click)="removeSkill(i)" *ngIf="isEditing && skillForms.length > 1">
+                      <i class="fas fa-times"></i>
                     </button>
+                  </div>
+                  <div class="skill-level-indicator" *ngIf="!isEditing">
+                    <div class="level-bar" [class]="'level-' + skill.get('level')?.value?.toLowerCase()">
+                      <div class="level-fill" [style.width.%]="getSkillLevelPercentage(skill.get('level')?.value)"></div>
+                    </div>
+                    <span class="level-text">{{ skill.get('level')?.value }}</span>
                   </div>
                 </div>
               </div>
+              <div class="no-data" *ngIf="skillForms.length === 0 && !isEditing">
+                <i class="fas fa-code"></i>
+                <p>No skills added yet</p>
+                <button type="button" class="btn-primary" (click)="isEditing = true; addSkill()">
+                  Add Your Skills
+                </button>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Key Skills Tab -->
-          <div class="tab-content" *ngIf="selectedTab === 'key-skills'">
-            <div class="card">
-              <div class="card-header">
-                <h3>Key Skills</h3>
-                <button type="button" class="btn-add" (click)="addKeySkill()" *ngIf="isEditing">
-                  <i class="fas fa-plus"></i> Add Key Skill
-                </button>
-              </div>
-              <div class="card-body">
-                <div formArrayName="keySkills">
-                  <div class="key-skills-container">
-                    <div class="key-skill-item" *ngFor="let skill of keySkillForms.controls; let i = index" [formGroupName]="i">
-                      <div class="key-skill-content">
-                        <div class="key-skill-inputs">
-                          <input type="text" formControlName="name" [readonly]="!isEditing" placeholder="Enter key skill">
-                          <select formControlName="proficiency" [disabled]="!isEditing">
-                            <option value="">Select Proficiency</option>
-                            <option value="Basic">Basic</option>
-                            <option value="Intermediate">Intermediate</option>
-                            <option value="Advanced">Advanced</option>
-                            <option value="Expert">Expert</option>
-                          </select>
-                        </div>
-                        <button type="button" class="btn-remove" (click)="removeKeySkill(i)" *ngIf="isEditing && keySkillForms.length > 1">
-                          <i class="fas fa-times"></i>
-                        </button>
-                      </div>
-                      <div class="proficiency-indicator" *ngIf="!isEditing">
-                        <div class="proficiency-bar" [class]="'proficiency-' + skill.get('proficiency')?.value?.toLowerCase()">
-                          <div class="proficiency-fill" [style.width.%]="getProficiencyPercentage(skill.get('proficiency')?.value)"></div>
-                        </div>
-                        <span class="proficiency-text">{{ skill.get('proficiency')?.value }}</span>
-                      </div>
+      <!-- Key Skills Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'key-skills'">
+        <div class="card">
+          <div class="card-header">
+            <h3>Key Skills</h3>
+            <button type="button" class="btn-add" (click)="addKeySkill()" *ngIf="isEditing">
+              <i class="fas fa-plus"></i> Add Key Skill
+            </button>
+          </div>
+          <div class="card-body">
+            <div formArrayName="keySkills">
+              <div class="key-skills-container">
+                <div class="key-skill-item" *ngFor="let skill of keySkillForms.controls; let i = index" [formGroupName]="i">
+                  <div class="key-skill-content">
+                    <div class="key-skill-inputs">
+                      <select formControlName="keySkillId" [disabled]="!isEditing" placeholder="select key skill">
+                         <option  [value]=''>--select Key Skills--</option>
+                        <option *ngFor="let level of keySkills" [ngValue]="level.keyskillId">{{ level.description }}</option>
+                      </select>
+                      <select formControlName="level" [disabled]="!isEditing">
+                        <option value="">Select Proficiency</option>
+                        <option value="Basic">Basic</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                        <option value="Expert">Expert</option>
+                      </select>
                     </div>
-                  </div>
-                  <div class="no-data" *ngIf="keySkillForms.length === 0 && !isEditing">
-                    <i class="fas fa-star"></i>
-                    <p>No key skills added yet</p>
-                    <button type="button" class="btn-primary" (click)="isEditing = true; addKeySkill()">
-                      Add Key Skills
+                    <button type="button" class="btn-remove" (click)="removeKeySkill(i)" *ngIf="isEditing && keySkillForms.length > 1">
+                      <i class="fas fa-times"></i>
                     </button>
+                  </div>
+                  <div class="proficiency-indicator" *ngIf="!isEditing">
+                    <div class="proficiency-bar" [class]="'proficiency-' + skill.get('level')?.value?.toLowerCase()">
+                      <div class="proficiency-fill" [style.width.%]="getProficiencyPercentage(skill.get('level')?.value)"></div>
+                    </div>
+                    <span class="proficiency-text">{{ skill.get('level')?.value }}</span>
                   </div>
                 </div>
               </div>
+              <div class="no-data" *ngIf="keySkillForms.length === 0 && !isEditing">
+                <i class="fas fa-star"></i>
+                <p>No key skills added yet</p>
+                <button type="button" class="btn-primary" (click)="isEditing = true; addKeySkill()">
+                  Add Key Skills
+                </button>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
 
           <!-- Projects Tab -->
           <div class="tab-content" *ngIf="selectedTab === 'projects'">
@@ -754,15 +757,15 @@
             </div>
           </div>
 
-          <!-- Submit Button -->
-          <div class="form-actions" *ngIf="isEditing">
-            <button type="submit" class="btn-primary" [disabled]="isLoading || profileForm.invalid">
-              <i class="fas fa-save"></i>
-              {{ isLoading ? 'Saving...' : 'Save Changes' }}
-            </button>
-          </div>
-        </form>
+      <!-- Submit Button -->
+      <div class="form-actions" *ngIf="isEditing">
+        <button type="submit" class="btn-primary" [disabled]="isLoading || !isCurrentTabValid()">
+          <i class="fas fa-save"></i>
+          {{ isLoading ? 'Saving...' : 'Save Changes' }}
+        </button>
       </div>
-    </div>
+    </form>
   </div>
+</div>
+</div>
 </div>

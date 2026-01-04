@@ -48,9 +48,9 @@ userName:this.loginForm.value.email,
 password:this.loginForm.value.password
       };
     this.loginService.Authentication(this.loginDetails).subscribe({next:(response:any)=>{
-      
+      debugger
       var token = response.token;
-if(response!="401"){
+if(response.token!="401"){
   
  var role= this.getClaimsFromToken(token).Role_Id;
   localStorage.setItem('token',token);
@@ -61,9 +61,13 @@ if(response!="401"){
   }
   
 else{
-  this.toastr.error("invalid role")
+  this.toastr.error("Invalid role")
 }
 this.loader.hide()
+}
+else{
+  this.toastr.error("Invalid Email Or Password")
+  this.loader.hide()
 }
     },error:(err:any)=>{
 

@@ -111,8 +111,16 @@ this.loader.show();
       this.signupService.signupEmployee(this.signupdetails).subscribe({
         next: (response) => {
         
-         
+         if(response==1000){
+this.toastr.error('Invalid OTP');
+         }
+         else if(response==0){
+          this.toastr.error('Sign UP failed');
+         }
+         else{
 this.toastr.success('Signup Successful!');
+         }
+
         
           
           this.resetForm();

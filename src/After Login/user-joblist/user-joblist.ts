@@ -12,7 +12,7 @@ import { LoaderService } from '../../Common/services/loader-service';
 export interface Job {
   id: number;
   title: string;
-  status: 'active' | 'draft' | 'closed';
+  status: string;
   department: string;
   location: string;
   description: string;
@@ -31,12 +31,14 @@ export interface Job {
 @Component({
   selector: 'user-joblist',
   standalone: true,
-  imports: [CommonModule,RouterModule,ReactiveFormsModule],
+  imports: [CommonModule,RouterModule,ReactiveFormsModule,FormsModule ],
   templateUrl: './user-joblist.html',
   styleUrl: './user-joblist.css'
 })
 export class UserJoblist implements OnInit {
   empId:number=0;
+  jobstatus='';
+  searchQueryfilter:string="";
   applyForJob:ApplyForJob | undefined;
    constructor(private jobServices:JobServices,private router:Router,private loader:LoaderService,   private toastr: ToastrService,){
  
@@ -86,6 +88,13 @@ export class UserJoblist implements OnInit {
        newApplicants: jobs.reduce((sum, job) => sum + job.newApplicants, 0)
      };
    });
+
+   onSearchClick(){
+var token = localStorage.getItem('token');
+      this.loader.show()
+     this.empId = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).EmpId);
+     this.getEmployeeList(this.empId);
+   }
  
    getClaimsFromToken(token: string): any {
      if (!token) return null;
@@ -191,40 +200,26 @@ applyjob(data:any){
       this.loader.show()
      this.empId = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).EmpId);
      this.getEmployeeList(this.empId);
-//      this.jobServices.JobToEmployee(this.empId).subscribe({next:(data:any)=>{
-       
-       
-//  this.jobsData=signal<Job[]>(data);
-//    this.filteredJobs = computed(() => {
-//      const jobs = this.jobsData();
-//      const query = this.searchQuery().toLowerCase();
-//      const filter = this.activeFilter();
-     
-//      let filtered = jobs;
-     
-//      // Apply status filter
-//      if (filter !== 'all') {
-//        filtered = filtered.filter(job => job.status === filter);
-//      }
-     
-//      // Apply search filter
-//      if (query) {
-//        filtered = filtered.filter(job =>
-//          job.title.toLowerCase().includes(query) ||
-//          job.department.toLowerCase().includes(query) ||
-//          job.description.toLowerCase().includes(query)
-//        );
-//      }
-     
-//      return filtered;
-//    })},error:(err:any)=>{
- 
-//      }})
-     // Component initialization if needed
+
    }
    getEmployeeList(empid:any){
-    this.jobServices.JobToEmployee(empid).subscribe({next:(data:any)=>{
-       
+    var data={
+      empId:empid,
+      search:this.searchQueryfilter,
+      status:this.jobstatus
+    }
+    this.jobServices.JobToEmployee(data).subscribe({next:(data:any)=>{
+       this.stats = computed(() => {
+     var jobs =data;
+     return {
+       total: jobs.length,
+       active: jobs.filter((job:any) => job.status === 'active').length,
+       drafts: jobs.filter((job:any) => job.status === 'draft').length,
+       closed: jobs.filter((job:any) => job.status === 'closed').length,
+       totalApplicants: jobs.reduce((sum:any, job:any) => sum + job.applicantCount, 0),
+       newApplicants: jobs.reduce((sum:any, job:any) => sum + job.newApplicants, 0)
+     };
+   });
        this.loader.hide()
  this.jobsData=signal<Job[]>(data);
    this.filteredJobs = computed(() => {
@@ -260,7 +255,11 @@ applyjob(data:any){
    }
  
    updateFilter(filter: string): void {
-     this.activeFilter.set(filter);
+    this.jobstatus=filter;
+     var token = localStorage.getItem('token');
+      this.loader.show()
+     this.empId = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).EmpId);
+     this.getEmployeeList(this.empId);
    }
  
    viewApplicants(jobId: number): void {

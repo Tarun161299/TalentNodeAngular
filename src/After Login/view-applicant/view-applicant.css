@@ -86,12 +86,78 @@
   align-items: flex-start;
 }
 
-.profile-avatar {
-  width: 80px;
+/* Avatar Container */
+.avatar-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 80px; /* Container का size set करें */
   height: 80px;
+  border-radius: 50%;
+  overflow: hidden; /* Important: यह overlay को round shape में रखेगा */
+}
+
+/* Avatar Image */
+.profile-avatar {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #e9ecef;
+  transition: all 0.3s ease;
+  display: block;
+}
+
+/* Hover Overlay - PERFECT SIZE */
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* 100% of container */
+  height: 100%; /* 100% of container */
+  border-radius: 50%; /* Same as avatar */
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  transform: translateZ(0); /* Fix for rendering issues */
+}
+
+/* Text in overlay */
+.overlay-text {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  padding: 0 5px;
+  line-height: 1.2;
+}
+
+.overlay-text i {
+  font-size: 12px;
+  margin-bottom: 3px;
+  display: block;
+}
+
+/* Hover Effects */
+.avatar-container:hover .profile-avatar {
+  border-color: #3498db;
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.avatar-container:hover .avatar-overlay {
+  opacity: 1;
+}
+
+/* Active/Click Effect */
+.avatar-container:active .profile-avatar {
+  transform: scale(0.95);
+  border-color: #2980b9;
 }
 
 .profile-info h3 {

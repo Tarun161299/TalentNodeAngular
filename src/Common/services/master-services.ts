@@ -34,6 +34,11 @@ export class MasterServices {
         return this.http.get<any>(`${this.baseUrl+ApiEndpoints.GetAllSkill}`,{ headers: this.getHeaders() });
       }
 
+       GetAllKeySkill( ): Observable<any> {
+      
+        return this.http.get<any>(`${this.baseUrl+ApiEndpoints.GetAllKeySkills}`,{ headers: this.getHeaders() });
+      }
+
       GetAllQualification( ): Observable<any> {
       
         return this.http.get<any>(`${this.baseUrl+ApiEndpoints.Qualification}`,{ headers: this.getHeaders() });
