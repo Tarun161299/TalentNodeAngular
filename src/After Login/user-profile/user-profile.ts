@@ -215,7 +215,6 @@ export class UserProfileComponent implements OnInit {
   GetUserDetailsById(id: number) {
     this.employeeService.getEmployeedetailsById(id).subscribe({
       next: (data: any) => {
-        debugger;
         this.loader.hide()
         this.user = data;
         this.user.avatar= (data.avatar==null||data.avatar==undefined||data.avatar=='')?`data:image/png;base64,${this.showP}`:`data:image/jpeg;base64,${data.avatar}`;

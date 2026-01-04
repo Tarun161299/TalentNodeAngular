@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common'; // Import CommonModule
 import { EmployeeService } from '../../Common/services/employee-service';
 import { Observable, interval, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { LoaderService } from '../../Common/services/loader-service';
+import { ToastrService } from 'ngx-toastr';
 
 interface Job {
   id: number;
@@ -122,13 +124,19 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   empId: number = 0;
   profileCompletionDetails: CompletionDetail[] = [];
   showBreakdown: boolean = false;
+  showP:string='';
+  defaultAvatar: string = 'assets/images/default-avatar.png';
+
   
   // New properties for enhanced dashboard
   showCompletionModal: boolean = false;
   isLoading: boolean = true;
   currentDate: Date = new Date();
   currentTime: Observable<Date>;
+  user:any;
+  profileForm:any;
   private subscriptions: Subscription[] = [];
+  
 
   applicationStats: ApplicationStat[] = [
     { type: 'total', icon: 'fas fa-file-alt', count: 24, label: 'Total Applications' },
@@ -254,10 +262,13 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     { name: 'UI/UX Design', level: 72 },
     { name: 'Project Management', level: 60 }
   ];
-
+  EmployeeName:string="";
   constructor(
     private router: Router,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private loader: LoaderService,
+    private toastr: ToastrService
+    
   ) {
     // Initialize current time observable
     this.currentTime = interval(1000).pipe(
@@ -266,9 +277,22 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  getDashboardData(id:number):void{
+    this.employeeService.getEmployeedetailsById(id).subscribe({
+      next: (data: any) => {
+        this.EmployeeName=(data.firstName ?? '' )+' '+ (data.lastName ?? '')
+        this.user = data;
+        this.user.avatar= (data.avatar==null||data.avatar==undefined||data.avatar=='')?`data:image/png;base64,${this.showP}`:`data:image/jpeg;base64,${data.avatar}`;
+      }, error: (err: any) => {
+      }
+    })
+  }
   ngOnInit(): void {
+    var token = localStorage.getItem('token');
+    this.empId = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).EmpId);
     this.loadUserData();
     this.loadApplicationStats();
+    this.getDashboardData(this.empId);
     
     // Simulate loading
     setTimeout(() => {
@@ -1080,4 +1104,5 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     
     this.subscriptions.push(new Subscription(() => clearInterval(intervalId)));
   }
+  
 }

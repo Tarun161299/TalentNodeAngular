@@ -183,12 +183,14 @@
                 
               
                 <!-- Show Change Photo overlay ONLY when in edit mode -->
+               <div *ngIf="this.isEditing"> 
               <div class="avatar-overlay" (click)="triggerAvatarUpload()">
                 <div class="upload-btn">
                   <i class="fas fa-camera"></i>
                   <span>Change Photo</span>
                 </div>
               </div>
+              </div> 
             </div>
             
             <input 
