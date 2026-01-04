@@ -1,0 +1,328 @@
+<!-- PDF Resume Modal -->
+<div class="custom-modal" *ngIf="showPdf">
+  <div class="custom-modal-content">
+    <button class="close-btn" (click)="closeModal()">X</button> 
+    <pdf-viewer
+          [src]="'data:application/pdf;base64,' + employee.resume"
+          [render-text]="true"
+          [show-all]="true"
+          style="display: block; height: 100%; width: 100%;">
+    </pdf-viewer>
+  </div>
+</div>
+
+<!-- Main Container -->
+<div class="employee-profile-view">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="loading-spinner"></div>
+    <p>Loading employee profile...</p>
+  </div>
+
+  <!-- Profile Content -->
+  <div *ngIf="!isLoading" class="profile-content">
+    <!-- Header Section -->
+    <div class="profile-header">
+      <div class="header-content">
+        <div class="avatar-section">
+          <div class="avatar-container">
+            <img [src]="employee.avatar" alt="Profile" class="avatar" onerror="this.src='assets/images/default-avatar.png'">
+          </div>
+          <div class="user-basic-info">
+            <h1>{{ getFullName() }}</h1>
+            <p class="current-role">{{ getCurrentPositionText() }}</p>
+            <div class="user-stats">
+              <span class="stat">
+                <i class="fas fa-briefcase"></i>
+                {{ getTotalExperience() }}
+              </span>
+              <span class="stat" *ngIf="employee.location">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ employee.location }}
+              </span>
+              <span class="stat" *ngIf="employee.noticePeriod">
+                <i class="fas fa-clock"></i>
+                {{ employee.noticePeriod }} days notice
+              </span>
+              <span class="stat">
+                <i class="fas fa-file-pdf"></i>
+                <a *ngIf="employee.resume" (click)="viewResume()">View Resume</a>
+                <span *ngIf="!employee.resume">No Resume</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="header-actions" *ngIf="showActions">
+          <button class="btn-download" *ngIf="employee.resume" (click)="viewResume()">
+            <i class="fas fa-download"></i>
+            View Resume
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs (Optional) -->
+    <div class="profile-tabs" *ngIf="showTabs">
+      <nav class="tab-nav">
+        <button 
+          class="tab-btn" 
+          [class.active]="selectedTab === 'personal'"
+          (click)="selectTab('personal')">
+          <i class="fas fa-user"></i>
+          Personal Info
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="selectedTab === 'experience'"
+          (click)="selectTab('experience')"
+          *ngIf="hasTabData('experience')">
+          <i class="fas fa-briefcase"></i>
+          Experience
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="selectedTab === 'education'"
+          (click)="selectTab('education')"
+          *ngIf="hasTabData('education')">
+          <i class="fas fa-graduation-cap"></i>
+          Education
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="selectedTab === 'skills'"
+          (click)="selectTab('skills')"
+          *ngIf="hasTabData('skills')">
+          <i class="fas fa-code"></i>
+          Skills
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="selectedTab === 'key-skills'"
+          (click)="selectTab('key-skills')"
+          *ngIf="hasTabData('key-skills')">
+          <i class="fas fa-star"></i>
+          Key Skills
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="selectedTab === 'projects'"
+          (click)="selectTab('projects')"
+          *ngIf="hasTabData('projects')">
+          <i class="fas fa-project-diagram"></i>
+          Projects
+        </button>
+      </nav>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="profile-details">
+      <!-- Personal Info Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'personal'">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-user"></i> Personal Information</h3>
+          </div>
+          <div class="card-body">
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Full Name</label>
+                <p>{{ getFullName() }}</p>
+              </div>
+              <div class="info-item">
+                <label>Email</label>
+                <p>{{ employee.email || 'Not specified' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Phone</label>
+                <p>{{ employee.phone || 'Not specified' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Location</label>
+                <p>{{ employee.location || 'Not specified' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Current Position</label>
+                <p>{{ getCurrentPositionText() }}</p>
+              </div>
+              <div class="info-item">
+                <label>Current Company</label>
+                <p>{{ employee.currentCompany || 'Not specified' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Current Salary</label>
+                <p>{{ employee.currentSalary ? ('₹' + employee.currentSalary.toLocaleString()) : 'Not specified' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Expected Salary</label>
+                <p>{{ employee.expectedSalary ? ('₹' + employee.expectedSalary.toLocaleString()) : 'Not specified' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Notice Period</label>
+                <p>{{ employee.noticePeriod ? (employee.noticePeriod + ' days') : 'Not specified' }}</p>
+              </div>
+            </div>
+            
+            <div class="info-item full-width" *ngIf="employee.bio">
+              <label>Professional Summary</label>
+              <p class="bio-text">{{ employee.bio }}</p>
+            </div>
+            
+            <div class="no-data" *ngIf="!getFullName()">
+              <i class="fas fa-user"></i>
+              <p>No personal information available</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Experience Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'experience'">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-briefcase"></i> Work Experience</h3>
+            <span class="badge">{{ employee.experience.length }} positions</span>
+          </div>
+          <div class="card-body">
+            <div class="experience-list">
+              <div class="experience-item" *ngFor="let exp of employee.experience; let i = index">
+                <div class="experience-header">
+                  <h4>{{ exp.position }}</h4>
+                  <span class="company">{{ exp.company }}</span>
+                  <span class="duration">
+                    {{ formatDate(exp.startDate) }} - {{ exp.current ? 'Present' : formatDate(exp.endDate) }}
+                  </span>
+                </div>
+                <p class="description" *ngIf="exp.description">{{ exp.description }}</p>
+              </div>
+            </div>
+            
+            <div class="no-data" *ngIf="employee.experience.length === 0">
+              <i class="fas fa-briefcase"></i>
+              <p>No work experience added</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Education Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'education'">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+            <span class="badge">{{ employee.education.length }} qualifications</span>
+          </div>
+          <div class="card-body">
+            <div class="education-list">
+              <div class="education-item" *ngFor="let edu of employee.education; let i = index">
+                <div class="education-header">
+                  <h4>Degree: {{ edu.degree || 'Not specified' }}</h4>
+                  <span class="institution">{{ edu.institution }}</span>
+                  <span class="year">Year: {{ edu.year }}</span>
+                  <span class="percentage" *ngIf="edu.percentage">
+                    Score: {{ edu.percentage }}%
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="no-data" *ngIf="employee.education.length === 0">
+              <i class="fas fa-graduation-cap"></i>
+              <p>No education details added</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'skills'">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-code"></i> Skills</h3>
+            <span class="badge">{{ employee.skills.length }} skills</span>
+          </div>
+          <div class="card-body">
+            <div class="skills-grid">
+              <div class="skill-item" *ngFor="let skill of employee.skills">
+                <div class="skill-name">{{ skill.skillname || 'Unnamed Skill' }}</div>
+                <div class="skill-level">
+                  <div class="level-bar">
+                    <div class="level-fill" [style.width.%]="getSkillLevelPercentage(skill.level)"></div>
+                  </div>
+                  <span class="level-text">{{ skill.level }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="no-data" *ngIf="employee.skills.length === 0">
+              <i class="fas fa-code"></i>
+              <p>No skills added</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Skills Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'key-skills'">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-star"></i> Key Skills</h3>
+            <span class="badge">{{ employee.keySkills.length }} key skills</span>
+          </div>
+          <div class="card-body">
+            <div class="key-skills-grid">
+              <div class="key-skill-item" *ngFor="let skill of employee.keySkills">
+                <div class="key-skill-name">{{ skill.keyName || 'Unnamed Key Skill' }}</div>
+                <div class="proficiency-level">
+                  <div class="proficiency-bar">
+                    <div class="proficiency-fill" [style.width.%]="getProficiencyPercentage(skill.level)"></div>
+                  </div>
+                  <span class="proficiency-text">{{ skill.level }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="no-data" *ngIf="employee.keySkills.length === 0">
+              <i class="fas fa-star"></i>
+              <p>No key skills added</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Projects Tab -->
+      <div class="tab-content" *ngIf="selectedTab === 'projects'">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-project-diagram"></i> Projects</h3>
+            <span class="badge">{{ employee.projects.length }} projects</span>
+          </div>
+          <div class="card-body">
+            <div class="projects-list">
+              <div class="project-item" *ngFor="let project of employee.projects; let i = index">
+                <div class="project-header">
+                  <h4>{{ project.name }}</h4>
+                  <span class="duration">
+                    {{ formatDate(project.startDate) }} - {{ project.ongoing ? 'Ongoing' : formatDate(project.endDate) }}
+                  </span>
+                </div>
+                <p class="description" *ngIf="project.description">{{ project.description }}</p>
+                <div class="project-tech" *ngIf="project.technologies">
+                  <strong>Technologies:</strong> {{ project.technologies }}
+                </div>
+                <a *ngIf="project.url" [href]="project.url" target="_blank" class="project-link">
+                  <i class="fas fa-external-link-alt"></i> View Project
+                </a>
+              </div>
+            </div>
+            
+            <div class="no-data" *ngIf="employee.projects.length === 0">
+              <i class="fas fa-project-diagram"></i>
+              <p>No projects added</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

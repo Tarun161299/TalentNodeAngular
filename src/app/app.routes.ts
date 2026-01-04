@@ -15,6 +15,7 @@ import { UserJoblist } from '../After Login/user-joblist/user-joblist';
 import { CreateJobComponent } from '../After Login/create-job-component/create-job-component';
 import { ViewApplicant } from '../After Login/view-applicant/view-applicant';
 import { LandingPage } from '../Before Login/landing-page/landing-page';
+import { EmployeeViewComponent } from './employee-view/employee-view';
 
 
 
@@ -42,8 +43,11 @@ export const routes: Routes = [
        {path: 'job-list',component:JobList},
       {path: 'user-joblist',component:UserJoblist},
        {path: 'CreateJob/:jobid',component:CreateJobComponent},
-       {path:'view-applicant/:jobid',component:ViewApplicant}
+       {path:'view-applicant/:jobid',component:ViewApplicant},
+       {path: 'Employee/:empId',component:EmployeeViewComponent},
+       
     ]
+
   },
   { path: '**', redirectTo: '' }
 ];

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { EmployeeService } from '../../Common/services/employee-service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { JobServices } from '../../Common/services/job-services';
@@ -70,9 +70,14 @@ export class ViewApplicant implements OnInit {
     private empService:EmployeeService,
     private jobServices:JobServices,
      private toastr: ToastrService,
-     private loader:LoaderService
+     private loader:LoaderService,
+     private router:Router
   ) {}
 
+  employeeProfile(data :any){
+    debugger
+this.router.navigate(['/welcome/Employee/'+data.Id.toString()]);
+  }
   loadapplicantsreal(){
     debugger
   this.jobId = Number(this.route.snapshot.paramMap.get('jobid'));
