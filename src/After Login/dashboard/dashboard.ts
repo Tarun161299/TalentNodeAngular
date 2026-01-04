@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common'; // Import CommonModule
+import { CommonModule } from '@angular/common';
 import { EmployeeService } from '../../Common/services/employee-service';
 import { Observable, interval, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -114,8 +114,8 @@ interface CompletionStep {
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
-  standalone: true, // Add this if using standalone components
-  imports: [CommonModule] // Add CommonModule to imports
+  standalone: true,
+  imports: [CommonModule]
 })
 export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   userName: string = '';
@@ -124,19 +124,21 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   empId: number = 0;
   profileCompletionDetails: CompletionDetail[] = [];
   showBreakdown: boolean = false;
-  showP:string='';
+  showP: string = '';
   defaultAvatar: string = 'assets/images/default-avatar.png';
 
-  
   // New properties for enhanced dashboard
   showCompletionModal: boolean = false;
   isLoading: boolean = true;
-  currentDate: Date = new Date();
-  currentTime: Observable<Date>;
-  user:any;
-  profileForm:any;
-  private subscriptions: Subscription[] = [];
   
+  // Updated date and time properties
+  currentDate: string = '';
+  currentTime: Observable<string>;
+  currentTimeString: string = '';
+  
+  user: any;
+  profileForm: any;
+  private subscriptions: Subscription[] = [];
 
   applicationStats: ApplicationStat[] = [
     { type: 'total', icon: 'fas fa-file-alt', count: 24, label: 'Total Applications' },
@@ -262,44 +264,52 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     { name: 'UI/UX Design', level: 72 },
     { name: 'Project Management', level: 60 }
   ];
-  EmployeeName:string="";
+  
+  EmployeeName: string = "";
+
   constructor(
     private router: Router,
     private employeeService: EmployeeService,
     private loader: LoaderService,
     private toastr: ToastrService
-    
   ) {
-    // Initialize current time observable
+    // Initialize current time observable with formatted time
     this.currentTime = interval(1000).pipe(
       startWith(0),
-      map(() => new Date())
+      map(() => {
+        const now = new Date();
+        const options: Intl.DateTimeFormatOptions = {
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        };
+        return now.toLocaleTimeString('en-US', options);
+      })
     );
+
+    // Initialize current date
+    this.updateCurrentDate();
   }
 
-  getDashboardData(id:number):void{
-    this.employeeService.getEmployeedetailsById(id).subscribe({
-      next: (data: any) => {
-        this.EmployeeName=(data.firstName ?? '' )+' '+ (data.lastName ?? '')
-        this.user = data;
-        this.user.avatar= (data.avatar==null||data.avatar==undefined||data.avatar=='')?`data:image/png;base64,${this.showP}`:`data:image/jpeg;base64,${data.avatar}`;
-      }, error: (err: any) => {
-      }
-    })
-  }
   ngOnInit(): void {
     var token = localStorage.getItem('token');
     this.empId = Number(this.getClaimsFromToken(token == null || token == undefined ? "" : token).EmpId);
     this.loadUserData();
     this.loadApplicationStats();
     this.getDashboardData(this.empId);
-    
+
+    // Subscribe to currentTime observable to update string value
+    const timeSubscription = this.currentTime.subscribe(time => {
+      this.currentTimeString = time;
+    });
+    this.subscriptions.push(timeSubscription);
+
     // Simulate loading
     setTimeout(() => {
       this.isLoading = false;
     }, 1500);
   }
-  
 
   ngAfterViewInit(): void {
     // Initialize any visual effects
@@ -308,6 +318,32 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     // Clean up subscriptions
     this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  private updateCurrentDate(): void {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
+    this.currentDate = now.toLocaleDateString('en-US', options);
+  }
+
+  getDashboardData(id: number): void {
+    this.employeeService.getEmployeedetailsById(id).subscribe({
+      next: (data: any) => {
+        this.EmployeeName = (data.firstName ?? '') + ' ' + (data.lastName ?? '');
+        this.user = data;
+        this.user.avatar = (data.avatar == null || data.avatar == undefined || data.avatar == '') ?
+          `data:image/png;base64,${this.showP}` :
+          `data:image/jpeg;base64,${data.avatar}`;
+      },
+      error: (err: any) => {
+        console.error('Error fetching dashboard data:', err);
+      }
+    });
   }
 
   // Helper methods for template
@@ -323,26 +359,11 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getFormattedDate(): string {
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    };
-    return this.currentDate.toLocaleDateString('en-US', options);
+    return this.currentDate;
   }
 
-  getFormattedTime(): Observable<string> {
-    return this.currentTime.pipe(
-      map(date => {
-        const options: Intl.DateTimeFormatOptions = { 
-          hour: 'numeric', 
-          minute: '2-digit', 
-          hour12: true 
-        };
-        return date.toLocaleTimeString('en-US', options);
-      })
-    );
+  getFormattedTime(): string {
+    return this.currentTimeString;
   }
 
   getAbsoluteTrend(trend: number): number {
@@ -354,7 +375,6 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // NEW ENHANCED METHODS FOR VIBRANT DESIGN
-
   getProgressColor(): string {
     if (this.profileCompleteness >= 80) return '#4CAF50';
     if (this.profileCompleteness >= 60) return '#FF9800';
@@ -380,12 +400,12 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
 
   getMatchScore(): number {
     if (!this.userProfile) return 0;
-    
+
     // Calculate match score based on profile completeness and skills
     const baseScore = this.profileCompleteness;
     const skillsScore = Math.min(100, this.userProfile.skills?.length * 5 || 0);
     const experienceScore = Math.min(100, this.userProfile.experience?.length * 10 || 0);
-    
+
     return Math.round((baseScore + skillsScore + experienceScore) / 3);
   }
 
@@ -545,14 +565,13 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // EXISTING METHODS FROM YOUR ORIGINAL CODE (with safety checks)
-
   loadUserData(): void {
     const token = localStorage.getItem('token');
     if (token) {
       const claims = this.getClaimsFromToken(token);
       this.userName = claims.UserName || 'User';
       this.empId = claims.EmpId || 0;
-      
+
       if (this.empId > 0) {
         this.fetchUserProfile(this.empId);
       }
@@ -644,9 +663,9 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       const value = this.userProfile![field.field as keyof UserProfile];
       const isFilled = Boolean(value && value.toString().trim().length > 0);
       const fieldScore = isFilled ? field.weight : 0;
-      
+
       score += fieldScore;
-      
+
       details.push({
         section: 'Basic Information',
         field: field.label,
@@ -668,11 +687,11 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     if (!this.userProfile) return { score, details };
 
     // Current Position & Company
-    const hasPosition = Boolean(this.userProfile!.currentPosition && 
-                       this.userProfile!.currentPosition.trim().length > 0);
-    const hasCompany = Boolean(this.userProfile!.currentCompany && 
-                      this.userProfile!.currentCompany.trim().length > 0);
-    
+    const hasPosition = Boolean(this.userProfile!.currentPosition &&
+      this.userProfile!.currentPosition.trim().length > 0);
+    const hasCompany = Boolean(this.userProfile!.currentCompany &&
+      this.userProfile!.currentCompany.trim().length > 0);
+
     // Position score
     const positionScore = hasPosition ? 4 : 0;
     score += positionScore;
@@ -700,11 +719,11 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Salary Information
-    const hasCurrentSalary = Boolean(this.userProfile!.currentSalary && 
-                            this.userProfile!.currentSalary > 0);
-    const hasExpectedSalary = Boolean(this.userProfile!.expectedSalary && 
-                             this.userProfile!.expectedSalary > 0);
-    
+    const hasCurrentSalary = Boolean(this.userProfile!.currentSalary &&
+      this.userProfile!.currentSalary > 0);
+    const hasExpectedSalary = Boolean(this.userProfile!.expectedSalary &&
+      this.userProfile!.expectedSalary > 0);
+
     const currentSalaryScore = hasCurrentSalary ? 2 : 0;
     score += currentSalaryScore;
     details.push({
@@ -730,8 +749,8 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Notice Period
-    const hasNoticePeriod = Boolean(this.userProfile!.noticePeriod && 
-                           this.userProfile!.noticePeriod > 0);
+    const hasNoticePeriod = Boolean(this.userProfile!.noticePeriod &&
+      this.userProfile!.noticePeriod > 0);
     const noticeScore = hasNoticePeriod ? 2 : 0;
     score += noticeScore;
     details.push({
@@ -745,8 +764,8 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Resume
-    const hasResume = Boolean(this.userProfile!.resume && 
-                     this.userProfile!.resume.trim().length > 0);
+    const hasResume = Boolean(this.userProfile!.resume &&
+      this.userProfile!.resume.trim().length > 0);
     const resumeScore = hasResume ? 5 : 0;
     score += resumeScore;
     details.push({
@@ -761,8 +780,8 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Profile Picture
-    const hasAvatar = Boolean(this.userProfile!.avatar && 
-                     this.userProfile!.avatar.trim().length > 0);
+    const hasAvatar = Boolean(this.userProfile!.avatar &&
+      this.userProfile!.avatar.trim().length > 0);
     const avatarScore = hasAvatar ? 2 : 0;
     score += avatarScore;
     details.push({
@@ -791,7 +810,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     // Base score for having experience
     const baseScore = hasExperience ? 10 : 0;
     score += baseScore;
-    
+
     details.push({
       section: 'Work Experience',
       field: 'Experience Added',
@@ -841,7 +860,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       const qualityScore = Object.values(qualityScores).reduce((a: number, b: number) => a + b, 0);
       const qualityPoints = Math.min(qualityScore, 15);
       const hasQualityPoints = Boolean(qualityPoints > 5);
-      
+
       score += qualityPoints;
 
       details.push({
@@ -874,7 +893,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     // Base score for having education
     const baseScore = hasEducation ? 5 : 0;
     score += baseScore;
-    
+
     details.push({
       section: 'Education',
       field: 'Education Added',
@@ -918,7 +937,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
       const qualityScore = Object.values(qualityScores).reduce((a: number, b: number) => a + b, 0);
       const qualityPoints = Math.min(qualityScore, 10);
       const hasQualityPoints = Boolean(qualityScore > 3);
-      
+
       score += qualityPoints;
 
       details.push({
@@ -953,7 +972,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     // Technical Skills
     const skillsScore = Math.min(skills.length, 5) * 1; // Max 5 points
     score += skillsScore;
-    
+
     details.push({
       section: 'Skills & Expertise',
       field: 'Technical Skills',
@@ -968,7 +987,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
     // Key Skills
     const keySkillsScore = Math.min(keySkills.length, 3) * 1.67; // Max 5 points
     score += keySkillsScore;
-    
+
     details.push({
       section: 'Skills & Expertise',
       field: 'Key Skills',
@@ -1037,42 +1056,41 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
 
   getCompletionTips(): string[] {
     const tips: string[] = [];
-    
+
     if (!this.userProfile?.firstName || !this.userProfile?.lastName) {
       tips.push('Add your full name to complete basic information');
     }
-    
+
     if (!this.userProfile?.email) {
       tips.push('Add your email address');
     }
-    
+
     if (!this.userProfile?.phone) {
       tips.push('Add your phone number');
     }
-    
+
     if (!this.userProfile?.resume) {
       tips.push('Upload your resume to increase chances by 40%');
     }
-    
+
     if (!this.userProfile?.experience || this.userProfile.experience.length === 0) {
       tips.push('Add your work experience');
     }
-    
+
     if (!this.userProfile?.skills || this.userProfile.skills.length === 0) {
       tips.push('Add your technical skills');
     }
-    
+
     if (!this.userProfile?.education || this.userProfile.education.length === 0) {
       tips.push('Add your education details');
     }
-    
+
     return tips.slice(0, 3);
   }
-  
 
   getGroupedCompletionDetails(): any[] {
     const grouped: any = {};
-    
+
     this.profileCompletionDetails.forEach(detail => {
       if (!grouped[detail.section]) {
         grouped[detail.section] = {
@@ -1082,12 +1100,12 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
           maxScore: 0
         };
       }
-      
+
       grouped[detail.section].items.push(detail);
       grouped[detail.section].score += detail.currentScore;
       grouped[detail.section].maxScore += detail.maxScore;
     });
-    
+
     return Object.values(grouped);
   }
 
@@ -1101,8 +1119,7 @@ export class Dashboard implements OnInit, AfterViewInit, OnDestroy {
         };
       });
     }, 60000);
-    
+
     this.subscriptions.push(new Subscription(() => clearInterval(intervalId)));
   }
-  
 }

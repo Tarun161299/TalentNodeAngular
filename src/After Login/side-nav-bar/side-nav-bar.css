@@ -2,7 +2,7 @@
   width: 240px;
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: white;
-  min-height: 100vh;
+  min-height: 111vh;
   transition: width 0.3s ease;
   overflow: hidden;
 }
