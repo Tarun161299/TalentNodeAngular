@@ -20,6 +20,10 @@ export class LoginComponent {
   loginForm: FormGroup;
   submitted = false;
   loginDetails:LoginDetails|undefined;
+  showPassword = false;
+
+// Add this method
+
   constructor(private fb: FormBuilder,
     private router: Router,
     private loginService:LoginService,
@@ -29,7 +33,8 @@ export class LoginComponent {
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
+      rememberMe: [false]
     });
   }
 email_input:string="";
@@ -55,7 +60,7 @@ if(response.token!="401"){
  var role= this.getClaimsFromToken(token).Role_Id;
   localStorage.setItem('token',token);
   if(role.toString()=="3")
-   this.router.navigate(['/welcome/dashboard']);
+   this.router.navigate(['/welcome/job-list']);
   else if(role.toString()=="4"){
     this.router.navigate(['/welcome/dashboard']);
   }
@@ -80,7 +85,6 @@ this.loader.hide()
       console.log('Form is invalid');
     }
   }
-showPassword = false;
 
 togglePassword() {
   this.showPassword = !this.showPassword;

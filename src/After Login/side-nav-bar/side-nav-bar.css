@@ -1,107 +1,195 @@
+/* ===== SIDEBAR (Naukri-style professional dark) ===== */
 .sidebar {
   width: 240px;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
-  color: white;
-  min-height: 111vh;
+  background: #1e2d40;
+  color: #c8d0dc;
+  height: 100vh;
   transition: width 0.3s ease;
   overflow: hidden;
   position: fixed;
   left: 0;
-  top: 0;
-  z-index: 1000;
-  height: 100vh;
+  top: 60px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
 }
 
 .sidebar.collapsed {
   width: 60px;
 }
 
+/* ===== TOGGLE BUTTON ===== */
 .toggle-btn {
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
   cursor: pointer;
-  background: #1a252f;
-  text-align: center;
+  background: #152030;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   font-size: 18px;
+  color: #a0aab4;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
 }
 
+.toggle-btn:hover {
+  background: #0e1a27;
+  color: #ffffff;
+}
+
+/* ===== MENU ===== */
 .menu {
   list-style: none;
-  padding: 0;
+  padding: 8px 0;
   margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
 }
 
+.menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.menu::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+}
+
+/* ===== MENU ITEMS ===== */
 .menu-item {
   display: flex;
   align-items: center;
   padding: 12px 16px;
   cursor: pointer;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  border-left: 3px solid transparent;
+  color: #b0bac6;
+  gap: 0;
 }
 
-.menu-item:hover {
-  background: #17232f;
+.menu-item i {
+  font-size: 15px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  color: #8898aa;
+  transition: color 0.2s;
 }
 
 .menu-item span {
-  margin-left: 10px;
+  margin-left: 12px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.submenu {
-  list-style: none;
-  padding-left: 20px;
-}
-
-.arrow {
+.menu-item .arrow {
   margin-left: auto;
-  transition: transform 0.2s;
-  font-size: 14px;
+  font-size: 11px;
+  color: #6b7a8d;
+  transition: transform 0.25s;
+  flex-shrink: 0;
 }
 
-.arrow.open {
+.menu-item .arrow.open {
   transform: rotate(180deg);
 }
 
+.menu-item:hover {
+  background: #283d55;
+  color: #e8ecf0;
+  border-left-color: #2557a7;
+}
+
+.menu-item:hover i {
+  color: #a0c4ff;
+}
+
+.menu-item.parent {
+  user-select: none;
+}
+
+/* ===== SUBMENU ===== */
 .submenu {
   list-style: none;
   margin: 0;
-  padding-left: 20px;
-  background: #1a252f;
-  border-left: 2px solid #0073e6;
+  padding: 0;
+  background: #152030;
+  border-left: none;
 }
 
 .submenu li a {
-  display: block;
-  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  padding: 10px 16px 10px 48px;
   font-size: 13px;
-  color: #ede4e4;
+  color: #8898aa;
   text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+  border-left: 3px solid transparent;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.submenu li a i {
+  font-size: 12px;
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .submenu li a:hover {
-  background: #e6f0ff;
-  color: #0073e6;
+  background: #1e2d40;
+  color: #e0e8f4;
+  border-left-color: #f16722;
 }
 
-/* Mobile Responsive Styles */
+/* ===== COLLAPSED STATE ===== */
+.sidebar.collapsed .menu-item span,
+.sidebar.collapsed .menu-item .arrow {
+  display: none;
+}
+
+.sidebar.collapsed .menu-item {
+  justify-content: center;
+  padding: 14px 0;
+}
+
+.sidebar.collapsed .menu-item i {
+  margin: 0;
+  font-size: 17px;
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .sidebar {
-    width: 100%;
+    width: 240px !important;
     height: auto;
-    min-height: auto;
     position: relative;
-    z-index: 1000;
+    top: 0;
+    flex-direction: column;
+    z-index: 100;
   }
-  
+
   .sidebar.collapsed {
-    width: 100%;
-    height: 60px;
+    height: 48px;
     overflow: hidden;
+    width: 100% !important;
   }
-  
+
   .sidebar:not(.collapsed) {
-    height: auto;
-    max-height: 80vh;
+    max-height: 70vh;
     overflow-y: auto;
+    width: 100% !important;
   }
 }

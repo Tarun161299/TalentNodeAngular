@@ -1,88 +1,215 @@
+/* ===== BEFORE-LOGIN HEADER (Naukri-style) ===== */
 .header {
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  padding: 1rem 0;
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 
-.container {
+.header-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  height: 64px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 24px;
 }
 
+/* ===== LOGO ===== */
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   text-decoration: none;
+  flex-shrink: 0;
+  cursor: pointer;
 }
 
-.logo i {
-  font-size: 2rem;
-  color: #f59e0b; /* Blue color for the handshake */
+.logo-icon {
+  font-size: 1.5rem;
+  color: #f16722;
 }
 
-.logo h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: white;
-  margin: 0;
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #2557a7;
+  letter-spacing: -0.5px;
 }
 
+.logo-accent {
+  color: #f16722;
+}
+
+/* ===== NAV ===== */
 .nav {
   display: flex;
-  gap: 2rem;
   align-items: center;
+  gap: 4px;
+  flex: 1;
 }
 
-.nav a {
+.nav-link {
   text-decoration: none;
-  color: white;
+  color: #333333;
+  font-size: 14px;
   font-weight: 500;
-  transition: color 0.3s ease;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
 }
 
-.nav a:hover {
-  color: #2563eb;
-  background: #f1f5f9;
+.nav-link:hover {
+  color: #2557a7;
+  background: #e8f0fe;
 }
 
-/* Responsive Design */
+/* ===== HEADER ACTIONS ===== */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.btn-login {
+  display: inline-block;
+  text-decoration: none;
+  color: #2557a7;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border: 1.5px solid #2557a7;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.btn-login:hover {
+  background: #e8f0fe;
+}
+
+.btn-register {
+  display: inline-block;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 7px 16px;
+  background: #f16722;
+  border: 1.5px solid #f16722;
+  border-radius: 4px;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-register:hover {
+  background: #c94e0e;
+  border-color: #c94e0e;
+}
+
+/* ===== HAMBURGER ===== */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.hamburger:hover {
+  background: #f3f2f0;
+}
+
+.hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #333;
+  border-radius: 2px;
+}
+
+/* ===== MOBILE NAV ===== */
+.mobile-nav {
+  display: none;
+  flex-direction: column;
+  background: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  padding: 8px 20px 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.mobile-nav.open {
+  display: flex;
+}
+
+.mobile-nav-link {
+  text-decoration: none;
+  color: #333;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: color 0.2s;
+}
+
+.mobile-nav-link:last-of-type {
+  border-bottom: none;
+}
+
+.mobile-nav-link:hover {
+  color: #2557a7;
+}
+
+.mobile-nav-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.mobile-nav-actions .btn-login,
+.mobile-nav-actions .btn-register {
+  flex: 1;
+  text-align: center;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 769px) {
+  .mobile-nav {
+    display: none !important;
+  }
+}
+
 @media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
   .nav {
-    gap: 1rem;
+    display: none;
   }
-  
-  .logo h1 {
-    font-size: 1.5rem;
+
+  .header-actions .btn-login,
+  .header-actions .btn-register {
+    display: none;
   }
-  
-  .logo i {
-    font-size: 1.5rem;
+
+  .hamburger {
+    display: flex;
   }
 }
 
 @media (max-width: 480px) {
-  .nav {
-    flex-wrap: wrap;
-    justify-content: center;
+  .header-container {
+    padding: 0 16px;
   }
-  
-  .nav a {
-    padding: 0.5rem;
-    font-size: 0.9rem;
+
+  .logo-text {
+    font-size: 1.3rem;
   }
 }

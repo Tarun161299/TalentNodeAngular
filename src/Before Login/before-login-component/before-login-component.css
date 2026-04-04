@@ -1,0 +1,12 @@
+/* ===== BEFORE-LOGIN SHELL ===== */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f3f2f0;
+}
+
+/* Router outlet container - centers login/signup forms */
+router-outlet + * {
+  flex: 1;
+}
