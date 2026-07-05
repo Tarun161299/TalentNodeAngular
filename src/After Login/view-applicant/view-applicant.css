@@ -20,7 +20,7 @@
 
 .page-header h2 i {
   margin-right: 10px;
-  color: #3498db;
+  color: #2557a7;
 }
 
 .results-info {
@@ -145,7 +145,7 @@
 
 /* Hover Effects */
 .avatar-container:hover .profile-avatar {
-  border-color: #3498db;
+  border-color: #2557a7;
   transform: scale(1.05);
   box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
 }
@@ -168,7 +168,7 @@
 
 .position {
   margin: 0 0 12px 0;
-  color: #3498db;
+  color: #2557a7;
   font-weight: 600;
   font-size: 1em;
 }
@@ -189,7 +189,7 @@
 
 .contact-item i {
   width: 16px;
-  color: #3498db;
+  color: #2557a7;
 }
 
 .application-meta {
@@ -217,7 +217,7 @@
 }
 
 .detail-section h4 i {
-  color: #3498db;
+  color: #2557a7;
 }
 
 /* Experience Styles */
@@ -231,7 +231,7 @@
   padding: 12px;
   background: #f8f9fa;
   border-radius: 8px;
-  border-left: 4px solid #3498db;
+  border-left: 4px solid #2557a7;
 }
 
 .exp-header {
@@ -253,7 +253,7 @@
 }
 
 .exp-company {
-  color: #3498db;
+  color: #2557a7;
   font-size: 0.9em;
   font-weight: 500;
 }
@@ -317,12 +317,12 @@
 
 .status-select:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: #2557a7;
   box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .status-pending { border-left: 4px solid #f39c12; }
-.status-reviewed { border-left: 4px solid #3498db; }
+.status-reviewed { border-left: 4px solid #2557a7; }
 .status-shortlisted { border-left: 4px solid #9b59b6; }
 .status-interview { border-left: 4px solid #e74c3c; }
 .status-rejected { border-left: 4px solid #95a5a6; }
@@ -347,7 +347,7 @@
 }
 
 .btn-view {
-  background: #3498db;
+  background: #2557a7;
   color: white;
 }
 
@@ -403,9 +403,9 @@
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: #3498db;
+  background: #2557a7;
   color: white;
-  border-color: #3498db;
+  border-color: #2557a7;
 }
 
 .pagination-btn:disabled {
@@ -435,9 +435,9 @@
 }
 
 .page-btn.active {
-  background: #3498db;
+  background: #2557a7;
   color: white;
-  border-color: #3498db;
+  border-color: #2557a7;
 }
 
 .page-size-selector {

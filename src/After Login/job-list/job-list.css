@@ -39,7 +39,7 @@
 }
 
 .header-text .header-title i {
-  color: #667eea;
+  color: #2557a7;
   font-size: 2rem;
 }
 
@@ -62,7 +62,7 @@
 .stat-number {
   font-size: 2rem;
   font-weight: 800;
-  color: #667eea;
+  color: #2557a7;
   line-height: 1;
 }
 
@@ -74,24 +74,24 @@
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f16722;
   color: white;
   border: none;
-  padding: 14px 28px;
-  border-radius: 12px;
-  font-size: 1rem;
+  padding: 11px 24px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  transition: background 0.2s;
 }
 
 .primary-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+  background: #c94e0e;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Filters Section */
@@ -126,9 +126,9 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #2557a7;
   background: white;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 87, 167, 0.1);
 }
 
 .search-icon {
@@ -157,13 +157,13 @@
 }
 
 .filter-tab:hover {
-  border-color: #667eea;
-  color: #667eea;
+  border-color: #2557a7;
+  color: #2557a7;
 }
 
 .filter-tab.active {
-  background: #667eea;
-  border-color: #667eea;
+  background: #2557a7;
+  border-color: #2557a7;
   color: white;
 }
 
@@ -194,7 +194,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2557a7 0%, #1a4082 100%);
 }
 
 .job-card:hover {
@@ -356,7 +356,7 @@
 }
 
 .action-btn.primary {
-  background: #667eea;
+  background: #2557a7;
   color: white;
 }
 

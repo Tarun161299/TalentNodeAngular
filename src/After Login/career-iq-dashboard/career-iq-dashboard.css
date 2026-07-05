@@ -6,7 +6,7 @@
 }
 
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-gradient: linear-gradient(135deg, #2557a7 0%, #1a4082 100%);
     --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
     --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
@@ -21,8 +21,8 @@
     --color-info: #2196F3;
     --color-danger: #F44336;
     --color-purple: #9C27B0;
-    --color-primary: #667eea;
-    --color-secondary: #764ba2;
+    --color-primary: #2557a7;
+    --color-secondary: #1a4082;
 }
 
 body {
@@ -91,7 +91,7 @@ body {
 }
 
 .user-name {
-    color: #667eea;
+    color: #2557a7;
     font-weight: 700;
 }
 
@@ -123,14 +123,14 @@ body {
 }
 
 .stat-badge:hover {
-    background: #667eea;
+    background: #2557a7;
     color: white;
-    border-color: #667eea;
+    border-color: #2557a7;
     transform: translateY(-2px);
 }
 
 .stat-badge i {
-    color: #667eea;
+    color: #2557a7;
 }
 
 .stat-badge:hover i {
@@ -156,8 +156,8 @@ body {
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #667eea;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: 3px solid #2557a7;
+    background: linear-gradient(135deg, #2557a7, #1a4082);
 }
 
 .status-indicator {
@@ -169,7 +169,7 @@ body {
     border-radius: 50%;
     background: #4CAF50;
     border: 2px solid white;
-    box-shadow: 0 0 0 2px #667eea;
+    box-shadow: 0 0 0 2px #2557a7;
 }
 
 .date-display {
@@ -202,8 +202,8 @@ body {
 }
 
 .quick-action-btn {
-    background: #667eea;
-    border: 2px solid #667eea;
+    background: #2557a7;
+    border: 2px solid #2557a7;
     color: white;
     padding: 12px 24px;
     border-radius: 50px;
@@ -219,8 +219,8 @@ body {
 }
 
 .quick-action-btn:hover {
-    background: #764ba2;
-    border-color: #764ba2;
+    background: #1a4082;
+    border-color: #1a4082;
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
@@ -473,7 +473,7 @@ body {
 .stat-item:hover {
     background: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-color: #667eea;
+    border-color: #2557a7;
 }
 
 .stat-dot {
@@ -641,7 +641,7 @@ body {
 .job-card-enhanced:hover {
     transform: translateY(-8px);
     box-shadow: var(--card-shadow-hover);
-    border-color: #667eea;
+    border-color: #2557a7;
 }
 
 .job-card-header {
@@ -663,7 +663,7 @@ body {
     width: 60px;
     height: 60px;
     border-radius: 15px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #2557a7, #1a4082);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -686,7 +686,7 @@ body {
     gap: 5px;
     padding: 5px 12px;
     background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
+    color: #2557a7;
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 500;
@@ -720,7 +720,7 @@ body {
 }
 
 .detail-item i {
-    color: #667eea;
+    color: #2557a7;
     width: 16px;
     text-align: center;
 }
@@ -782,9 +782,9 @@ body {
 }
 
 .save-btn:hover {
-    background: #667eea;
+    background: #2557a7;
     color: white;
-    border-color: #667eea;
+    border-color: #2557a7;
     transform: rotate(15deg);
 }
 
@@ -876,7 +876,7 @@ body {
     transform: translateX(5px);
     background: white;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    border-color: #667eea;
+    border-color: #2557a7;
 }
 
 .stat-icon-sidebar {
@@ -939,7 +939,7 @@ body {
     transform: translateX(5px);
     background: white;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    border-color: #667eea;
+    border-color: #2557a7;
 }
 
 .interview-time {
@@ -951,7 +951,7 @@ body {
 .interview-hour {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #667eea;
+    color: #2557a7;
 }
 
 .interview-date {
@@ -1059,7 +1059,7 @@ body {
     text-align: right;
     font-size: 0.9rem;
     font-weight: 600;
-    color: #667eea;
+    color: #2557a7;
     flex-shrink: 0;
     white-space: nowrap;
 }
@@ -1881,7 +1881,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #2557a7, #1a4082);
     border-radius: 10px;
 }
 

@@ -1,53 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HR Dashboard - Candidates</title>
-
-</head>
-<body>
-<!-- resume-preview-dialog.component.html -->
-<div class="custom-modal" *ngIf="showPdf">
-  <div class="custom-modal-content">
-    <button class="close-btn" (click)="closeModal()">X</button> 
-    <pdf-viewer
-          [src]="'data:application/pdf;base64,' + pdfBase64"
-          [render-text]="true"
-          [show-all]="true"
-          style="display: block; height: 100%; width: 100%;">
-        </pdf-viewer>
-
-   </div>
-</div> 
-  <h1 class="title">📋 Candidate Applications</h1>
-
-  <!-- src/app/dashboard/dashboard.component.html -->
-
-<div class="dashboard">
-  <div class="row" *ngFor="let candidate of employeeList">
-    <div class="profile">
-      <img  [src]="(candidate.empImage==null||candidate.empImage==''|| candidate.empImage==undefined)?'data:image/png;base64,' + showP:'data:image/jpeg;base64,' + candidate.empImage" [alt]="candidate.firstName">
-      <div class="info">
-        <h3>{{ candidate.firstName +' '+ candidate.lastName}}</h3>
-        <p>Applied For: <strong>IT</strong></p>
-<div  *ngFor="let qual of candidate.emp_Qualification"><span  class="qualification">🎓 {{ qual.qualificationName }}</span></div>
-        
-        <span class="details">💼 {{ candidate.experience }} | 📍 {{ candidate.districtName }}</span>
-        <span class="contact">📞 {{ candidate.phone }} | ✉ {{ candidate.email }}</span>
-      </div>
+<!-- PDF Resume Viewer Modal -->
+<div class="modal-overlay" *ngIf="showPdf" (click)="closeModal()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3><i class="fas fa-file-pdf"></i> Resume Preview</h3>
+      <button class="modal-close" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
-    <div class="actions">
-      <span class="status new" >New </span>
-       <!-- [ngClass]="candidate.status" -->
-      <button class="btn view" (click)="openPdf(candidate.employeeID)">📄 Resume</button>
-      <button class="btn profile">👤 View Profile</button>
-      <button class="btn shortlist">✔ Shortlist</button>
-      <button class="btn reject">❌ Reject</button>
-      <button class="btn call">📞 Call</button>
+    <div class="modal-body">
+      <pdf-viewer
+        [src]="'data:application/pdf;base64,' + pdfBase64"
+        [render-text]="true"
+        [show-all]="true"
+        style="display: block; height: 100%; width: 100%;">
+      </pdf-viewer>
     </div>
   </div>
 </div>
 
-</body>
-</html>
+<!-- Page Content -->
+<div class="page-container">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">
+        <i class="fas fa-users"></i>
+        Candidate Applications
+      </h1>
+      <p class="page-subtitle">Review and manage all job applications</p>
+    </div>
+    <div class="header-right">
+      <span class="total-badge">
+        <strong>{{ employeeList.length }}</strong> Candidates
+      </span>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!employeeList || employeeList.length === 0">
+    <i class="fas fa-users-slash"></i>
+    <h3>No Applications Found</h3>
+    <p>There are no candidate applications to display yet.</p>
+  </div>
+
+  <!-- Candidates List -->
+  <div class="candidates-list">
+    <div class="candidate-card" *ngFor="let candidate of employeeList">
+
+      <!-- Card Main -->
+      <div class="card-body">
+
+        <!-- Avatar -->
+        <div class="avatar-wrap">
+          <img
+            class="candidate-avatar"
+            [src]="(candidate.empImage == null || candidate.empImage == '' || candidate.empImage == undefined)
+              ? 'data:image/png;base64,' + showP
+              : 'data:image/jpeg;base64,' + candidate.empImage"
+            [alt]="candidate.firstName">
+          <span class="status-dot"></span>
+        </div>
+
+        <!-- Info -->
+        <div class="candidate-info">
+          <div class="info-top">
+            <h3 class="candidate-name">{{ candidate.firstName }} {{ candidate.lastName }}</h3>
+            <span class="status-badge status-new">New</span>
+          </div>
+
+          <div class="info-row">
+            <span class="info-item">
+              <i class="fas fa-briefcase"></i>
+              Applied For: <strong>IT</strong>
+            </span>
+            <span class="info-item" *ngIf="candidate.experience">
+              <i class="fas fa-clock"></i>
+              {{ candidate.experience }}
+            </span>
+            <span class="info-item" *ngIf="candidate.districtName">
+              <i class="fas fa-map-marker-alt"></i>
+              {{ candidate.districtName }}
+            </span>
+          </div>
+
+          <div class="qualifications" *ngIf="candidate.emp_Qualification && candidate.emp_Qualification.length > 0">
+            <span class="qual-tag" *ngFor="let qual of candidate.emp_Qualification">
+              <i class="fas fa-graduation-cap"></i>
+              {{ qual.qualificationName }}
+            </span>
+          </div>
+
+          <div class="contact-row">
+            <span class="contact-item" *ngIf="candidate.phone">
+              <i class="fas fa-phone-alt"></i> {{ candidate.phone }}
+            </span>
+            <span class="contact-item" *ngIf="candidate.email">
+              <i class="fas fa-envelope"></i> {{ candidate.email }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card-actions">
+          <button class="action-btn btn-resume" (click)="openPdf(candidate.employeeID)" title="View Resume">
+            <i class="fas fa-file-alt"></i>
+            <span>Resume</span>
+          </button>
+          <button class="action-btn btn-profile" title="View Profile">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+          </button>
+          <button class="action-btn btn-shortlist" title="Shortlist">
+            <i class="fas fa-check"></i>
+            <span>Shortlist</span>
+          </button>
+          <button class="action-btn btn-reject" title="Reject">
+            <i class="fas fa-times"></i>
+            <span>Reject</span>
+          </button>
+          <button class="action-btn btn-call" title="Call">
+            <i class="fas fa-phone"></i>
+            <span>Call</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
